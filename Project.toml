@@ -1,0 +1,20 @@
+name = "qr_mumps"
+uuid = "422b30a1-cc69-4d85-abe7-cc07b540c444"
+version = "0.1.0"
+
+[deps]
+CEnum = "fa961155-64e5-5f13-b03f-caf6b980ea82"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+qr_mumps_jll = "e37b5aa0-c611-5f0f-83fb-aee446c0b77e"
+
+[compat]
+julia = "1.3"
+qr_mumps_jll = "3.0.1"
+
+[extras]
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Random", "Test"]
