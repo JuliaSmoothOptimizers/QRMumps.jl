@@ -1,4 +1,3 @@
-using qr_mumps
-using Base.Test
+using Test, qr_mumps, LinearAlgebra, SparseArrays, Printf, Random
 
-include("test_dqrm.jl")
+include("test_qrm.jl")
