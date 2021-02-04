@@ -25,8 +25,8 @@ for (fname, lname, elty, subty) in ((:sqrm_spfct_init_c, :libsqrm, Float32   , F
                                     (:cqrm_spfct_init_c, :libcqrm, ComplexF32, Float32),
                                     (:zqrm_spfct_init_c, :libzqrm, ComplexF64, Float64))
   @eval begin
-    function qrm_spfct_init(spfct :: qrm_spfct, spmat :: qrm_spmat{$elty})
-      ccall(($fname, $lname), Cint, (Ptr{qrm_spfct}, Ptr{qrm_spmat{$elty}}), spfct, spmat)
+    function qrm_spfct_init(spfct :: qrm_spfct{$elty}, spmat :: qrm_spmat{$elty})
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Ptr{qrm_spmat{$elty}}), spfct, spmat)
     end
   end
 end
@@ -36,8 +36,8 @@ for (fname, lname, elty, subty) in ((:sqrm_spfct_destroy_c, :libsqrm, Float32   
                                     (:cqrm_spfct_destroy_c, :libcqrm, ComplexF32, Float32),
                                     (:zqrm_spfct_destroy_c, :libzqrm, ComplexF64, Float64))
   @eval begin
-    function qrm_spfct_destroy(spfct :: qrm_spfct)
-      ccall(($fname, $lname), Cint, (Ptr{qrm_spfct},), spfct)
+    function qrm_spfct_destroy(spfct :: qrm_spfct{$elty})
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}},), spfct)
     end
   end
 end
@@ -58,8 +58,8 @@ for (fname, lname, elty, subty) in ((:sqrm_analyse_c, :libsqrm, Float32   , Floa
                                     (:cqrm_analyse_c, :libcqrm, ComplexF32, Float32),
                                     (:zqrm_analyse_c, :libzqrm, ComplexF64, Float64))
   @eval begin
-    function qrm_analyse(spmat :: qrm_spmat{$elty}, spfct :: qrm_spfct, transp :: Char)
-      ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{qrm_spfct}, UInt8), spmat, spfct, transp)
+    function qrm_analyse(spmat :: qrm_spmat{$elty}, spfct :: qrm_spfct{$elty}; transp :: Char='n')
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{qrm_spfct{$elty}}, UInt8), spmat, spfct, transp)
     end
   end
 end
@@ -69,8 +69,8 @@ for (fname, lname, elty, subty) in ((:sqrm_factorize_c, :libsqrm, Float32   , Fl
                                     (:cqrm_factorize_c, :libcqrm, ComplexF32, Float32),
                                     (:zqrm_factorize_c, :libzqrm, ComplexF64, Float64))
   @eval begin
-    function qrm_factorize(spmat :: qrm_spmat{$elty}, spfct :: qrm_spfct, transp :: Char)
-      ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{qrm_spfct}, UInt8), spmat, spfct, transp)
+    function qrm_factorize(spmat :: qrm_spmat{$elty}, spfct :: qrm_spfct{$elty}; transp :: Char='n')
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{qrm_spfct{$elty}}, UInt8), spmat, spfct, transp)
     end
   end
 end
@@ -81,8 +81,14 @@ for (fname, lname, elty, subty) in ((:sqrm_solve_c, :libsqrm, Float32   , Float3
                                     (:cqrm_solve_c, :libcqrm, ComplexF32, Float32),
                                     (:zqrm_solve_c, :libzqrm, ComplexF64, Float64))
   @eval begin
-    function qrm_solve(spfct :: qrm_spfct, transp :: Char, b, x, nrhs :: Integer)
-      ccall(($fname, $lname), Cint, (Ptr{qrm_spfct}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), spfct, transp, b, x, nrhs)
+    function qrm_solve(spfct :: qrm_spfct{$elty}, b :: Vector{$elty}, x :: Vector{$elty}; transp :: Char='n')
+      nrhs = 1
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), spfct, transp, b, x, nrhs)
+    end
+
+    function qrm_solve(spfct :: qrm_spfct{$elty}, b :: Matrix{$elty}, x :: Matrix{$elty}; transp :: Char='n')
+      nrhs = size(b, 2)
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), spfct, transp, b, x, nrhs)
     end
   end
 end
@@ -92,8 +98,14 @@ for (fname, lname, elty, subty) in ((:sqrm_apply_c, :libsqrm, Float32   , Float3
                                     (:cqrm_apply_c, :libcqrm, ComplexF32, Float32),
                                     (:zqrm_apply_c, :libzqrm, ComplexF64, Float64))
   @eval begin
-    function qrm_apply(spfct :: qrm_spfct, transp :: Char, b, nrhs :: Integer)
-        ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, UInt8, Ptr{$elty}, Cint), spfct, transp, b, nrhs)
+    function qrm_apply(spfct :: qrm_spfct{$elty}, b :: Vector{$elty}; transp :: Char='n')
+      nrhs = 1
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), spfct, transp, b, nrhs)
+    end
+
+    function qrm_apply(spfct :: qrm_spfct{$elty}, b :: Matrix{$elty}; transp :: Char='n')
+      nrhs = size(b, 2)
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), spfct, transp, b, nrhs)
     end
   end
 end
@@ -103,8 +115,14 @@ for (fname, lname, elty, subty) in ((:sqrm_matmul_c, :libsqrm, Float32   , Float
                                     (:cqrm_matmul_c, :libcqrm, ComplexF32, Float32),
                                     (:zqrm_matmul_c, :libzqrm, ComplexF64, Float64))
   @eval begin
-    function qrm_matmul(spmat :: qrm_spmat{$elty}, transp :: Char, alpha, x, beta, y, nrhs :: Integer)
-        ccall(($fname, $lname), Cvoid, (Ptr{qrm_spmat{$elty}}, UInt8, elty, Ptr{$elty}, elty, Ptr{$elty}, Cint), spmat, transp, alpha, x, beta, y, nrhs)
+    function qrm_matmul(spmat :: qrm_spmat{$elty}, alpha :: $elty, x :: Vector{$elty}, beta :: $elty, y :: Vector{$elty}; transp :: Char='n')
+      nrhs = 1
+      ccall(($fname, $lname), Cvoid, (Ptr{qrm_spmat{$elty}}, UInt8, $elty, Ptr{$elty}, $elty, Ptr{$elty}, Cint), spmat, transp, alpha, x, beta, y, nrhs)
+    end
+
+    function qrm_matmul(spmat :: qrm_spmat{$elty}, alpha :: $elty, x :: Matrix{$elty}, beta :: $elty, y :: Matrix{$elty}; transp :: Char='n')
+      nrhs = size(y, 2)
+      ccall(($fname, $lname), Cvoid, (Ptr{qrm_spmat{$elty}}, UInt8, $elty, Ptr{$elty}, $elty, Ptr{$elty}, Cint), spmat, transp, alpha, x, beta, y, nrhs)
     end
   end
 end
@@ -114,8 +132,8 @@ for (fname, lname, elty, subty) in ((:sqrm_spmat_nrm_c, :libsqrm, Float32   , Fl
                                     (:cqrm_spmat_nrm_c, :libcqrm, ComplexF32, Float32),
                                     (:zqrm_spmat_nrm_c, :libzqrm, ComplexF64, Float64))
   @eval begin
-    function qrm_spmat_nrm(spmat :: qrm_spmat{$elty}, ntype, nrm)
-        ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, UInt8, Ptr{$subty}), spmat, ntype, nrm)
+    function qrm_spmat_nrm(spmat :: qrm_spmat{$elty}, ntype :: Char, nrm :: $subty)
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, UInt8, Ptr{$subty}), spmat, ntype, nrm)
     end
   end
 end
@@ -125,8 +143,14 @@ for (fname, lname, elty, subty) in ((:sqrm_vecnrm_c, :libsqrm, Float32   , Float
                                     (:cqrm_vecnrm_c, :libcqrm, ComplexF32, Float32),
                                     (:zqrm_vecnrm_c, :libzqrm, ComplexF64, Float64))
   @eval begin
-    function qrm_vecnrm(x, n :: Integer, nrhs :: Integer, ntype, nrm)
-        ccall(($fname, $lname), Cint, (Ptr{$elty}, Cint, Cint, UInt8, Ptr{$subty}), x, n, nrhs, ntype, nrm)
+    function qrm_vecnrm(x :: Vector{$elty}, n :: Integer, ntype :: Char, nrm :: $subty)
+      nrhs = 1
+      ccall(($fname, $lname), Cint, (Ptr{$elty}, Cint, Cint, UInt8, Ptr{$subty}), x, n, nrhs, ntype, nrm)
+    end
+
+    function qrm_vecnrm(x :: Matrix{$elty}, n :: Integer, ntype :: Char, nrm :: Vector{$subty})
+      nrhs = size(b, 2)
+      ccall(($fname, $lname), Cint, (Ptr{$elty}, Cint, Cint, UInt8, Ptr{$subty}), x, n, nrhs, ntype, nrm)
     end
   end
 end
@@ -136,8 +160,14 @@ for (fname, lname, elty, subty) in ((:sqrm_spbackslash_c, :libsqrm, Float32   , 
                                     (:cqrm_spbackslash_c, :libcqrm, ComplexF32, Float32),
                                     (:zqrm_spbackslash_c, :libzqrm, ComplexF64, Float64))
   @eval begin
-    function qrm_spbackslash(spmat :: qrm_spmat{$elty}, b, x, nrhs :: Integer)
-        ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, b, x, nrhs)
+    function qrm_spbackslash(spmat :: qrm_spmat{$elty}, b :: Vector{$elty}, x :: Vector{$elty})
+      nrhs = 1
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, b, x, nrhs)
+    end
+
+    function qrm_spbackslash(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty}, x :: Matrix{$elty})
+      nrhs = size(b, 2)
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, b, x, nrhs)
     end
   end
 end
@@ -147,8 +177,14 @@ for (fname, lname, elty, subty) in ((:sqrm_spposv_c, :libsqrm, Float32   , Float
                                     (:cqrm_spposv_c, :libcqrm, ComplexF32, Float32),
                                     (:zqrm_spposv_c, :libzqrm, ComplexF64, Float64))
   @eval begin
-    function qrm_spposv(spmat :: qrm_spmat{$elty}, b, x, nrhs :: Integer)
-        ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, b, x, nrhs)
+    function qrm_spposv(spmat :: qrm_spmat{$elty}, b :: Vector{$elty}, x :: Vector{$elty})
+      nrhs = 1
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, b, x, nrhs)
+    end
+
+    function qrm_spposv(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty}, x :: Matrix{$elty})
+      nrhs = size(b, 2)
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, b, x, nrhs)
     end
   end
 end
@@ -158,8 +194,14 @@ for (fname, lname, elty, subty) in ((:sqrm_least_squares_c, :libsqrm, Float32   
                                     (:cqrm_least_squares_c, :libcqrm, ComplexF32, Float32),
                                     (:zqrm_least_squares_c, :libzqrm, ComplexF64, Float64))
   @eval begin
-    function qrm_least_squares(spmat :: qrm_spmat{$elty}, b, x, nrhs :: Integer)
-        ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, b, x, nrhs)
+    function qrm_least_squares(spmat :: qrm_spmat{$elty}, b :: Vector{$elty}, x :: Vector{$elty})
+      nrhs = 1
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, b, x, nrhs)
+    end
+
+    function qrm_least_squares(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty}, x :: Matrix{$elty})
+      nrhs = size(b, 2)
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, b, x, nrhs)
     end
   end
 end
@@ -169,8 +211,14 @@ for (fname, lname, elty, subty) in ((:sqrm_min_norm_c, :libsqrm, Float32   , Flo
                                     (:cqrm_min_norm_c, :libcqrm, ComplexF32, Float32),
                                     (:zqrm_min_norm_c, :libzqrm, ComplexF64, Float64))
   @eval begin
-    function qrm_min_norm(spmat :: qrm_spmat{$elty}, b, x, nrhs :: Integer)
-        ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, b, x, nrhs)
+    function qrm_min_norm(spmat :: qrm_spmat{$elty}, b :: Vector{$elty}, x :: Vector{$elty})
+      nrhs = 1
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, b, x, nrhs)
+    end
+
+    function qrm_min_norm(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty}, x :: Matrix{$elty})
+      nrhs = size(b, 2)
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, b, x, nrhs)
     end
   end
 end
@@ -180,8 +228,14 @@ for (fname, lname, elty, subty) in ((:sqrm_residual_norm_c, :libsqrm, Float32   
                                     (:cqrm_residual_norm_c, :libcqrm, ComplexF32, Float32),
                                     (:zqrm_residual_norm_c, :libzqrm, ComplexF64, Float64))
   @eval begin
-    function qrm_residual_norm(spmat :: qrm_spmat{$elty}, b, x, nrhs :: Integer, nrm)
-        ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint, Ptr{$subty}), spmat, b, x, nrhs, nrm)
+    function qrm_residual_norm(spmat :: qrm_spmat{$elty}, b :: Vector{$elty}, x :: Vector{$elty}, nrm :: $subty)
+      nrhs = 1
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint, Ptr{$subty}), spmat, b, x, nrhs, nrm)
+    end
+
+    function qrm_residual_norm(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty}, x :: Matrix{$elty}, nrm :: Vector{$subty})
+      nrhs = size(r, 2)
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint, Ptr{$subty}), spmat, b, x, nrhs, nrm)
     end
   end
 end
@@ -191,8 +245,14 @@ for (fname, lname, elty, subty) in ((:sqrm_residual_orth_c, :libsqrm, Float32   
                                     (:cqrm_residual_orth_c, :libcqrm, ComplexF32, Float32),
                                     (:zqrm_residual_orth_c, :libzqrm, ComplexF64, Float64))
   @eval begin
-    function qrm_residual_orth(spmat :: qrm_spmat{$elty}, r, nrhs :: Integer, nrm)
-        ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Cint, Ptr{$subty}), spmat, r, nrhs, nrm)
+    function qrm_residual_orth(spmat :: qrm_spmat{$elty}, r :: Vector{$elty}, nrm :: $subty)
+      nrhs = 1
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Cint, Ptr{$subty}), spmat, r, nrhs, nrm)
+    end
+
+    function qrm_residual_orth(spmat :: qrm_spmat{$elty}, r :: Matrix{$elty}, nrm :: Vector{$subty})
+      rhs = size(r, 2)
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Cint, Ptr{$subty}), spmat, r, nrhs, nrm)
     end
   end
 end
@@ -202,8 +262,8 @@ for (fname, lname, elty, subty) in ((:sqrm_spfct_seti_c, :libsqrm, Float32   , F
                                     (:cqrm_spfct_seti_c, :libcqrm, ComplexF32, Float32),
                                     (:zqrm_spfct_seti_c, :libzqrm, ComplexF64, Float64))
   @eval begin
-    function qrm_spfct_seti(spfct :: qrm_spfct, str, val :: Integer)
-        ccall(($fname, $lname), Cint, (Ptr{qrm_spfct}, Cstring, Cint), spfct, str, val)
+    function qrm_spfct_seti(spfct :: qrm_spfct{$elty}, str, val :: Integer)
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Cstring, Cint), spfct, str, val)
     end
   end
 end
@@ -213,8 +273,8 @@ for (fname, lname, elty, subty) in ((:sqrm_spfct_geti_c, :libsqrm, Float32   , F
                                     (:cqrm_spfct_geti_c, :libcqrm, ComplexF32, Float32),
                                     (:zqrm_spfct_geti_c, :libzqrm, ComplexF64, Float64))
   @eval begin
-    function qrm_spfct_geti(spfct :: qrm_spfct, str, val)
-        ccall(($fname, $lname), Cint, (Ptr{qrm_spfct}, Cstring, Ptr{Cint}), spfct, str, val)
+    function qrm_spfct_geti(spfct :: qrm_spfct{$elty}, str, val)
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Cstring, Ptr{Cint}), spfct, str, val)
     end
   end
 end
@@ -224,8 +284,8 @@ for (fname, lname, elty, subty) in ((:sqrm_spfct_getii_c, :libsqrm, Float32   , 
                                     (:cqrm_spfct_getii_c, :libcqrm, ComplexF32, Float32),
                                     (:zqrm_spfct_getii_c, :libzqrm, ComplexF64, Float64))
   @eval begin
-    function qrm_spfct_getii(spfct :: qrm_spfct, str, val)
-        ccall(($fname, $lname), Cint, (Ptr{qrm_spfct}, Cstring, Ptr{Clonglong}), spfct, str, val)
+    function qrm_spfct_getii(spfct :: qrm_spfct{$elty}, str, val)
+      ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Cstring, Ptr{Clonglong}), spfct, str, val)
     end
   end
 end

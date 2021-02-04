@@ -1,4 +1,4 @@
-struct qrm_spmat{T}  # T ∈ Union{Complex{Float32}, Complex{Float64}, Float32, Float64}
+mutable struct qrm_spmat{T}
   irn :: Ptr{Cint}
   jcn :: Ptr{Cint}
   val :: Ptr{T}
@@ -9,7 +9,7 @@ struct qrm_spmat{T}  # T ∈ Union{Complex{Float32}, Complex{Float64}, Float32, 
   h   :: Ptr{Cvoid}
 end
 
-struct qrm_spfct  # HELP 
+mutable struct qrm_spfct{T}
   cperm_in :: Ptr{Cint}
   icntl    :: NTuple{20, Cint}
   rcntl    :: NTuple{10, Cdouble}
