@@ -7,6 +7,11 @@ mutable struct qrm_spmat{T}
   nz  :: Cint
   sym :: Cint
   h   :: Ptr{Cvoid}
+
+  function qrm_spmat{T}() where T
+    spmat = new(C_NULL, C_NULL, C_NULL, 0, 0, 0, 0, C_NULL)
+    return spmat
+  end
 end
 
 mutable struct qrm_spfct{T}
@@ -15,6 +20,11 @@ mutable struct qrm_spfct{T}
   rcntl    :: NTuple{10, Cdouble}
   gstats   :: NTuple{10, Clong}
   h        :: Ptr{Cvoid}
+
+  function qrm_spfct{T}() where T
+    spfct = new(C_NULL, ntuple(x -> Cint(0), 20), ntuple(x -> Cdouble(0), 10), ntuple(x -> Clong(0), 10), C_NULL)
+    return spfct
+  end
 end
 
 const qrm_no_transp   = 'n'
