@@ -7,6 +7,8 @@ nz  = Int32(10)
 sym = Int32(1)
 
 for T in (Float32, Float64, ComplexF32, ComplexF64)
+  qrm_init(1, 0)
+
   spmat = qrm_spmat{T}()
   qrm_spmat_init(spmat)
   @test spmat.h ≠ C_NULL
@@ -21,7 +23,7 @@ for T in (Float32, Float64, ComplexF32, ComplexF64)
   spfct = qrm_spfct{T}()
   qrm_spfct_init(spfct, spmat)
 
-  A = sparse(Int64.(irn), Int64.(jcn), val, m, n)
+  # A = sparse(Int64.(irn), Int64.(jcn), val, m, n)
 
   # for transp ∈ ('n', 't', 'c')
   #   qrm_analyse(spmat, spfct, transp=transp)
@@ -29,16 +31,26 @@ for T in (Float32, Float64, ComplexF32, ComplexF64)
 
   #   b1 = rand(T, 5)
   #   x1 = zeros(T, 5)
-  #   qrm_solve(spfct, b1, x1)
+  #   qrm_solve(spfct, b1, x1, transp=transp)
+  #   qrm_apply(spfct, b1, transp=transp)
   #   show(x1)
   #   println()
   #   println(norm(b1 - A * x1))
 
   #   b2 = rand(T, 5, 3)
   #   x2 = zeros(T, 5, 3)
-  #   qrm_solve(spfct, b2, x2)
+  #   qrm_solve(spfct, b2, x2, transp=transp)
+  #   qrm_apply(spfct, b2, transp=transp)
   #   show(x2)
   #   println()
   #   println(norm(b2 - A * x2))
   # end
+
+  # for ntype ∈ ('i', '1', 'f')
+  #   nrm = one(real(T(3)))
+  #   qrm_spmat_nrm(spmat, ntype, nrm)
+  # end
+
+  qrm_finalize()
+
 end
