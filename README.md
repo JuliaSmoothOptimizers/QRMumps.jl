@@ -19,3 +19,21 @@ It implements a direct solution method based on the QR or Cholesky factorization
 Therefore, it is suited to solving sparse least-squares problems, to computing the minimum-norm solution of sparse, underdetermined problems and to solving symmetric, positive-definite sparse linear systems.
 It can obviously be used for solving square unsymmetric problems in which case the stability provided by the use of orthogonal transformations comes at the cost of a higher operation count with respect to solvers based on, e.g., the LU factorization such as [MUMPS](http://mumps.enseeiht.fr/).
 qr_mumps supports real and complex, single or double precision arithmetic. 
+
+## Custom Installation
+
+**Note: qr_mumps is already precompiled with Yggdrasil for all platforms.**
+
+To use your custom qr_mumps, set the environmental variables `JULIA_QR_MUMPS_LIBRARY_PATH`
+to point the shared library.
+
+**Very important note: you must set these environment variables before
+calling `using qr_mumps` in every Julia session.**
+
+For example:
+```julia
+ENV["JULIA_QR_MUMPS_LIBRARY_PATH"] = "/home/alexis/Applications/qr_mumps-3.0.1/build/lib"
+using qr_mumps
+```
+
+Alternatively, you can set these permanently through your operating system.
