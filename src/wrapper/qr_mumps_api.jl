@@ -33,7 +33,7 @@ for (fname, lname, elty, subty) in (("sqrm_spmat_init_c", libsqrm, Float32   , F
             return spmat
         end
 
-        function qrm_spmat_init(A :: SparseMatrixCSC{$elty,I}, sym :: Bool=false) where I <: Integer
+        function qrm_spmat_init(A :: SparseMatrixCSC{$elty,I}; sym :: Bool=false) where I <: Integer
             spmat = qrm_spmat{$elty}()
             qrm_spmat_init!(spmat, A, sym=sym)
             return spmat
@@ -80,6 +80,7 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_init_c", libsqrm, Float32   , F
     end
 end
 
+# TO DO : qrm_spfct_destroy or qrm_spfct_destroy! ?
 for (fname, lname, elty, subty) in (("sqrm_spfct_destroy_c", libsqrm, Float32   , Float32),
                                     ("dqrm_spfct_destroy_c", libdqrm, Float64   , Float64),
                                     ("cqrm_spfct_destroy_c", libcqrm, ComplexF32, Float32),
