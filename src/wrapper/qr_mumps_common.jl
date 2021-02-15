@@ -17,12 +17,12 @@ end
 mutable struct qrm_spfct{T}
   cperm_in :: Ptr{Cint}
   icntl    :: NTuple{20, Cint}
-  rcntl    :: NTuple{10, Cdouble}
+  rcntl    :: NTuple{10, Cfloat}
   gstats   :: NTuple{10, Clong}
   h        :: Ptr{Cvoid}
 
   function qrm_spfct{T}() where T
-    spfct = new(C_NULL, ntuple(x -> Cint(0), 20), ntuple(x -> Cdouble(0), 10), ntuple(x -> Clong(0), 10), C_NULL)
+    spfct = new(C_NULL, ntuple(x -> Cint(0), 20), ntuple(x -> Cfloat(0), 10), ntuple(x -> Clong(0), 10), C_NULL)
     return spfct
   end
 end
