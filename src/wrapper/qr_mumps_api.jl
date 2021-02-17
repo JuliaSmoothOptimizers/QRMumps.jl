@@ -5,7 +5,11 @@ for (fname, lname, elty, subty) in (("sqrm_spmat_init_c", libsqrm, Float32   , F
     @eval begin
         function qrm_spmat_init!(spmat :: qrm_spmat{$elty})
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}},), ptr_spmat)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}},), ptr_spmat)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
 
         function qrm_spmat_init(::Type{$elty})
@@ -16,7 +20,11 @@ for (fname, lname, elty, subty) in (("sqrm_spmat_init_c", libsqrm, Float32   , F
 
         function qrm_spmat_init!(spmat :: qrm_spmat{$elty}, A :: SparseMatrixCSC{$elty,I}; sym :: Bool=false) where I <: Integer
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}},), ptr_spmat)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}},), ptr_spmat)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             irn, jcn, val = findnz(A)
             m, n = size(A)
             nz = nnz(A)
@@ -55,7 +63,11 @@ for (fname, lname, elty, subty) in (("sqrm_spmat_destroy_c", libsqrm, Float32   
     @eval begin
         function qrm_spmat_destroy!(spmat :: qrm_spmat{$elty})
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}},), ptr_spmat)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}},), ptr_spmat)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
     end
 end
@@ -68,13 +80,21 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_init_c", libsqrm, Float32   , F
         function qrm_spfct_init!(spfct :: qrm_spfct{$elty}, spmat :: qrm_spmat{$elty})
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Ptr{qrm_spmat{$elty}}), ptr_spfct, ptr_spmat)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Ptr{qrm_spmat{$elty}}), ptr_spfct, ptr_spmat)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
         function qrm_spfct_init(spmat :: qrm_spmat{$elty})
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             spfct = qrm_spfct{$elty}()
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Ptr{qrm_spmat{$elty}}), ptr_spfct, ptr_spmat)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Ptr{qrm_spmat{$elty}}), ptr_spfct, ptr_spmat)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             return spfct
         end
     end
@@ -88,28 +108,32 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_destroy_c", libsqrm, Float32   
     @eval begin
         function qrm_spfct_destroy(spfct :: qrm_spfct{$elty})
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}},), ptr_spfct)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}},), ptr_spfct)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
     end
 end
 
-for (fname, lname, elty, subty) in (("sqrm_readmat_c", libsqrm, Float32   , Float32),
-                                    ("dqrm_readmat_c", libdqrm, Float64   , Float64),
-                                    ("cqrm_readmat_c", libcqrm, ComplexF32, Float32),
-                                    ("zqrm_readmat_c", libzqrm, ComplexF64, Float64))
-    @eval begin
-        function qrm_readmat!(matfile :: Cstring, spmat :: qrm_spmat{$elty})
-            ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cvoid, (Cstring, Ptr{qrm_spmat{$elty}}), matfile, ptr_spmat)
-        end
-        function qrm_readmat(::Type{$elty}, matfile :: Cstring)
-            spmat = qrm_spmat{$elty}()
-            ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cvoid, (Cstring, Ptr{qrm_spmat{$elty}}), matfile, ptr_spmat)
-            return spmat
-        end
-    end
-end
+# for (fname, lname, elty, subty) in (("sqrm_readmat_c", libsqrm, Float32   , Float32),
+#                                     ("dqrm_readmat_c", libdqrm, Float64   , Float64),
+#                                     ("cqrm_readmat_c", libcqrm, ComplexF32, Float32),
+#                                     ("zqrm_readmat_c", libzqrm, ComplexF64, Float64))
+#     @eval begin
+#         function qrm_readmat!(matfile :: Cstring, spmat :: qrm_spmat{$elty})
+#             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
+#             ccall(($fname, $lname), Cvoid, (Cstring, Ptr{qrm_spmat{$elty}}), matfile, ptr_spmat)
+#         end
+#         function qrm_readmat(::Type{$elty}, matfile :: Cstring)
+#             spmat = qrm_spmat{$elty}()
+#             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
+#             ccall(($fname, $lname), Cvoid, (Cstring, Ptr{qrm_spmat{$elty}}), matfile, ptr_spmat)
+#             return spmat
+#         end
+#     end
+# end
 
 for (fname, lname, elty, subty) in (("sqrm_analyse_c", libsqrm, Float32   , Float32),
                                     ("dqrm_analyse_c", libdqrm, Float64   , Float64),
@@ -119,13 +143,21 @@ for (fname, lname, elty, subty) in (("sqrm_analyse_c", libsqrm, Float32   , Floa
         function qrm_analyse!(spmat :: qrm_spmat{$elty}, spfct :: qrm_spfct{$elty}; transp :: Char='n')
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{qrm_spfct{$elty}}, UInt8), ptr_spmat, ptr_spfct, transp)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{qrm_spfct{$elty}}, UInt8), ptr_spmat, ptr_spfct, transp)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
         function qrm_analyse(spmat :: qrm_spmat{$elty}; transp :: Char='n')
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             spfct = qrm_spfct_init(spmat)
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{qrm_spfct{$elty}}, UInt8), ptr_spmat, ptr_spfct, transp)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{qrm_spfct{$elty}}, UInt8), ptr_spmat, ptr_spfct, transp)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             return spfct
         end
 
@@ -145,7 +177,11 @@ for (fname, lname, elty, subty) in (("sqrm_factorize_c", libsqrm, Float32   , Fl
         function qrm_factorize!(spmat :: qrm_spmat{$elty}, spfct :: qrm_spfct{$elty}; transp :: Char='n')
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{qrm_spfct{$elty}}, UInt8), ptr_spmat, ptr_spfct, transp)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{qrm_spfct{$elty}}, UInt8), ptr_spmat, ptr_spfct, transp)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
 
         # @inline qrm_factorize!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, spfct :: qrm_spfct{$elty}) = qrm_factorize!(spmat.parent, spfct, transp='t')
@@ -161,20 +197,32 @@ for (fname, lname, elty, subty) in (("sqrm_solve_c", libsqrm, Float32   , Float3
         function qrm_solve!(spfct :: qrm_spfct{$elty}, b :: Vector{$elty}, x :: Vector{$elty}; transp :: Char='n')
             nrhs = 1
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(b), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
 
         function qrm_solve!(spfct :: qrm_spfct{$elty}, b :: Matrix{$elty}, x :: Matrix{$elty}; transp :: Char='n')
             nrhs = size(b, 2)
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(b), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
 
         function qrm_solve(spfct :: qrm_spfct{$elty}, b :: Vector{$elty}; transp :: Char='n')
             nrhs = 1
             x = zeros($elty,spfct.n)
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(b), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             x
         end
 
@@ -182,7 +230,11 @@ for (fname, lname, elty, subty) in (("sqrm_solve_c", libsqrm, Float32   , Float3
             nrhs = size(b, 2)
             x = zeros($elty,spfct.n,nrhs)
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(b), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
 
         # @inline qrm_solve!(spfct :: Transpose{$elty,qrm_spfct{$elty}}, b :: Vector{$elty}, x :: Vector{$elty}) = qrm_solve!(spfct.parent, b, x, transp='t')
@@ -207,20 +259,32 @@ for (fname, lname, elty, subty) in (("sqrm_apply_c", libsqrm, Float32   , Float3
         function qrm_apply!(spfct :: qrm_spfct{$elty}, b :: Vector{$elty}; transp :: Char='n')
             nrhs = 1
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(b), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(b), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
 
         function qrm_apply!(spfct :: qrm_spfct{$elty}, b :: Matrix{$elty}; transp :: Char='n')
             nrhs = size(b, 2)
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(b), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(b), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
 
         function qrm_apply(spfct :: qrm_spfct{$elty}, b :: Vector{$elty}; transp :: Char='n')
             nrhs = 1
             bc = copy(b)
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(bc), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(bc), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             return bc
         end
 
@@ -228,7 +292,11 @@ for (fname, lname, elty, subty) in (("sqrm_apply_c", libsqrm, Float32   , Float3
             nrhs = size(b, 2)
             bc = copy(b)
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(bc), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(bc), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             return bc
         end
 
@@ -278,7 +346,11 @@ for (fname, lname, elty, subty) in (("sqrm_spmat_nrm_c", libsqrm, Float32   , Fl
     @eval begin
         function qrm_spmat_nrm(spmat :: qrm_spmat{$elty}, ntype :: Char, nrm :: $subty)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, UInt8, Ptr{$subty}), ptr_spmat, ntype, nrm)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, UInt8, Ptr{$subty}), ptr_spmat, ntype, nrm)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
     end
 end
@@ -290,12 +362,20 @@ for (fname, lname, elty, subty) in (("sqrm_vecnrm_c", libsqrm, Float32   , Float
     @eval begin
         function qrm_vecnrm(x :: Vector{$elty}, n :: Integer, ntype :: Char, nrm :: $subty)
             nrhs = 1
-            ccall(($fname, $lname), Cint, (Ptr{$elty}, Cint, Cint, UInt8, $subty), pointer(x), n, nrhs, ntype, nrm)
+            err = ccall(($fname, $lname), Cint, (Ptr{$elty}, Cint, Cint, UInt8, $subty), pointer(x), n, nrhs, ntype, nrm)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
 
         function qrm_vecnrm(x :: Matrix{$elty}, n :: Integer, ntype :: Char, nrm :: Vector{$subty})
             nrhs = size(b, 2)
-            ccall(($fname, $lname), Cint, (Ptr{$elty}, Cint, Cint, UInt8, Ptr{$subty}), pointer(x), n, nrhs, ntype, pointer(nrm))
+            err = ccall(($fname, $lname), Cint, (Ptr{$elty}, Cint, Cint, UInt8, Ptr{$subty}), pointer(x), n, nrhs, ntype, pointer(nrm))
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
     end
 end
@@ -308,13 +388,21 @@ for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , 
         function qrm_spbackslash!(spmat :: qrm_spmat{$elty}, b :: Vector{$elty}, x :: Vector{$elty})
             nrhs = 1
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
 
         function qrm_spbackslash!(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty}, x :: Matrix{$elty})
             nrhs = size(b, 2)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
 
 
@@ -322,7 +410,11 @@ for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , 
             nrhs = 1
             x = zeros($elty, spmat.n)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             x
         end
 
@@ -330,7 +422,11 @@ for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , 
             nrhs = size(b, 2)
             x = zeros($elty, spmat.n,nrhs)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             x
         end
 
@@ -347,7 +443,11 @@ for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , 
             x = zeros($elty,spmat.n)
             bcopy = copy(b)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(bcopy), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(bcopy), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             return x
         end
 
@@ -356,7 +456,11 @@ for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , 
             x = zeros($elty,spmat.n,nrhs)
             bcopy = copy(b)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(bcopy), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(bcopy), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             return x
         end
     end
@@ -370,20 +474,32 @@ for (fname, lname, elty, subty) in (("sqrm_spposv_c", libsqrm, Float32   , Float
         function qrm_spposv!(spmat :: qrm_spmat{$elty}, b :: Vector{$elty}, x :: Vector{$elty})
             nrhs = 1
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
         
         function qrm_spposv!(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty}, x :: Matrix{$elty})
             nrhs = size(b, 2)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
 
         function qrm_spposv(spmat :: qrm_spmat{$elty}, b :: Vector{$elty})
             nrhs = 1
             x = zeros($elty,spmat.n)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             return x
         end
 
@@ -391,7 +507,11 @@ for (fname, lname, elty, subty) in (("sqrm_spposv_c", libsqrm, Float32   , Float
             nrhs = size(b, 2)
             x = zeros($elty,spmat.n,nrhs)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             return x
         end
 
@@ -406,20 +526,32 @@ for (fname, lname, elty, subty) in (("sqrm_least_squares_c", libsqrm, Float32   
         function qrm_least_squares!(spmat :: qrm_spmat{$elty}, b :: Vector{$elty}, x :: Vector{$elty})
             nrhs = 1
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            cccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            cerr = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
 
         function qrm_least_squares!(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty}, x :: Matrix{$elty})
             nrhs = size(b, 2)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
 
         function qrm_least_squares(spmat :: qrm_spmat{$elty}, b :: Vector{$elty})
             nrhs = 1
             x = zeros($elty,spmat.n)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            cccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            cerr = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             return x
         end
 
@@ -427,7 +559,11 @@ for (fname, lname, elty, subty) in (("sqrm_least_squares_c", libsqrm, Float32   
             nrhs = size(b, 2)
             x = zeros($elty,spmat.n,nrhs)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             return x
         end
     end
@@ -441,20 +577,32 @@ for (fname, lname, elty, subty) in (("sqrm_min_norm_c", libsqrm, Float32   , Flo
         function qrm_min_norm!(spmat :: qrm_spmat{$elty}, b :: Vector{$elty}, x :: Vector{$elty})
             nrhs = 1
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
 
         function qrm_min_norm!(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty}, x :: Matrix{$elty})
             nrhs = size(b, 2)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
 
         function qrm_min_norm(spmat :: qrm_spmat{$elty}, b :: Vector{$elty})
             nrhs = 1
             x = zeros($elty,spmat.n)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             return x
         end
 
@@ -462,7 +610,11 @@ for (fname, lname, elty, subty) in (("sqrm_min_norm_c", libsqrm, Float32   , Flo
             nrhs = size(b, 2)
             x = zeros($elty,spmat.n,nrhs)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             return x
         end
     end
@@ -477,7 +629,11 @@ for (fname, lname, elty, subty) in (("sqrm_residual_norm_c", libsqrm, Float32   
             nrhs = 1
             nrm=$subty(0)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint, $subty), ptr_spmat, pointer(b), pointer(x), nrhs, nrm)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint, $subty), ptr_spmat, pointer(b), pointer(x), nrhs, nrm)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             return nrm
         end
 
@@ -485,7 +641,11 @@ for (fname, lname, elty, subty) in (("sqrm_residual_norm_c", libsqrm, Float32   
             nrhs = size(r, 2)
             nrm  = zeros($subty,nrhs)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint, Ptr{$subty}), ptr_spmat, pointer(b), pointer(x), nrhs, pointer(nrm))
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint, Ptr{$subty}), ptr_spmat, pointer(b), pointer(x), nrhs, pointer(nrm))
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             return nrm
         end
     end
@@ -500,7 +660,11 @@ for (fname, lname, elty, subty) in (("sqrm_residual_orth_c", libsqrm, Float32   
             nrhs = 1
             nrm=$subty(0)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Cint, $subty), ptr_spmat, pointer(r), nrhs, nrm)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Cint, $subty), ptr_spmat, pointer(r), nrhs, nrm)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             return nrm
         end
 
@@ -508,7 +672,11 @@ for (fname, lname, elty, subty) in (("sqrm_residual_orth_c", libsqrm, Float32   
             nrhs = size(r, 2)
             nrm  = zeros($subty,nrhs)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Cint, Ptr{$subty}), ptr_spmat, pointer(r), nrhs, pointer(nrm))
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Cint, Ptr{$subty}), ptr_spmat, pointer(r), nrhs, pointer(nrm))
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
             return nrm
         end
     end
@@ -521,7 +689,11 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_seti_c", libsqrm, Float32   , F
     @eval begin
         function qrm_spfct_seti(spfct :: qrm_spfct{$elty}, str :: Cstring, val :: Integer)
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Cstring, Cint), ptr_spfct, str, val)
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Cstring, Cint), ptr_spfct, str, val)
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
     end
 end
@@ -533,7 +705,11 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_geti_c", libsqrm, Float32   , F
     @eval begin
         function qrm_spfct_geti(spfct :: qrm_spfct{$elty}, str :: Cstring, val :: Vector{Integer})
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Cstring, Ptr{Cint}), ptr_spfct, str, pointer(val))
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Cstring, Ptr{Cint}), ptr_spfct, str, pointer(val))
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
     end
 end
@@ -545,25 +721,45 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_getii_c", libsqrm, Float32   , 
     @eval begin
         function qrm_spfct_getii(spfct :: qrm_spfct{$elty}, str :: Cstring, val :: Vector{Integer})
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
-            ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Cstring, Ptr{Clonglong}), ptr_spfct, str, pointer(val))
+            err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Cstring, Ptr{Clonglong}), ptr_spfct, str, pointer(val))
+            if(err != 0)
+                throw(ErrorException(string("qr_mumps error: ",err)))
+                return
+            end
         end
     end
 end
 
 function qrm_gseti(str :: Cstring, val :: Integer)
-    ccall(("qrm_gseti_c", libqrm_common), Cint, (Cstring, Cint), str, val)
+    err = ccall(("qrm_gseti_c", libqrm_common), Cint, (Cstring, Cint), str, val)
+    if(err != 0)
+        throw(ErrorException(string("qr_mumps error: ",err)))
+        return
+    end
 end
 
 function qrm_ggeti(str :: Cstring, val :: Vector{Integer})
-    ccall(("qrm_ggeti_c", libqrm_common), Cint, (Cstring, Ptr{Cint}), str, pointer(val))
+    err = ccall(("qrm_ggeti_c", libqrm_common), Cint, (Cstring, Ptr{Cint}), str, pointer(val))
+    if(err != 0)
+        throw(ErrorException(string("qr_mumps error: ",err)))
+        return
+    end
 end
 
 function qrm_ggetii(str :: Cstring, val :: Vector{Integer})
-    ccall(("qrm_ggetii_c", libqrm_common), Cint, (Cstring, Ptr{Clonglong}), str, pointer(val))
+    err = ccall(("qrm_ggetii_c", libqrm_common), Cint, (Cstring, Ptr{Clonglong}), str, pointer(val))
+    if(err != 0)
+        throw(ErrorException(string("qr_mumps error: ",err)))
+        return
+    end
 end
 
 function qrm_init(ncpu :: Integer, ngpu :: Integer)
-    ccall(("qrm_init_c", libqrm_common), Cint, (Cint, Cint), ncpu, ngpu)
+    err = ccall(("qrm_init_c", libqrm_common), Cint, (Cint, Cint), ncpu, ngpu)
+    if(err != 0)
+        throw(ErrorException(string("qr_mumps error: ",err)))
+        return
+    end
 end
 
 function qrm_finalize()
@@ -577,3 +773,5 @@ end
 function length(spmat :: qrm_spmat{T}) where T
     spmat.m * spmat.n
 end
+
+
