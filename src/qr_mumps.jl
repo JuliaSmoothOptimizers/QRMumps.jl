@@ -25,7 +25,6 @@ export qrm_spmat, qrm_spfct,
     qrm_init, qrm_finalize,
     qrm_spmat_init!, qrm_spmat_init, qrm_spmat_destroy!,
     qrm_spfct_init!, qrm_spfct_init, qrm_spfct_destroy!,
-    qrm_readmat!, qrm_readmat,
     qrm_analyse!, qrm_analyse,
     qrm_factorize!,
     qrm_solve!, qrm_solve,
@@ -346,12 +345,6 @@ Computes the quantity ``\frac{\|A^T r\|_2}{\|r\|_2}`` which can be used to evalu
 * r: the residual(s).
 """
 function qrm_residual_orth end
-
-"TO DO!"
-function qrm_readmat! end
-
-"TO DO!"
-function qrm_readmat end
 
 "TO DO!"
 function qrm_spfct_seti end
