@@ -131,11 +131,11 @@ for (fname, lname, elty, subty) in (("sqrm_analyse_c", libsqrm, Float32   , Floa
             return spfct
         end
 
-        # @inline qrm_analyse!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, spfct :: qrm_spfct{$elty}) = qrm_analyse!(spmat.parent, spfct, transp='t')
-        # @inline qrm_analyse!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}, spfct :: qrm_spfct{$elty}) = qrm_analyse!(spmat.parent, spfct, transp='c')
+        @inline qrm_analyse!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, spfct :: qrm_spfct{$elty}) = qrm_analyse!(spmat.parent, spfct, transp='t')
+        @inline qrm_analyse!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}, spfct :: qrm_spfct{$elty}) = qrm_analyse!(spmat.parent, spfct, transp='c')
 
-        # @inline qrm_analyse(spmat :: Transpose{$elty,qrm_spmat{$elty}}) = qrm_analyse(spmat.parent, transp='t')
-        # @inline qrm_analyse(spmat :: Adjoint{$elty,qrm_spmat{$elty}}) = qrm_analyse(spmat.parent, transp='c')
+        @inline qrm_analyse(spmat :: Transpose{$elty,qrm_spmat{$elty}}) = qrm_analyse(spmat.parent, transp='t')
+        @inline qrm_analyse(spmat :: Adjoint{$elty,qrm_spmat{$elty}}) = qrm_analyse(spmat.parent, transp='c')
     end
 end
 
@@ -153,8 +153,8 @@ for (fname, lname, elty, subty) in (("sqrm_factorize_c", libsqrm, Float32   , Fl
             end
         end
 
-        # @inline qrm_factorize!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, spfct :: qrm_spfct{$elty}) = qrm_factorize!(spmat.parent, spfct, transp='t')
-        # @inline qrm_factorize!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}  , spfct :: qrm_spfct{$elty}) = qrm_factorize!(spmat.parent, spfct, transp='c')
+        @inline qrm_factorize!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, spfct :: qrm_spfct{$elty}) = qrm_factorize!(spmat.parent, spfct, transp='t')
+        @inline qrm_factorize!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}  , spfct :: qrm_spfct{$elty}) = qrm_factorize!(spmat.parent, spfct, transp='c')
     end
 end
 
@@ -299,11 +299,11 @@ for (fname, lname, elty, subty) in (("sqrm_spmat_mv_c", libsqrm, Float32   , Flo
             end
         end
 
-        # @inline qrm_spmat_mv!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, alpha :: $elty, x :: Vector{$elty}, beta :: $elty, y :: Vector{$elty}) = qrm_matmul(spmat.parent, alpha, x, beta, y, transp='t')
-        # @inline qrm_spmat_mv!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, alpha :: $elty, x :: Matrix{$elty}, beta :: $elty, y :: Matrix{$elty}) = qrm_matmul(spmat.parent, alpha, x, beta, y, transp='t')
+        @inline qrm_spmat_mv!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, alpha :: $elty, x :: Vector{$elty}, beta :: $elty, y :: Vector{$elty}) = qrm_matmul(spmat.parent, alpha, x, beta, y, transp='t')
+        @inline qrm_spmat_mv!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, alpha :: $elty, x :: Matrix{$elty}, beta :: $elty, y :: Matrix{$elty}) = qrm_matmul(spmat.parent, alpha, x, beta, y, transp='t')
 
-        # @inline qrm_spmat_mv!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}, alpha :: $elty, x :: Vector{$elty}, beta :: $elty, y :: Vector{$elty}) = qrm_matmul(spmat.parent, alpha, x, beta, y, transp='c')
-        # @inline qrm_spmat_mv!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}, alpha :: $elty, x :: Matrix{$elty}, beta :: $elty, y :: Matrix{$elty}) = qrm_matmul(spmat.parent, alpha, x, beta, y, transp='c')
+        @inline qrm_spmat_mv!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}, alpha :: $elty, x :: Vector{$elty}, beta :: $elty, y :: Vector{$elty}) = qrm_matmul(spmat.parent, alpha, x, beta, y, transp='c')
+        @inline qrm_spmat_mv!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}, alpha :: $elty, x :: Matrix{$elty}, beta :: $elty, y :: Matrix{$elty}) = qrm_matmul(spmat.parent, alpha, x, beta, y, transp='c')
     end
 end
 
@@ -700,12 +700,4 @@ end
 
 function qrm_finalize()
     ccall(("qrm_finalize_c", libqrm_common), Cvoid, ())
-end
-
-function size(spmat :: qrm_spmat{T}, dim=nothing) where T
-    dim == 1 ? spmat.m : (dim == 2 ? spmat.n : (spmat.m, spmat.n))
-end
-
-function length(spmat :: qrm_spmat{T}) where T
-    spmat.m * spmat.n
 end

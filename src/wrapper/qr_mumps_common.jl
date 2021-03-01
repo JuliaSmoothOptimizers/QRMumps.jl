@@ -6,7 +6,7 @@ containing the number of rows, columns and nonzeros, respectively. qr mumps uses
 indices between 1 and n. Duplicate entries are summed during the factorization, out-of-bound entries
 are ignored. The sym field is used to specify if the matrix is symmetric (> 0) or unsymmetric (= 0).
 """
-mutable struct qrm_spmat{T}
+mutable struct qrm_spmat{T} <: AbstractSparseMatrix{T, Cint}
   irn :: Ptr{Cint}
   jcn :: Ptr{Cint}
   val :: Ptr{T}
@@ -20,6 +20,13 @@ mutable struct qrm_spmat{T}
     spmat = new(C_NULL, C_NULL, C_NULL, 0, 0, 0, 0, C_NULL)
     return spmat
   end
+end
+
+Base.size(spmat :: qrm_spmat) = (spmat.m, spmat.n)
+SparseArrays.nnz(spmat :: qrm_spmat) = spmat.nz
+
+function Base.show(io :: IO, ::MIME"text/plain", spmat :: qrm_spmat)
+  println(io, "Sparse matrix -- qrm_spmat of size ", size(spmat), " with ", nnz(spmat), " nonzeros.")
 end
 
 @doc raw"""
@@ -39,6 +46,10 @@ mutable struct qrm_spfct{T} <: Factorization{T}
     spfct = new(C_NULL, ntuple(x -> Cint(0), 20), ntuple(x -> Cfloat(0), 10), ntuple(x -> Clong(0), 10), C_NULL)
     return spfct
   end
+end
+
+function Base.show(io :: IO, ::MIME"text/plain", spfct :: qrm_spfct)
+  println(io, "Sparse factorization -- qrm_spfct")
 end
 
 const qrm_no_transp   = 'n'
