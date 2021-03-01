@@ -52,11 +52,6 @@ qrm_residual_orth
 ```
 
 ```@docs
-qrm_readmat
-qrm_readmat!
-```
-
-```@docs
 qrm_spfct_seti
 qrm_spfct_geti
 qrm_spfct_getii

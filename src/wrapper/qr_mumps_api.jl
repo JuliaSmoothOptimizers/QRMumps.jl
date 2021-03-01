@@ -106,25 +106,6 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_destroy_c", libsqrm, Float32   
     end
 end
 
-for (fname, lname, elty, subty) in (("sqrm_readmat_c", libsqrm, Float32   , Float32),
-                                    ("dqrm_readmat_c", libdqrm, Float64   , Float64),
-                                    ("cqrm_readmat_c", libcqrm, ComplexF32, Float32),
-                                    ("zqrm_readmat_c", libzqrm, ComplexF64, Float64))
-    @eval begin
-        function qrm_readmat!(matfile :: String, spmat :: qrm_spmat{$elty})
-            ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cvoid, (String, Ptr{qrm_spmat{$elty}}), matfile, ptr_spmat)
-        end
-
-        function qrm_readmat(::Type{$elty}, matfile :: String)
-            spmat = qrm_spmat{$elty}()
-            ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
-            ccall(($fname, $lname), Cvoid, (String, Ptr{qrm_spmat{$elty}}), matfile, ptr_spmat)
-            return spmat
-        end
-    end
-end
-
 for (fname, lname, elty, subty) in (("sqrm_analyse_c", libsqrm, Float32   , Float32),
                                     ("dqrm_analyse_c", libdqrm, Float64   , Float64),
                                     ("cqrm_analyse_c", libcqrm, ComplexF32, Float32),
