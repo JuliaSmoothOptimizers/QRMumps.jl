@@ -28,7 +28,7 @@ information about its execution (number of flops, memory consumpnion etc) and st
 the factorization, namely, the factors with all the symbolic information needed to use them in the
 solve phase.
 """
-mutable struct qrm_spfct{T}
+mutable struct qrm_spfct{T} <: Factorization{T}
   cperm_in :: Ptr{Cint}
   icntl    :: NTuple{20, Cint}
   rcntl    :: NTuple{10, Cfloat}
