@@ -2,9 +2,7 @@ module qr_mumps
 
 using CEnum, Libdl, SparseArrays, LinearAlgebra
 
-import Base: \, size, length
-
-export \
+import Base: \
     
 if haskey(ENV, "JULIA_QR_MUMPS_LIBRARY_PATH")
   println("Custom Installation")
@@ -30,7 +28,7 @@ export qrm_spmat, qrm_spfct,
     qrm_solve!, qrm_solve,
     qrm_apply!, qrm_apply,
     qrm_spmat_mv!, qrm_spmat_nrm, qrm_vecnrm,
-    qrm_spbackslash!, qrm_spbackslash,
+    qrm_spbackslash!, qrm_spbackslash, \,
     qrm_spposv!, qrm_spposv,
     qrm_least_squares!, qrm_least_squares,
     qrm_min_norm!, qrm_min_norm,
