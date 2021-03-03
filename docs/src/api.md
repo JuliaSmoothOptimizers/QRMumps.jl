@@ -52,10 +52,6 @@ qrm_residual_orth
 ```
 
 ```@docs
-qrm_spfct_seti
-qrm_spfct_geti
-qrm_spfct_getii
-qrm_gseti
-qrm_ggeti
-qrm_ggetii
+qrm_set
+qrm_get
 ```

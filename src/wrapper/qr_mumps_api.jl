@@ -631,7 +631,7 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_seti_c", libsqrm, Float32   , F
                                     ("cqrm_spfct_seti_c", libcqrm, ComplexF32, Float32),
                                     ("zqrm_spfct_seti_c", libzqrm, ComplexF64, Float64))
     @eval begin
-        function qrm_spfct_seti(spfct :: qrm_spfct{$elty}, str :: Cstring, val :: Integer)
+        function qrm_set(spfct :: qrm_spfct{$elty}, str :: Cstring, val :: Cint)
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Cstring, Cint), ptr_spfct, str, val)
             if err ≠ 0
@@ -641,12 +641,19 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_seti_c", libsqrm, Float32   , F
     end
 end
 
+function qrm_set(str :: Cstring, val :: Cint)
+    err = ccall(("qrm_gseti_c", libqrm_common), Cint, (Cstring, Cint), str, val)
+    if err ≠ 0
+        throw(ErrorException(error_handling(err)))
+    end
+end
+
 for (fname, lname, elty, subty) in (("sqrm_spfct_geti_c", libsqrm, Float32   , Float32),
                                     ("dqrm_spfct_geti_c", libdqrm, Float64   , Float64),
                                     ("cqrm_spfct_geti_c", libcqrm, ComplexF32, Float32),
                                     ("zqrm_spfct_geti_c", libzqrm, ComplexF64, Float64))
     @eval begin
-        function qrm_spfct_geti(spfct :: qrm_spfct{$elty}, str :: Cstring, val :: Vector{Integer})
+        function qrm_get(spfct :: qrm_spfct{$elty}, str :: Cstring, val :: Vector{Cint})
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Cstring, Ptr{Cint}), ptr_spfct, str, pointer(val))
             if err ≠ 0
@@ -661,7 +668,7 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_getii_c", libsqrm, Float32   , 
                                     ("cqrm_spfct_getii_c", libcqrm, ComplexF32, Float32),
                                     ("zqrm_spfct_getii_c", libzqrm, ComplexF64, Float64))
     @eval begin
-        function qrm_spfct_getii(spfct :: qrm_spfct{$elty}, str :: Cstring, val :: Vector{Integer})
+        function qrm_get(spfct :: qrm_spfct{$elty}, str :: Cstring, val :: Vector{Clonglong})
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Cstring, Ptr{Clonglong}), ptr_spfct, str, pointer(val))
             if err ≠ 0
@@ -671,21 +678,14 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_getii_c", libsqrm, Float32   , 
     end
 end
 
-function qrm_gseti(str :: Cstring, val :: Integer)
-    err = ccall(("qrm_gseti_c", libqrm_common), Cint, (Cstring, Cint), str, val)
-    if err ≠ 0
-        throw(ErrorException(error_handling(err)))
-    end
-end
-
-function qrm_ggeti(str :: Cstring, val :: Vector{Integer})
+function qrm_get(str :: Cstring, val :: Vector{Cint})
     err = ccall(("qrm_ggeti_c", libqrm_common), Cint, (Cstring, Ptr{Cint}), str, pointer(val))
     if err ≠ 0
         throw(ErrorException(error_handling(err)))
     end
 end
 
-function qrm_ggetii(str :: Cstring, val :: Vector{Integer})
+function qrm_get(str :: Cstring, val :: Vector{Clonglong})
     err = ccall(("qrm_ggetii_c", libqrm_common), Cint, (Cstring, Ptr{Clonglong}), str, pointer(val))
     if err ≠ 0
         throw(ErrorException(error_handling(err)))
