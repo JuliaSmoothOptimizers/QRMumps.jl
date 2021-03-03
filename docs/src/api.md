@@ -46,8 +46,11 @@ qrm_min_norm!
 ```@docs
 qrm_spmat_mv!
 qrm_spmat_nrm
+qrm_vecnrm!
 qrm_vecnrm
+qrm_residual_norm!
 qrm_residual_norm
+qrm_residual_orth!
 qrm_residual_orth
 ```
 

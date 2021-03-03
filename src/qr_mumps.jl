@@ -27,12 +27,14 @@ export qrm_spmat, qrm_spfct,
     qrm_factorize!,
     qrm_solve!, qrm_solve,
     qrm_apply!, qrm_apply,
-    qrm_spmat_mv!, qrm_spmat_nrm, qrm_vecnrm,
+    qrm_spmat_mv!, qrm_spmat_nrm,
+    qrm_vecnrm!, qrm_vecnrm,
     qrm_spbackslash!, qrm_spbackslash, \,
     qrm_spposv!, qrm_spposv,
     qrm_least_squares!, qrm_least_squares,
     qrm_min_norm!, qrm_min_norm,
-    qrm_residual_norm, qrm_residual_orth,
+    qrm_residual_norm!, qrm_residual_norm,
+    qrm_residual_orth!, qrm_residual_orth,
     qrm_set, qrm_get
 
 @doc raw"""
@@ -203,21 +205,26 @@ This routine computes the one-norm ``\|A\|_1``, the infinity-norm ``\|x\|_{\inft
 #### Input Arguments :
 
 * `spmat`: the input matrix.
-* `ntype`: the type of norm to be computed. It can be either 'i', '1' or 'f' for the infinity, one and Frobenius norms, respectively.
+* `ntype`: the type of norm to be computed. It can be either `'i'`, `'1'` or `'f'` for the infinity, one and Frobenius norms, respectively.
 * `nrm`: the computed norm.
 """
 function qrm_spmat_nrm end
 
 @doc raw"""
-    qrm_vecnrm(x, ntype, nrm)
+    qrm_vecnrm!(x, ntype, nrm)
 
 This routine computes the one-norm ``\|x\|_1``, the infinity-norm ``\|x\|_{\infty}`` or the two-norm ``\|x\|_2`` of a vector.
 
 #### Input Arguments :
 
 * `x`: the x vector(s).
-* `ntype`: the type of norm to be computed. It can be either 'i', '1' or '2' for the infinity, one and two norms, respectively.
+* `ntype`: the type of norm to be computed. It can be either `'i'`, `'1'` or `'2'` for the infinity, one and two norms, respectively.
 * `nrm`: the computed norm(s). If x is a matrix this argument has to be a vector and each of its elements will contain the norm of the corresponding column of x.
+"""
+function qrm_vecnrm! end
+
+@doc raw"""
+    nrm = qrm_vecnrm(x, ntype)
 """
 function qrm_vecnrm end
 
@@ -319,7 +326,7 @@ function qrm_min_norm! end
 function qrm_min_norm end
 
 @doc raw"""
-    qrm_residual_norm(spmat, b, x)
+    qrm_residual_norm!(spmat, b, x, nrm)
 
 This function computes the scaled norm of the residual ``\frac{\|b - Ax\|_{\infty}}{\|b\|_{\infty} + \|x\|_{\infty} \|A\|_{\infty}}``, i.e., the normwise backward error.
 
@@ -328,11 +335,17 @@ This function computes the scaled norm of the residual ``\frac{\|b - Ax\|_{\inft
 * `spmat`: the input matrix.
 * `b`: the right-hand side(s).
 * `x`: the solution vector(s).
+* `nrm`: the computed norm(s).
+"""
+function qrm_residual_norm! end
+
+@doc raw"""
+    nrm = qrm_residual_norm(spmat, b, x)
 """
 function qrm_residual_norm end
 
 @doc raw"""
-    qrm_residual_orth(spmat, r)
+    qrm_residual_orth!(spmat, r, nrm)
 
 Computes the quantity ``\frac{\|A^T r\|_2}{\|r\|_2}`` which can be used to evaluate the quality of the solution of a least squares problem.
 
@@ -340,6 +353,12 @@ Computes the quantity ``\frac{\|A^T r\|_2}{\|r\|_2}`` which can be used to evalu
 
 * `spmat`: the input matrix.
 * `r`: the residual(s).
+* `nrm`: the computed norm(s).
+"""
+function qrm_residual_orth! end
+
+@doc raw"""
+    nrm = qrm_residual_orth(spmat, r)
 """
 function qrm_residual_orth end
 
