@@ -39,11 +39,11 @@ mutable struct qrm_spfct{T} <: Factorization{T}
   cperm_in :: Ptr{Cint}
   icntl    :: NTuple{20, Cint}
   rcntl    :: NTuple{10, Cfloat}
-  gstats   :: NTuple{10, Clong}
+  gstats   :: NTuple{10, Clonglong}
   h        :: Ptr{Cvoid}
 
   function qrm_spfct{T}() where T
-    spfct = new(C_NULL, ntuple(x -> Cint(0), 20), ntuple(x -> Cfloat(0), 10), ntuple(x -> Clong(0), 10), C_NULL)
+    spfct = new(C_NULL, ntuple(x -> Cint(0), 20), ntuple(x -> Cfloat(0), 10), ntuple(x -> Clonglong(0), 10), C_NULL)
     return spfct
   end
 end

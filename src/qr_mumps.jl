@@ -33,8 +33,7 @@ export qrm_spmat, qrm_spfct,
     qrm_least_squares!, qrm_least_squares,
     qrm_min_norm!, qrm_min_norm,
     qrm_residual_norm, qrm_residual_orth,
-    qrm_spfct_seti, qrm_spfct_geti, qrm_spfct_getii,
-    qrm_gseti, qrm_ggeti, qrm_ggetii
+    qrm_set, qrm_get
 
 @doc raw"""
     qrm_init(ncpu, ngpu)
@@ -43,8 +42,8 @@ This routine initializes qr\_mumps and should be called prior to any other qr\_m
 
 #### Input Arguments :
 
-* ncpu: number of working threads on CPU.
-* ngpu: number of working threads on GPU.
+* `ncpu`: number of working threads on CPU.
+* `ngpu`: number of working threads on GPU.
 """
 function qrm_init end
 
@@ -62,9 +61,9 @@ This routine initializes a **qrm_spmat** type data structure from a **sparseMatr
 
 #### Input Arguments :
 
-* spmat: the **qrm_spmat** sparse matrix to be initialized.
-* A : a Julia sparse matrix stored in **sparseMatrixCSC** format.
-* sym : a boolean to specify if the matrix is symmetric (true) or unsymmetric (false).
+* `spmat`: the **qrm_spmat** sparse matrix to be initialized.
+* `A` : a Julia sparse matrix stored in **sparseMatrixCSC** format.
+* `sym` : a boolean to specify if the matrix is symmetric / hermitian (true) or unsymmetric (false).
 """
 function qrm_spmat_init! end
 
@@ -80,7 +79,7 @@ This routine cleans up a **qrm_spmat** type data structure.
 
 #### Input Argument :
 
-* spfct: the sparse matrix to be destroyed.
+* `spfct`: the sparse matrix to be destroyed.
 """
 function qrm_spmat_destroy! end
 
@@ -92,8 +91,8 @@ This amounts to setting all the control parameters to the default values.
 
 #### Input Arguments :
 
-* spmat: the input matrix of qrm_spmat type.
-* spfct: the sparse factorization object to be initialized.
+* `spmat`: the input matrix of qrm_spmat type.
+* `spfct`: the sparse factorization object to be initialized.
 """
 function qrm_spfct_init! end
 
@@ -109,7 +108,7 @@ This routine cleans up a **qrm_spfct** type data structure by deleting the resul
 
 #### Input Argument :
 
-* spfct: the sparse factorization object to be destroyed.
+* `spfct`: the sparse factorization object to be destroyed.
 """
 function qrm_spfct_destroy! end
 
@@ -120,9 +119,9 @@ This routine performs the analysis phase and updates spfct.
 
 #### Input Arguments :
 
-* spmat: the input matrix of qrm_spmat type.
-* spfct: the sparse factorization object of qrm_spfct type.
-* transp: whether the input matrix should be transposed or not. Can be either 't', 'c' or 'n'.
+* `spmat`: the input matrix of qrm_spmat type.
+* `spfct`: the sparse factorization object of qrm_spfct type.
+* `transp`: whether the input matrix should be transposed or not. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_analyse! end
 
@@ -138,9 +137,9 @@ This routine performs the factorization phase. It can only be executed if the an
 
 #### Input Arguments :
 
-* spmat: the input matrix of qrm_spmat type.
-* spfct: the sparse factorization object of qrm_spfct type.
-* transp: whether the input matrix should be transposed or not. Can be either 't', 'c' or 'n'.
+* `spmat`: the input matrix of qrm_spmat type.
+* `spfct`: the sparse factorization object of qrm_spfct type.
+* `transp`: whether the input matrix should be transposed or not. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_factorize! end
 
@@ -151,10 +150,10 @@ This routine solves the triangular system `Rx = b` or `Rᵀx = b`. It can only b
 
 #### Input Arguments :
 
-* spfct: the sparse factorization object resulting from the qrm_factorize! function.
-* b: the right-hand side(s).
-* x: the solution vector(s).
-* transp: whether to solve for R or Rᵀ. Can be either 't', 'c' or 'n'.
+* `spfct`: the sparse factorization object resulting from the qrm_factorize! function.
+* `b`: the right-hand side(s).
+* `x`: the solution vector(s).
+* `transp`: whether to solve for R or Rᵀ. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_solve! end
 
@@ -170,9 +169,9 @@ This routine computes `z = Qb` or `z = Qᵀb` in place and overwrites b. It can 
 
 #### Input Arguments :
 
-* spfct: the sparse factorization object resulting from the qrm_factorize! function.
-* b: the vector(s) to which Q or Qᵀ is applied.
-* transp: whether to apply Q or Qᵀ. Can be either 't', 'c' or 'n'.
+* `spfct`: the sparse factorization object resulting from the qrm_factorize! function.
+* `b`: the vector(s) to which Q or Qᵀ is applied.
+* `transp`: whether to apply Q or Qᵀ. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_apply! end
 
@@ -188,11 +187,11 @@ This subroutine performs a matrix-vector product of the type y = αAx + βy or y
 
 #### Input Arguments :
 
-* spmat: the input matrix.
-* alpha, beta : the α and β scalars
-* x: the x vector(s).
-* y: the y vector(s).
-* transp: whether to multiply by A or Aᵀ. Can be either 't', 'c' or 'n'.
+* `spmat`: the input matrix.
+* `alpha`, `beta` : the α and β scalars
+* `x`: the x vector(s).
+* `y`: the y vector(s).
+* `transp`: whether to multiply by A or Aᵀ. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_spmat_mv! end
 
@@ -203,9 +202,9 @@ This routine computes the one-norm ``\|A\|_1``, the infinity-norm ``\|x\|_{\inft
 
 #### Input Arguments :
 
-* spmat: the input matrix.
-* ntype: the type of norm to be computed. It can be either 'i', '1' or 'f' for the infinity, one and Frobenius norms, respectively.
-* nrm: the computed norm.
+* `spmat`: the input matrix.
+* `ntype`: the type of norm to be computed. It can be either 'i', '1' or 'f' for the infinity, one and Frobenius norms, respectively.
+* `nrm`: the computed norm.
 """
 function qrm_spmat_nrm end
 
@@ -216,9 +215,9 @@ This routine computes the one-norm ``\|x\|_1``, the infinity-norm ``\|x\|_{\inft
 
 #### Input Arguments :
 
-* x: the x vector(s).
-* ntype: the type of norm to be computed. It can be either 'i', '1' or '2' for the infinity, one and two norms, respectively.
-* nrm the computed norm(s). If x is a matrix this argument has to be a vector and each of its elements will contain the norm of the corresponding column of x.
+* `x`: the x vector(s).
+* `ntype`: the type of norm to be computed. It can be either 'i', '1' or '2' for the infinity, one and two norms, respectively.
+* `nrm`: the computed norm(s). If x is a matrix this argument has to be a vector and each of its elements will contain the norm of the corresponding column of x.
 """
 function qrm_vecnrm end
 
@@ -248,9 +247,9 @@ It is a shortcut for the sequence
 
 #### Input Arguments :
 
-* spmat: the input matrix.
-* b: the right-hand side(s).
-* x: the solution vector(s).
+* `spmat`: the input matrix.
+* `b`: the right-hand side(s).
+* `x`: the solution vector(s).
 """
 function qrm_spposv! end
 
@@ -278,9 +277,9 @@ It is a shortcut for the sequence
 
 #### Input Arguments :
 
-* spmat: the input matrix.
-* b: the ight-hand side(s).
-* x: the solution vector(s).
+* `spmat`: the input matrix.
+* `b`: the ight-hand side(s).
+* `x`: the solution vector(s).
 """
 function qrm_least_squares! end
 
@@ -308,9 +307,9 @@ It is a shortcut for the sequence
 
 #### Input Arguments :
 
-* spmat: the input matrix.
-* b: the right-hand side(s).
-* x: the solution vector(s).
+* `spmat`: the input matrix.
+* `b`: the right-hand side(s).
+* `x`: the solution vector(s).
 """
 function qrm_min_norm! end
 
@@ -326,9 +325,9 @@ This function computes the scaled norm of the residual ``\frac{\|b - Ax\|_{\inft
 
 #### Input Arguments :
 
-* spmat: the input matrix.
-* b: the right-hand side(s).
-* x: the solution vector(s).
+* `spmat`: the input matrix.
+* `b`: the right-hand side(s).
+* `x`: the solution vector(s).
 """
 function qrm_residual_norm end
 
@@ -339,27 +338,15 @@ Computes the quantity ``\frac{\|A^T r\|_2}{\|r\|_2}`` which can be used to evalu
 
 #### Input Arguments :
 
-* spmat: the input matrix.
-* r: the residual(s).
+* `spmat`: the input matrix.
+* `r`: the residual(s).
 """
 function qrm_residual_orth end
 
 "TO DO!"
-function qrm_spfct_seti end
+function qrm_set end
 
 "TO DO!"
-function qrm_spfct_geti end
-
-"TO DO!"
-function qrm_spfct_getii end
-
-"TO DO!"
-function qrm_gseti end
-
-"TO DO!"
-function qrm_ggeti end
-
-"TO DO!"
-function qrm_ggetii end
+function qrm_get end
 
 end # module
