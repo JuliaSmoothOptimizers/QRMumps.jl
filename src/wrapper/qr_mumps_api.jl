@@ -313,7 +313,7 @@ for (fname, lname, elty, subty) in (("sqrm_spmat_nrm_c", libsqrm, Float32   , Fl
                                     ("cqrm_spmat_nrm_c", libcqrm, ComplexF32, Float32),
                                     ("zqrm_spmat_nrm_c", libzqrm, ComplexF64, Float64))
     @eval begin
-        function qrm_spmat_nrm(spmat :: qrm_spmat{$elty}, ntype :: Char)
+        function qrm_spmat_nrm(spmat :: qrm_spmat{$elty}; ntype :: Char='f')
             nrm = Ref{$subty}(0)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, UInt8, Ref{$subty}), ptr_spmat, ntype, nrm)
@@ -330,7 +330,7 @@ for (fname, lname, elty, subty) in (("sqrm_vecnrm_c", libsqrm, Float32   , Float
                                     ("cqrm_vecnrm_c", libcqrm, ComplexF32, Float32),
                                     ("zqrm_vecnrm_c", libzqrm, ComplexF64, Float64))
     @eval begin
-        function qrm_vecnrm(x :: Vector{$elty}, ntype :: Char)
+        function qrm_vecnrm(x :: Vector{$elty}; ntype :: Char='2')
             n = length(x)
             nrhs = 1
             nrm = Ref{$subty}(0)
@@ -341,7 +341,7 @@ for (fname, lname, elty, subty) in (("sqrm_vecnrm_c", libsqrm, Float32   , Float
             return nrm[]
         end
 
-        function qrm_vecnrm(x :: Matrix{$elty}, ntype :: Char)
+        function qrm_vecnrm(x :: Matrix{$elty}; ntype :: Char='2')
             n, nrhs = size(x)
             nrm = zeros($subty, nrhs)
             err = ccall(($fname, $lname), Cint, (Ptr{$elty}, Cint, Cint, UInt8, Ptr{$subty}), pointer(x), n, nrhs, ntype, pointer(nrm))
@@ -351,7 +351,7 @@ for (fname, lname, elty, subty) in (("sqrm_vecnrm_c", libsqrm, Float32   , Float
             return nrm
         end
 
-        function qrm_vecnrm!(x :: Matrix{$elty}, ntype :: Char, nrm :: Vector{$subty})
+        function qrm_vecnrm!(x :: Matrix{$elty}, nrm :: Vector{$subty}; ntype :: Char='2')
             n, nrhs = size(x)
             err = ccall(($fname, $lname), Cint, (Ptr{$elty}, Cint, Cint, UInt8, Ptr{$subty}), pointer(x), n, nrhs, ntype, pointer(nrm))
             if err ≠ 0
