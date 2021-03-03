@@ -7,8 +7,12 @@ makedocs(
   strict = true,
   format = Documenter.HTML(assets = ["assets/style.css"], prettyurls = get(ENV, "CI", nothing) == "true"),
   sitename = "qr_mumps.jl",
-  pages = ["Home" => "index.md",
+  pages = ["Introduction" => "index.md",
+           "Features" => "features.md",
            "API" => "api.md",
+           "Control parameters" => "control_parameters.md",
+           "Information parameters" => "information_parameters.md",
+           "Performance tuning" => "performance.md",
            "Reference" => "reference.md",
           ]
 )
