@@ -133,7 +133,7 @@ function qrm_analyse! end
 function qrm_analyse end
 
 @doc raw"""
-    qrm_factorize!(spmat, spfct; transp'n')
+    qrm_factorize!(spmat, spfct; transp='n')
 
 This routine performs the factorization phase. It can only be executed if the analysis is already done.
 
