@@ -42,6 +42,10 @@ export qrm_spmat, qrm_spfct,
 
 This routine initializes qr\_mumps and should be called prior to any other qr\_mumps routine.
 
+    qrm_init()
+
+`ncpu` and `ngpu` are optional arguments and their default value are, respectively, `1` and `0`.
+
 #### Input Arguments :
 
 * `ncpu`: number of working threads on CPU.
