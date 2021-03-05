@@ -5,11 +5,16 @@ All the information parameters can be gotten through the **qrm\_get** routine; p
 The **qrm\_get** routine can also be used to retrieve the values of all the control parameters described in the previous section with the obvious usage.
 The type of all information parameters is **Int64**.
 
+## Global parameters
 
-* **qrm\_max\_mem**: this parameter returns the maximum amount of memory allocated by **qr\_mumps** during its execution. It’s a global parameter.
+* **qrm\_max\_mem**: this parameter returns the maximum amount of memory allocated by **qr\_mumps** during its execution.
 
 
-* **qrm\_tot\_mem**: this parameter returns the total amount of memory allocated by **qr\_mumps** at the moment when the **qrm\_get** routine is called. It’s a global parameter.
+* **qrm\_tot\_mem**: this parameter returns the total amount of memory allocated by **qr\_mumps** at the moment when the **qrm\_get** routine is called.
+
+## Problem specific parameters
+
+* **qrm\_e\_facto\_flops**: this parameter returns an estimate, computed during the analysis phase, of the number of floating point operations performed during the factorization phase. This value is only available after the **qrm\_analyse** routine is executed.
 
 
 * **qrm\_e\_nnz\_r**: this parameter returns an estimate, computed during the analysis phase, of the number of nonzero coefficients in the **R** factor. This value is only available after the **qrm\_analyse** routine is executed.
@@ -18,7 +23,7 @@ The type of all information parameters is **Int64**.
 * **qrm\_e\_nnz\_h**: this parameter returns an estimate, computed during the analysis phase, of the number of nonzero coefficients in the **Q** matrix. This value is only available after the **qrm\_analyse** routine is executed.
 
 
-* **qrm\_e\_facto\_flops**: this parameter returns an estimate, computed during the analysis phase, of the number of floating point operations performed during the factorization phase. This value is only available after the **qrm\_analyse** routine is executed.
+* **qrm\_facto\_flops**: this parameter returns the number of floating point operations performed during the factorization phase. This value is only available after the **qrm\_analyse** routine is executed.
 
 
 * **qrm\_nnz\_r**: this parameter returns the actual number of the nonzero coefficients in the **R** factor after the factorization is done. This value is only available after **the qrm\_factorize** routine is executed.
