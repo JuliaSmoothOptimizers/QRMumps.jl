@@ -1,3 +1,19 @@
+# Thanks to Balen Ekusuimii !
+struct MutableNTupleWrapper{Tx,Ty}
+    owner :: Tx
+    n_field :: UInt64
+end
+
+function Base.setindex!(self :: MutableNTupleWrapper{Tx,Ty}, value, key, extra...) where {Tx,Ty}
+    ptr = Base.unsafe_convert(Ptr{Ty}, pointer_from_objref(self.owner) + fieldoffset(Tx, self.n_field))
+    unsafe_store!(ptr, convert(Ty, value), key)
+end
+
+function Base.getindex(self :: MutableNTupleWrapper{Tx,Ty}, key, extra...) where {Tx,Ty}
+    ptr = Base.unsafe_convert(Ptr{Ty}, pointer_from_objref(self.owner) + fieldoffset(Tx, self.n_field))
+    unsafe_load(ptr, key)
+end
+
 @doc raw"""
 This data type is used to store a sparse matrix in the COO (or coordinate) format through the irn, jcn
 and val fields containing the row indices, column indices and values, respectively and the m, n and nz
@@ -46,6 +62,13 @@ mutable struct qrm_spfct{T} <: Factorization{T}
     spfct = new(C_NULL, ntuple(x -> Cint(0), 20), ntuple(x -> Cfloat(0), 10), ntuple(x -> Clonglong(0), 10), C_NULL)
     return spfct
   end
+end
+
+function Base.getproperty(self :: qrm_spfct{T}, name :: Symbol) where T
+    name == :icntl ? MutableNTupleWrapper{qrm_spfct{T},Cint}(self, 2) :
+    name == :rcntl ? MutableNTupleWrapper{qrm_spfct{T},Cfloat}(self, 3) :
+    name == :gstats ? MutableNTupleWrapper{qrm_spfct{T},Clonglong}(self, 4) :
+    getfield(self, name)
 end
 
 function Base.show(io :: IO, ::MIME"text/plain", spfct :: qrm_spfct)
