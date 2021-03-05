@@ -6,9 +6,7 @@ for (fname, lname, elty, subty) in (("sqrm_spmat_init_c", libsqrm, Float32   , F
         function qrm_spmat_init!(spmat :: qrm_spmat{$elty})
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}},), ptr_spmat)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
@@ -21,9 +19,7 @@ for (fname, lname, elty, subty) in (("sqrm_spmat_init_c", libsqrm, Float32   , F
         function qrm_spmat_init!(spmat :: qrm_spmat{$elty}, A :: SparseMatrixCSC{$elty,I}; sym :: Bool=false) where I <: Integer
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}},), ptr_spmat)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             irn, jcn, val = findnz(A)
             m, n = size(A)
             nz = nnz(A)
@@ -63,9 +59,7 @@ for (fname, lname, elty, subty) in (("sqrm_spmat_destroy_c", libsqrm, Float32   
         function qrm_spmat_destroy!(spmat :: qrm_spmat{$elty})
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}},), ptr_spmat)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
     end
@@ -80,9 +74,7 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_init_c", libsqrm, Float32   , F
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Ptr{qrm_spmat{$elty}}), ptr_spfct, ptr_spmat)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
@@ -102,9 +94,7 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_destroy_c", libsqrm, Float32   
         function qrm_spfct_destroy!(spfct :: qrm_spfct{$elty})
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}},), ptr_spfct)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
     end
@@ -119,9 +109,7 @@ for (fname, lname, elty, subty) in (("sqrm_analyse_c", libsqrm, Float32   , Floa
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{qrm_spfct{$elty}}, UInt8), ptr_spmat, ptr_spfct, transp)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
@@ -130,9 +118,7 @@ for (fname, lname, elty, subty) in (("sqrm_analyse_c", libsqrm, Float32   , Floa
             spfct = qrm_spfct_init(spmat)
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{qrm_spfct{$elty}}, UInt8), ptr_spmat, ptr_spfct, transp)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return spfct
         end
 
@@ -153,9 +139,7 @@ for (fname, lname, elty, subty) in (("sqrm_factorize_c", libsqrm, Float32   , Fl
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{qrm_spfct{$elty}}, UInt8), ptr_spmat, ptr_spfct, transp)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
@@ -173,9 +157,7 @@ for (fname, lname, elty, subty) in (("sqrm_solve_c", libsqrm, Float32   , Float3
             nrhs = 1
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
@@ -183,9 +165,7 @@ for (fname, lname, elty, subty) in (("sqrm_solve_c", libsqrm, Float32   , Float3
             nrhs = size(b, 2)
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
@@ -194,9 +174,7 @@ for (fname, lname, elty, subty) in (("sqrm_solve_c", libsqrm, Float32   , Float3
             x = zeros($elty, spfct.n)
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
 
@@ -205,9 +183,7 @@ for (fname, lname, elty, subty) in (("sqrm_solve_c", libsqrm, Float32   , Float3
             x = zeros($elty, spfct.n, nrhs)
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
 
@@ -234,9 +210,7 @@ for (fname, lname, elty, subty) in (("sqrm_apply_c", libsqrm, Float32   , Float3
             nrhs = 1
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(b), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
@@ -244,9 +218,7 @@ for (fname, lname, elty, subty) in (("sqrm_apply_c", libsqrm, Float32   , Float3
             nrhs = size(b, 2)
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(b), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
@@ -255,9 +227,7 @@ for (fname, lname, elty, subty) in (("sqrm_apply_c", libsqrm, Float32   , Float3
             z = copy(b)
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(z), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return z
         end
 
@@ -266,9 +236,7 @@ for (fname, lname, elty, subty) in (("sqrm_apply_c", libsqrm, Float32   , Float3
             z = copy(b)
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), ptr_spfct, transp, pointer(z), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return z
         end
 
@@ -297,9 +265,7 @@ for (fname, lname, elty, subty) in (("sqrm_spmat_mv_c", libsqrm, Float32   , Flo
             nrhs = 1
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cvoid, (Ptr{qrm_spmat{$elty}}, UInt8, $elty, Ptr{$elty}, $elty, Ptr{$elty}, Cint), ptr_spmat, transp, alpha, pointer(x), beta, pointer(y), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
@@ -307,9 +273,7 @@ for (fname, lname, elty, subty) in (("sqrm_spmat_mv_c", libsqrm, Float32   , Flo
             nrhs = size(y, 2)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cvoid, (Ptr{qrm_spmat{$elty}}, UInt8, $elty, Ptr{$elty}, $elty, Ptr{$elty}, Cint), ptr_spmat, transp, alpha, pointer(x), beta, pointer(y), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
@@ -330,9 +294,7 @@ for (fname, lname, elty, subty) in (("sqrm_spmat_nrm_c", libsqrm, Float32   , Fl
             nrm = Ref{$subty}(0)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, UInt8, Ref{$subty}), ptr_spmat, ntype, nrm)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nrm[]
         end
     end
@@ -348,9 +310,7 @@ for (fname, lname, elty, subty) in (("sqrm_vecnrm_c", libsqrm, Float32   , Float
             nrhs = 1
             nrm = Ref{$subty}(0)
             err = ccall(($fname, $lname), Cint, (Ptr{$elty}, Cint, Cint, UInt8, Ref{$subty}), pointer(x), n, nrhs, ntype, nrm)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nrm[]
         end
 
@@ -358,18 +318,14 @@ for (fname, lname, elty, subty) in (("sqrm_vecnrm_c", libsqrm, Float32   , Float
             n, nrhs = size(x)
             nrm = zeros($subty, nrhs)
             err = ccall(($fname, $lname), Cint, (Ptr{$elty}, Cint, Cint, UInt8, Ptr{$subty}), pointer(x), n, nrhs, ntype, pointer(nrm))
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nrm
         end
 
         function qrm_vecnrm!(x :: Matrix{$elty}, nrm :: Vector{$subty}; ntype :: Char='2')
             n, nrhs = size(x)
             err = ccall(($fname, $lname), Cint, (Ptr{$elty}, Cint, Cint, UInt8, Ptr{$subty}), pointer(x), n, nrhs, ntype, pointer(nrm))
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
     end
@@ -384,9 +340,7 @@ for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , 
             nrhs = 1
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
@@ -394,9 +348,7 @@ for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , 
             nrhs = size(b, 2)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
@@ -406,9 +358,7 @@ for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , 
             x = zeros($elty, spmat.n)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
 
@@ -417,9 +367,7 @@ for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , 
             x = zeros($elty, spmat.n, nrhs)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
 
@@ -437,9 +385,7 @@ for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , 
             bcopy = copy(b)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(bcopy), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
 
@@ -449,9 +395,7 @@ for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , 
             bcopy = copy(b)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(bcopy), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
     end
@@ -466,9 +410,7 @@ for (fname, lname, elty, subty) in (("sqrm_spposv_c", libsqrm, Float32   , Float
             nrhs = 1
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
         
@@ -476,9 +418,7 @@ for (fname, lname, elty, subty) in (("sqrm_spposv_c", libsqrm, Float32   , Float
             nrhs = size(b, 2)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
@@ -487,9 +427,7 @@ for (fname, lname, elty, subty) in (("sqrm_spposv_c", libsqrm, Float32   , Float
             x = zeros($elty, spmat.n)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
 
@@ -498,9 +436,7 @@ for (fname, lname, elty, subty) in (("sqrm_spposv_c", libsqrm, Float32   , Float
             x = zeros($elty, spmat.n, nrhs)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
     end
@@ -515,9 +451,7 @@ for (fname, lname, elty, subty) in (("sqrm_least_squares_c", libsqrm, Float32   
             nrhs = 1
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
@@ -525,9 +459,7 @@ for (fname, lname, elty, subty) in (("sqrm_least_squares_c", libsqrm, Float32   
             nrhs = size(b, 2)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
@@ -536,9 +468,7 @@ for (fname, lname, elty, subty) in (("sqrm_least_squares_c", libsqrm, Float32   
             x = zeros($elty, spmat.n)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
 
@@ -547,9 +477,7 @@ for (fname, lname, elty, subty) in (("sqrm_least_squares_c", libsqrm, Float32   
             x = zeros($elty, spmat.n, nrhs)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
     end
@@ -564,9 +492,7 @@ for (fname, lname, elty, subty) in (("sqrm_min_norm_c", libsqrm, Float32   , Flo
             nrhs = 1
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
@@ -574,9 +500,7 @@ for (fname, lname, elty, subty) in (("sqrm_min_norm_c", libsqrm, Float32   , Flo
             nrhs = size(b, 2)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
@@ -585,9 +509,7 @@ for (fname, lname, elty, subty) in (("sqrm_min_norm_c", libsqrm, Float32   , Flo
             x = zeros($elty, spmat.n)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
 
@@ -596,9 +518,7 @@ for (fname, lname, elty, subty) in (("sqrm_min_norm_c", libsqrm, Float32   , Flo
             x = zeros($elty, spmat.n, nrhs)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), ptr_spmat, pointer(b), pointer(x), nrhs)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
     end
@@ -614,9 +534,7 @@ for (fname, lname, elty, subty) in (("sqrm_residual_norm_c", libsqrm, Float32   
             nrm = Ref{$subty}(0)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint, Ref{$subty}), ptr_spmat, pointer(b), pointer(x), nrhs, nrm)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nrm[]
         end
 
@@ -625,9 +543,7 @@ for (fname, lname, elty, subty) in (("sqrm_residual_norm_c", libsqrm, Float32   
             nrm = zeros($subty, nrhs)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint, Ptr{$subty}), ptr_spmat, pointer(b), pointer(x), nrhs, pointer(nrm))
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nrm
         end
 
@@ -635,9 +551,7 @@ for (fname, lname, elty, subty) in (("sqrm_residual_norm_c", libsqrm, Float32   
             nrhs = size(x, 2)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint, Ptr{$subty}), ptr_spmat, pointer(b), pointer(x), nrhs, pointer(nrm))
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
     end
@@ -653,9 +567,7 @@ for (fname, lname, elty, subty) in (("sqrm_residual_orth_c", libsqrm, Float32   
             nrm = Ref{$subty}(0)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Cint, Ref{$subty}), ptr_spmat, pointer(r), nrhs, nrm)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nrm[]
         end
 
@@ -664,9 +576,7 @@ for (fname, lname, elty, subty) in (("sqrm_residual_orth_c", libsqrm, Float32   
             nrm  = zeros($subty, nrhs)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Cint, Ptr{$subty}), ptr_spmat, pointer(r), nrhs, pointer(nrm))
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nrm
         end
 
@@ -674,9 +584,7 @@ for (fname, lname, elty, subty) in (("sqrm_residual_orth_c", libsqrm, Float32   
             nrhs = size(r, 2)
             ptr_spmat = Ptr{qrm_spmat{$elty}}(pointer_from_objref(spmat))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spmat{$elty}}, Ptr{$elty}, Cint, Ptr{$subty}), ptr_spmat, pointer(r), nrhs, pointer(nrm))
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
     end
@@ -690,9 +598,7 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_seti_c", libsqrm, Float32   , F
         function qrm_set(spfct :: qrm_spfct{$elty}, str :: String, val :: Cint)
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Cstring, Cint), ptr_spfct, str, val)
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
     end
@@ -700,9 +606,7 @@ end
 
 function qrm_set(str :: String, val :: Cint)
     err = ccall(("qrm_gseti_c", libqrm_common), Cint, (Cstring, Cint), str, val)
-    if err ≠ 0
-        throw(ErrorException(error_handling(err)))
-    end
+    (err ≠ 0) && throw(ErrorException(error_handling(err)))
     return nothing
 end
 
@@ -714,9 +618,7 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_geti_c", libsqrm, Float32   , F
         function qrm_get(spfct :: qrm_spfct{$elty}, str :: String, val :: Vector{Cint})
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Cstring, Ptr{Cint}), ptr_spfct, str, pointer(val))
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
         end
     end
 end
@@ -729,32 +631,24 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_getii_c", libsqrm, Float32   , 
         function qrm_get(spfct :: qrm_spfct{$elty}, str :: String, val :: Vector{Clonglong})
             ptr_spfct = Ptr{qrm_spfct{$elty}}(pointer_from_objref(spfct))
             err = ccall(($fname, $lname), Cint, (Ptr{qrm_spfct{$elty}}, Cstring, Ptr{Clonglong}), ptr_spfct, str, pointer(val))
-            if err ≠ 0
-                throw(ErrorException(error_handling(err)))
-            end
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
         end
     end
 end
 
 function qrm_get(str :: String, val :: Vector{Cint})
     err = ccall(("qrm_ggeti_c", libqrm_common), Cint, (Cstring, Ptr{Cint}), str, pointer(val))
-    if err ≠ 0
-        throw(ErrorException(error_handling(err)))
-    end
+    (err ≠ 0) && throw(ErrorException(error_handling(err)))
 end
 
 function qrm_get(str :: String, val :: Vector{Clonglong})
     err = ccall(("qrm_ggetii_c", libqrm_common), Cint, (Cstring, Ptr{Clonglong}), str, pointer(val))
-    if err ≠ 0
-        throw(ErrorException(error_handling(err)))
-    end
+    (err ≠ 0) && throw(ErrorException(error_handling(err)))
 end
 
 function qrm_init(ncpu :: Integer, ngpu :: Integer)
     err = ccall(("qrm_init_c", libqrm_common), Cint, (Cint, Cint), ncpu, ngpu)
-    if err ≠ 0
-        throw(ErrorException(error_handling(err)))
-    end
+    (err ≠ 0) && throw(ErrorException(error_handling(err)))
 end
 
 function qrm_finalize()
