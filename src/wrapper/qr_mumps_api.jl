@@ -646,11 +646,13 @@ function qrm_get(str :: String, val :: Vector{Clonglong})
     (err ≠ 0) && throw(ErrorException(error_handling(err)))
 end
 
-function qrm_init(ncpu :: Integer, ngpu :: Integer)
+function qrm_init(ncpu :: Integer=1, ngpu :: Integer=0)
     err = ccall(("qrm_init_c", libqrm_common), Cint, (Cint, Cint), ncpu, ngpu)
     (err ≠ 0) && throw(ErrorException(error_handling(err)))
+    return nothing
 end
 
 function qrm_finalize()
     ccall(("qrm_finalize_c", libqrm_common), Cvoid, ())
+    return nothing
 end
