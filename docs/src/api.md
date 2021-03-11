@@ -13,13 +13,11 @@ qrm_finalize
 ```@docs
 qrm_spmat_init
 qrm_spmat_init!
-qrm_spmat_destroy!
 ```
 
 ```@docs
 qrm_spfct_init
 qrm_spfct_init!
-qrm_spfct_destroy!
 ```
 
 ```@docs

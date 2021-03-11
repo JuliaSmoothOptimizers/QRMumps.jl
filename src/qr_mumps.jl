@@ -79,17 +79,6 @@ function qrm_spmat_init! end
 function qrm_spmat_init end
 
 @doc raw"""
-    qrm_spmat_destroy!(spmat)
-
-This routine cleans up a **qrm_spmat** type data structure.
-
-#### Input Argument :
-
-* `spfct`: the sparse matrix to be destroyed.
-"""
-function qrm_spmat_destroy! end
-
-@doc raw"""
     qrm_spfct_init!(spmat, spfct)
 
 This routine initializes a **qrm_spfct** type data structure.
@@ -106,17 +95,6 @@ function qrm_spfct_init! end
     spfct = qrm_spfct_init(spmat)
 """
 function qrm_spfct_init end
-
-@doc raw"""
-    qrm_spfct_destroy!(spfct)
-
-This routine cleans up a **qrm_spfct** type data structure by deleting the result of a sparse factorization.
-
-#### Input Argument :
-
-* `spfct`: the sparse factorization object to be destroyed.
-"""
-function qrm_spfct_destroy! end
 
 @doc raw"""
     qrm_analyse!(spmat, spfct; transp='n')
