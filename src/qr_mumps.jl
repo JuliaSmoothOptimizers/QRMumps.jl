@@ -21,8 +21,8 @@ include("wrapper/qr_mumps_api.jl")
 
 export qrm_spmat, qrm_spfct,
     qrm_init, qrm_finalize,
-    qrm_spmat_init!, qrm_spmat_init, qrm_spmat_destroy!,
-    qrm_spfct_init!, qrm_spfct_init, qrm_spfct_destroy!,
+    qrm_spmat_init!, qrm_spmat_init,
+    qrm_spfct_init!, qrm_spfct_init,
     qrm_analyse!, qrm_analyse,
     qrm_factorize!,
     qrm_solve!, qrm_solve,

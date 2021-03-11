@@ -18,6 +18,7 @@ mutable struct qrm_spmat{T} <: AbstractSparseMatrix{T, Cint}
 
   function qrm_spmat{T}() where T
     spmat = new(C_NULL, C_NULL, C_NULL, 0, 0, 0, 0, C_NULL)
+    finalizer(qrm_spmat_destroy!, spmat)
     return spmat
   end
 end
@@ -39,11 +40,12 @@ mutable struct qrm_spfct{T} <: Factorization{T}
   cperm_in :: Ptr{Cint}
   icntl    :: NTuple{20, Cint}
   rcntl    :: NTuple{10, Cfloat}
-  gstats   :: NTuple{10, Clonglong}
+  gstats   :: NTuple{10, Clong}
   h        :: Ptr{Cvoid}
 
   function qrm_spfct{T}() where T
-    spfct = new(C_NULL, ntuple(x -> Cint(0), 20), ntuple(x -> Cfloat(0), 10), ntuple(x -> Clonglong(0), 10), C_NULL)
+    spfct = new(C_NULL, ntuple(x -> Cint(0), 20), ntuple(x -> Cfloat(0), 10), ntuple(x -> Clong(0), 10), C_NULL)
+    finalizer(qrm_spfct_destroy!, spfct)
     return spfct
   end
 end
