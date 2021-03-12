@@ -36,6 +36,10 @@ the factorization, namely, the factors with all the symbolic information needed 
 solve phase.
 """
 mutable struct qrm_spfct{T} <: Factorization{T}
+  m        :: Cint
+  n        :: Cint
+  nz       :: Cint
+  sym      :: Cint
   cperm_in :: Ptr{Cint}
   icntl    :: NTuple{20, Cint}
   rcntl    :: NTuple{10, Cfloat}
@@ -43,7 +47,7 @@ mutable struct qrm_spfct{T} <: Factorization{T}
   h        :: Ptr{Cvoid}
 
   function qrm_spfct{T}() where T
-    spfct = new(C_NULL, ntuple(x -> Cint(0), 20), ntuple(x -> Cfloat(0), 10), ntuple(x -> Clonglong(0), 10), C_NULL)
+    spfct = new(0, 0, 0, 0, C_NULL, ntuple(x -> Cint(0), 20), ntuple(x -> Cfloat(0), 10), ntuple(x -> Clonglong(0), 10), C_NULL)
     return spfct
   end
 end
