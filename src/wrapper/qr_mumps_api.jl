@@ -347,6 +347,45 @@ for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , 
     end
 end
 
+for (fname, lname, elty, subty) in (("sqrm_spfct_backslash_c", libsqrm, Float32   , Float32),
+                                    ("dqrm_spfct_backslash_c", libdqrm, Float64   , Float64),
+                                    ("cqrm_spfct_backslash_c", libcqrm, ComplexF32, Float32),
+                                    ("zqrm_spfct_backslash_c", libzqrm, ComplexF64, Float64))
+    @eval begin
+        function qrm_spbackslash!(spfct :: qrm_spfct{$elty}, b :: Vector{$elty}, x :: Vector{$elty})
+            nrhs = 1
+            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, b, x, nrhs)
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            return nothing
+        end
+
+        function qrm_spbackslash!(spfct :: qrm_spfct{$elty}, b :: Matrix{$elty}, x :: Matrix{$elty})
+            nrhs = size(b, 2)
+            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, b, x, nrhs)
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            return nothing
+        end
+
+
+        function qrm_spbackslash(spfct :: qrm_spfct{$elty}, b :: Vector{$elty})
+            nrhs = 1
+            x = zeros($elty, spfct.n)
+            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, b, x, nrhs)
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            return x
+        end
+
+        function qrm_spbackslash(spfct :: qrm_spfct{$elty}, b :: Matrix{$elty})
+            nrhs = size(b, 2)
+            x = zeros($elty, spfct.n, nrhs)
+            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, b, x, nrhs)
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            return x
+        end
+
+    end
+end
+
 for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , Float32),
                                     ("dqrm_spbackslash_c", libdqrm, Float64   , Float64),
                                     ("cqrm_spbackslash_c", libcqrm, ComplexF32, Float32),
@@ -366,6 +405,31 @@ for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , 
             x = zeros($elty, spmat.n, nrhs)
             bcopy = copy(b)
             err = ccall(($fname, $lname), Cint, (Ref{qrm_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, bcopy, x, nrhs)
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            return x
+        end
+    end
+end
+
+for (fname, lname, elty, subty) in (("sqrm_spfct_backslash_c", libsqrm, Float32   , Float32),
+                                    ("dqrm_spfct_backslash_c", libdqrm, Float64   , Float64),
+                                    ("cqrm_spfct_backslash_c", libcqrm, ComplexF32, Float32),
+                                    ("zqrm_spfct_backslash_c", libzqrm, ComplexF64, Float64))
+    @eval begin
+        function (\)(spfct :: qrm_spfct{$elty}, b :: Vector{$elty})
+            nrhs = 1
+            x = zeros($elty, spfct.n)
+            bcopy = copy(b)
+            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, bcopy, x, nrhs)
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            return x
+        end
+
+        function (\)(spfct :: qrm_spfct{$elty}, b :: Matrix{$elty})
+            nrhs = size(b, 2)
+            x = zeros($elty, spfct.n, nrhs)
+            bcopy = copy(b)
+            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, bcopy, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
