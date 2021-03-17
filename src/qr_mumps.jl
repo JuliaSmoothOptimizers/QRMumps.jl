@@ -1,6 +1,6 @@
 module qr_mumps
 
-using CEnum, Libdl, SparseArrays, LinearAlgebra
+using Libdl, SparseArrays, LinearAlgebra
 
 import Base: \
     

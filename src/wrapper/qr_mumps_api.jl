@@ -612,169 +612,77 @@ for (fname, lname, elty, subty) in (("sqrm_residual_orth_c", libsqrm, Float32   
 end
 
 function qrm_set(str :: String, val :: Number)
-    
-    if ((str=="qrm_eunit")       ||
-        (str=="qrm_print_etree") ||
-        (str=="qrm_ounit")       ||
-        (str=="qrm_dunit")       ||
-        (str=="qrm_ncpu")        ||
-        (str=="qrm_ngpu")        ||
-        (str=="qrm_max_mem")     ||
-        (str=="qrm_tot_mem")     ||
-        (str=="qrm_ordering")    ||
-        (str=="qrm_minamalg")    ||
-        (str=="qrm_mb")          ||
-        (str=="qrm_nb")          ||
-        (str=="qrm_ib")          ||
-        (str=="qrm_bh")          ||
-        (str=="qrm_keeph")       ||
-        (str=="qrm_rhsnb")       ||
-        (str=="qrm_nlz")         ||
-        (str=="qrm_pinth"))
-        
+    if (str ∈ GICNTL) || (str ∈ PICNTL)
         err = ccall(("qrm_glob_set_i4_c", libqrm_common), Cint, (Cstring, Cint), str, v)
-    elseif((str=="qrm_amalgth")   ||
-           (str=="qrm_rweigth")   ||
-           (str=="qrm_mem_relax") ||
-           (str=="qrm_rd_eps"))
-        
+    elseif str ∈ RCNTL
         err = ccall(("qrm_glob_set_r4_c", libqrm_common), Cint, (Cstring, Cfloat), str, v)
     else
         err = Int32(23)
     end
-
     (err ≠ 0) && throw(ErrorException(error_handling(err)))
     return nothing
 end
 
-        
 for (fname, lname, elty, subty) in (("sqrm_spfct_set", libsqrm, Float32   , Float32),
                                     ("dqrm_spfct_set", libdqrm, Float64   , Float64),
                                     ("cqrm_spfct_set", libcqrm, ComplexF32, Float32),
                                     ("zqrm_spfct_set", libzqrm, ComplexF64, Float64))
     @eval begin
         function qrm_set(spfct :: qrm_spfct{$elty}, str :: String, val :: Number)
-            
-            if ((str=="qrm_ordering")    ||
-                (str=="qrm_minamalg")    ||
-                (str=="qrm_mb")          ||
-                (str=="qrm_nb")          ||
-                (str=="qrm_ib")          ||
-                (str=="qrm_bh")          ||
-                (str=="qrm_keeph")       ||
-                (str=="qrm_rhsnb")       ||
-                (str=="qrm_nlz")         ||
-                (str=="qrm_pinth"))
-
+            if str ∈ PICNTL
                 finame = $fname*"_i4_c"
                 err = ccall((finame, $lname), Cint, (Ref{qrm_spfct{$elty}}, Cstring, Cint), spfct, str, v)
-            elseif((str=="qrm_amalgth")   ||
-                   (str=="qrm_rweigth")   ||
-                   (str=="qrm_mem_relax") ||
-                   (str=="qrm_rd_eps"))
-
+            elseif str ∈ RCNTL
                 frname = $fname*"_r4_c"
                 err = ccall((frname, $lname), Cint, (Ref{qrm_spfct{$elty}}, Cstring, Cfloat), spfct, str, v)
             else
+                v = nothing
                 err = Int32(23)
             end
-                
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
-    end        
-end        
-
+    end
+end
 
 function qrm_get(str :: String)
-    
-    if ((str=="qrm_eunit")       ||
-        (str=="qrm_print_etree") ||
-        (str=="qrm_ounit")       ||
-        (str=="qrm_dunit")       ||
-        (str=="qrm_ncpu")        ||
-        (str=="qrm_ngpu")        ||
-        (str=="qrm_max_mem")     ||
-        (str=="qrm_tot_mem")     ||
-        (str=="qrm_ordering")    ||
-        (str=="qrm_minamalg")    ||
-        (str=="qrm_mb")          ||
-        (str=="qrm_nb")          ||
-        (str=="qrm_ib")          ||
-        (str=="qrm_bh")          ||
-        (str=="qrm_keeph")       ||
-        (str=="qrm_rhsnb")       ||
-        (str=="qrm_nlz")         ||
-        (str=="qrm_pinth"))
-        
+    if (str ∈ GICNTL) || (str ∈ PICNTL)
         v = Ref{Clonglong}(0)
-        
         err = ccall(("qrm_glob_get_i8_c", libqrm_common), Cint, (Cstring, Ref{Clonglong}), str, v)
-    elseif((str=="qrm_amalgth")   ||
-           (str=="qrm_rweigth")   ||
-           (str=="qrm_mem_relax") ||
-           (str=="qrm_rd_eps"))
-        
+    elseif str ∈ RCNTL
         v = Ref{Float32}(0)
         err = ccall(("qrm_glob_get_r4_c", libqrm_common), Cint, (Cstring, Ref{Cfloat}), str, v)
     else
-        err = Int32(23)
         v = nothing
+        err = Int32(23)
     end
-        
     (err ≠ 0) && throw(ErrorException(error_handling(err)))
     return v[]
 end
 
-        
 for (fname, lname, elty, subty) in (("sqrm_spfct_get", libsqrm, Float32   , Float32),
                                     ("dqrm_spfct_get", libdqrm, Float64   , Float64),
                                     ("cqrm_spfct_get", libcqrm, ComplexF32, Float32),
                                     ("zqrm_spfct_get", libzqrm, ComplexF64, Float64))
     @eval begin
         function qrm_get(spfct :: qrm_spfct{$elty}, str :: String)
-            
-            if ((str=="qrm_ordering")        ||
-                (str=="qrm_minamalg")        ||
-                (str=="qrm_mb")              ||
-                (str=="qrm_nb")              ||
-                (str=="qrm_ib")              ||
-                (str=="qrm_bh")              ||
-                (str=="qrm_keeph")           ||
-                (str=="qrm_rhsnb")           ||
-                (str=="qrm_nlz")             ||
-                (str=="qrm_pinth")           ||
-                (str=="qrm_e_nnz_r")         ||
-                (str=="qrm_e_nnz_h")         ||
-                (str=="qrm_e_facto_flops")   ||
-                (str=="qrm_e_facto_mempeak") ||
-                (str=="qrm_nnz_r")           ||
-                (str=="qrm_nnz_h")           ||
-                (str=="qrm_facto_flops")     ||
-                (str=="qrm_rd_num"))
-                
+            if (str ∈ PICNTL) || (str ∈ STATS)
                 v = Ref{Clonglong}(0)
                 finame = $fname*"_i8_c"
                 err = ccall((finame, $lname), Cint, (Ref{qrm_spfct{$elty}}, Cstring, Ref{Clonglong}), spfct, str, v)
-            elseif((str=="qrm_amalgth")   ||
-                   (str=="qrm_rweigth")   ||
-                   (str=="qrm_mem_relax") ||
-                   (str=="qrm_rd_eps"))
-                
+            elseif str ∈ RCNTL
                 v = Ref{Float32}(0)
                 frname = $fname*"_r4_c"
                 err = ccall((frname, $lname), Cint, (Ref{qrm_spfct{$elty}}, Cstring, Ref{Cfloat}), spfct, str, v)
             else
                 err = Int32(23)
-                v = nothing      
             end
-                
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return v[]
         end
-    end        
-end        
-        
+    end
+end
+
 function qrm_init(ncpu :: Integer=1, ngpu :: Integer=0)
     err = ccall(("qrm_init_c", libqrm_common), Cint, (Cint, Cint), ncpu, ngpu)
     (err ≠ 0) && throw(ErrorException(error_handling(err)))
