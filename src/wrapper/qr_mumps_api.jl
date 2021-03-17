@@ -611,7 +611,7 @@ for (fname, lname, elty, subty) in (("sqrm_residual_orth_c", libsqrm, Float32   
     end
 end
 
-function qrm_set(str :: String, val :: I) where I <: Number
+function qrm_set(str :: String, val :: Number)
     
     if ((str=="qrm_eunit")       ||
         (str=="qrm_print_etree") ||
@@ -634,14 +634,13 @@ function qrm_set(str :: String, val :: I) where I <: Number
         
         err = ccall(("qrm_glob_set_i4_c", libqrm_common), Cint, (Cstring, Cint), str, v)
     elseif((str=="qrm_amalgth")   ||
-            (str=="qrm_rweigth")   ||
-            (str=="qrm_mem_relax") ||
-            (str=="qrm_rd_eps"))
+           (str=="qrm_rweigth")   ||
+           (str=="qrm_mem_relax") ||
+           (str=="qrm_rd_eps"))
         
-        v = Float32(val)
         err = ccall(("qrm_glob_set_r4_c", libqrm_common), Cint, (Cstring, Cfloat), str, v)
     else
-        err = Int32(23);
+        err = Int32(23)
     end
 
     (err ≠ 0) && throw(ErrorException(error_handling(err)))
@@ -654,7 +653,7 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_set", libsqrm, Float32   , Floa
                                     ("cqrm_spfct_set", libcqrm, ComplexF32, Float32),
                                     ("zqrm_spfct_set", libzqrm, ComplexF64, Float64))
     @eval begin
-        function qrm_set(spfct :: qrm_spfct{$elty}, str :: String, val :: I) where I <: Number
+        function qrm_set(spfct :: qrm_spfct{$elty}, str :: String, val :: Number)
             
             if ((str=="qrm_ordering")    ||
                 (str=="qrm_minamalg")    ||
@@ -666,20 +665,18 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_set", libsqrm, Float32   , Floa
                 (str=="qrm_rhsnb")       ||
                 (str=="qrm_nlz")         ||
                 (str=="qrm_pinth"))
-                
-                v = floor(Cint,val)
+
                 finame = $fname*"_i4_c"
                 err = ccall((finame, $lname), Cint, (Ref{qrm_spfct{$elty}}, Cstring, Cint), spfct, str, v)
             elseif((str=="qrm_amalgth")   ||
                    (str=="qrm_rweigth")   ||
                    (str=="qrm_mem_relax") ||
                    (str=="qrm_rd_eps"))
-                
-                v = Float32(val)
+
                 frname = $fname*"_r4_c"
                 err = ccall((frname, $lname), Cint, (Ref{qrm_spfct{$elty}}, Cstring, Cfloat), spfct, str, v)
             else
-                err = Int32(23);
+                err = Int32(23)
             end
                 
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
@@ -721,7 +718,7 @@ function qrm_get(str :: String)
         v = Ref{Float32}(0)
         err = ccall(("qrm_glob_get_r4_c", libqrm_common), Cint, (Cstring, Ref{Cfloat}), str, v)
     else
-        err = Int32(23);
+        err = Int32(23)
         v = nothing
     end
         
@@ -768,7 +765,7 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_get", libsqrm, Float32   , Floa
                 frname = $fname*"_r4_c"
                 err = ccall((frname, $lname), Cint, (Ref{qrm_spfct{$elty}}, Cstring, Ref{Cfloat}), spfct, str, v)
             else
-                err = Int32(23);
+                err = Int32(23)
                 v = nothing      
             end
                 

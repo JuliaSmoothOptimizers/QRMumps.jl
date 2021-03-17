@@ -68,7 +68,7 @@ This routine initializes a **qrm_spmat** type data structure from a **sparseMatr
 #### Input Arguments :
 
 * `spmat`: the **qrm_spmat** sparse matrix to be initialized.
-* `A` : a Julia sparse matrix stored in **sparseMatrixCSC** format.
+* `A` : a Julia sparse matrix stored in **SparseMatrixCSC** format.
 * `sym` : a boolean to specify if the matrix is symmetric / hermitian (true) or unsymmetric (false).
 """
 function qrm_spmat_init! end
@@ -97,7 +97,7 @@ This amounts to setting all the control parameters to the default values.
 
 #### Input Arguments :
 
-* `spmat`: the input matrix of qrm_spmat type.
+* `spmat`: the input matrix of type `qrm_spmat`.
 * `spfct`: the sparse factorization object to be initialized.
 """
 function qrm_spfct_init! end
@@ -125,8 +125,8 @@ This routine performs the analysis phase and updates spfct.
 
 #### Input Arguments :
 
-* `spmat`: the input matrix of qrm_spmat type.
-* `spfct`: the sparse factorization object of qrm_spfct type.
+* `spmat`: the input matrix of type `qrm_spmat`.
+* `spfct`: the sparse factorization object of type `qrm_spfct`.
 * `transp`: whether the input matrix should be transposed or not. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_analyse! end
@@ -143,8 +143,8 @@ This routine performs the factorization phase. It can only be executed if the an
 
 #### Input Arguments :
 
-* `spmat`: the input matrix of qrm_spmat type.
-* `spfct`: the sparse factorization object of qrm_spfct type.
+* `spmat`: the input matrix of type `qrm_spmat`.
+* `spfct`: the sparse factorization object of type `qrm_spfct`.
 * `transp`: whether the input matrix should be transposed or not. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_factorize! end
@@ -366,10 +366,31 @@ function qrm_residual_orth! end
 """
 function qrm_residual_orth end
 
-"TO DO!"
+@doc raw"""
+    qrm_set(str, val)
+    qrm_set(spfct, str, val)
+
+Set control parameters that define the behavior of `qr_mumps`.
+
+#### Input Arguments :
+
+* `spfct`: a sparse factorization object of type `qrm_spfct`.
+* `str`: a string describing the parameter to set.
+* `val`: the parameter value.
+"""
 function qrm_set end
 
-"TO DO!"
+@doc raw"""
+    val = qrm_get(str)
+    val = qrm_get(spfct, str)
+
+Returns the value of a control parameter or an information parameter.
+
+#### Input Arguments :
+
+* `spfct`: a sparse factorization object of type `qrm_spfct`.
+* `str`: a string describing the parameter to get.
+"""
 function qrm_get end
 
 end # module
