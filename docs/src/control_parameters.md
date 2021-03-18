@@ -7,7 +7,7 @@ Control parameters define the behavior of **qr\_mumps** and can be set in two mo
 
 * **problem mode**: these parameters control the behavior of **qr\_mumps** on a specific sparse factorization problem. Because the **qrm\_spfct\_init** routine sets the control parameters to their default values, these have to be modified after the sparse factorization object initialization.
 
-All the control parameters can be set through the **qrm\_set** routine; problem specific control parameters can also be set by manually changing the **icntl** and **rcntl** attributes of a **qrm\_spfct** factorization.
+All the control parameters can be set through the **qrm\_set** routine.
 
 ## Global parameters
 
@@ -22,6 +22,12 @@ All the control parameters can be set through the **qrm\_set** routine; problem 
 
 * **qrm\_eunit**: an integer specifying the unit for error messages; if negative, error messages are suppressed. Default is 0.
 
+
+* **qrm\_dunit**: ...
+
+
+* **qrm\_print\_etree**: ...
+
 ## Problem specific parameters
 
 * **qrm\_ordering**: this parameter specifies what permutation to apply to the columns of the input matrix in order to reduce the fill-in and, consequently, the operation count of the factorization and solve phases. This parameter is used by **qr\_mumps** during the analysis phase and, therefore, has to be set before it starts. The following pre-defined values are accepted:
@@ -33,7 +39,7 @@ All the control parameters can be set through the **qrm\_set** routine; problem 
     * **qrm\_metis\_** : the Metis software package (if installed) is used for computing the column permutation.
 
 
-* **qrm\_sing**: ...
+* **qrm\_sing**: ... ???
 
 
 * **qrm\_minamalg**: ...
@@ -53,16 +59,22 @@ All the control parameters can be set through the **qrm\_set** routine; problem 
 * **qrm\_bh**: this parameter defines the type of algorithm for the communication-avoiding QR factorization of frontal matrices. Smaller values mean more concurrency but worse tasks efficiency; if lower or equal to zero the largest possible value is chosen for each front. Default value is -1.
 
 
+* **qrm\_nlz**: ...
+
+
 * **qrm\_rhsnb**: in the case where multiple right-hand sides are passed to the **qrm\_apply** or the **qrm\_solve** routines, this parameter can be used to define a blocking of the right-hand sides. This parameter is used by **qr\_mumps** during the solve phase and, therefore, has to be set before it starts. By default, all the right-hand sides are treated in a single block.
 
 
 * **qrm\_pinth**: an integer value to control memory pinning when GPUs are used: all frontal matrices whose size (min(rows,cols)) is bigger than this value will be pinned.
 
 
-* **qrm\_amalgthr**: a **Float32** value ...
+* **qrm\_amalgthr**: a value ...
 
 
-* **qrm\_mem\_relax**: a **Float32** value (≥ 1) that sets a relaxation parameter, with respect to the sequential peak, for the memory consumption in the factorization phase. If negative, the memory consumption is not bounded. Default value is −1.0.
+* **qrm\_rweigh**: a value ...
 
 
-* **qrm\_rd\_eps**: a **Float32** value setting a threshold to estimate the rank of the problem. If > 0 the **qrm\_factorize** routine will count the number of diagonal coefficients of the **R** factor whose absolute value is smaller than the provided value. This number can be retrieved through the **qrm\_rd\_num** information parameter described in the next section.
+* **qrm\_mem\_relax**: a value (≥ 1) that sets a relaxation parameter, with respect to the sequential peak, for the memory consumption in the factorization phase. If negative, the memory consumption is not bounded. Default value is −1.0.
+
+
+* **qrm\_rd\_eps**: a value setting a threshold to estimate the rank of the problem. If > 0 the **qrm\_factorize** routine will count the number of diagonal coefficients of the **R** factor whose absolute value is smaller than the provided value. This number can be retrieved through the **qrm\_rd\_num** information parameter described in the next section.

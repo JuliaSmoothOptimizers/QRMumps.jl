@@ -17,16 +17,16 @@ The type of all information parameters is **Int64**.
 * **qrm\_e\_facto\_flops**: this parameter returns an estimate, computed during the analysis phase, of the number of floating point operations performed during the factorization phase. This value is only available after the **qrm\_analyse** routine is executed.
 
 
-* **qrm\_e\_nnz\_r**: this parameter returns an estimate, computed during the analysis phase, of the number of nonzero coefficients in the **R** factor. This value is only available after the **qrm\_analyse** routine is executed.
-
-
-* **qrm\_e\_nnz\_h**: this parameter returns an estimate, computed during the analysis phase, of the number of nonzero coefficients in the **Q** matrix. This value is only available after the **qrm\_analyse** routine is executed.
-
-
 * **qrm\_facto\_flops**: this parameter returns the number of floating point operations performed during the factorization phase. This value is only available after the **qrm\_analyse** routine is executed.
 
 
+* **qrm\_e\_nnz\_r**: this parameter returns an estimate, computed during the analysis phase, of the number of nonzero coefficients in the **R** factor. This value is only available after the **qrm\_analyse** routine is executed.
+
+
 * **qrm\_nnz\_r**: this parameter returns the actual number of the nonzero coefficients in the **R** factor after the factorization is done. This value is only available after **the qrm\_factorize** routine is executed.
+
+
+* **qrm\_e\_nnz\_h**: this parameter returns an estimate, computed during the analysis phase, of the number of nonzero coefficients in the **Q** matrix. This value is only available after the **qrm\_analyse** routine is executed.
 
 
 * **qrm\_nnz\_h**: this parameter returns the actual number of the nonzero coefficients in the **Q** matrix after the factorization is done. This value is only available after the **qrm\_factorize** routine is executed.
