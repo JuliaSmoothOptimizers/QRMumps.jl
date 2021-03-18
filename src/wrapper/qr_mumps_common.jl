@@ -1,11 +1,3 @@
-@doc raw"""
-This data type is used to store a sparse matrix in the COO (or coordinate) format through the irn, jcn
-and val fields containing the row indices, column indices and values, respectively and the m, n and nz
-containing the number of rows, columns and nonzeros, respectively. qr mumps uses a Fortran-style
-1-based numbering and thus all row indices are expected to be between 1 and m and all the column
-indices between 1 and n. Duplicate entries are summed during the factorization, out-of-bound entries
-are ignored. The sym field is used to specify if the matrix is symmetric (> 0) or unsymmetric (= 0).
-"""
 mutable struct c_spmat{T}
   irn :: Ptr{Cint}
   jcn :: Ptr{Cint}
@@ -27,6 +19,14 @@ mutable struct c_spmat{T}
   end
 end
 
+@doc raw"""
+This data type is used to store a sparse matrix in the COO (or coordinate) format through the irn, jcn
+and val fields containing the row indices, column indices and values, respectively and the m, n and nz
+containing the number of rows, columns and nonzeros, respectively. qr mumps uses a Fortran-style
+1-based numbering and thus all row indices are expected to be between 1 and m and all the column
+indices between 1 and n. Duplicate entries are summed during the factorization, out-of-bound entries
+are ignored. The sym field is used to specify if the matrix is symmetric (> 0) or unsymmetric (= 0).
+"""
 mutable struct qrm_spmat{T} <: AbstractSparseMatrix{T, Cint}
   irn :: Vector{Cint}
   jcn :: Vector{Cint}
