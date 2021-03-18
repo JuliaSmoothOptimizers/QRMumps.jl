@@ -1,45 +1,53 @@
-qrm_init(1, 0)
+qrm_init()
+m = 200
 n = 100
+p = 5
 
-for T in (Float32, Float64, ComplexF32, ComplexF64)
+for T in (Float32, Float64)
+  tol = (T == Float32) ? 1e-4 : 1e-12
   for I in (Int32 , Int64)
-    A = sprand(n, n, 0.1)
+    A = sprand(m, n, 0.3)
     A = convert(SparseMatrixCSC{T,I}, A)
-    b = rand(T, n)
-    x = rand(T, n)
-    B = rand(T, n, n)
-    X = rand(T, n, n)
-    spmat = qrm_spmat_init(T)
-    qrm_spmat_init!(spmat)
+    b = rand(T, m)
+    B = rand(T, m, p)
+
     spmat = qrm_spmat_init(A)
-    qrm_spmat_init!(spmat, A)
-    qrm_spmat_init(Symmetric(A))
-    qrm_spmat_init(Hermitian(A))
-    qrm_spmat_init!(spmat, Symmetric(A))
-    qrm_spmat_init!(spmat, Hermitian(A))
+    spfct = qrm_analyse(spmat)
+    qrm_factorize!(spmat, spfct)
 
-    spfct = qrm_spfct_init(spmat)
-    qrm_spfct_init!(spfct, spmat)
+    z = qrm_apply(spfct, b, transp='t')
+    x = qrm_solve(spfct, z, transp='n')
+    r = b - A * x
+    @test norm(A' * r) ≤ tol
 
-    # x = spmat \ b
-    # nrm = qrm_residual_norm(spmat, b, x)
-    # @test norm(b - A * x) ≤ 1e-8
+    Z = qrm_apply(spfct, B, transp='t')
+    X = qrm_solve(spfct, Z, transp='n')
+    R = B - A * X
+    @test norm(A' * R) ≤ tol
+  end
+end
 
-    # X = spmat \ B
-    # nrm = qrm_residual_norm(spmat, B, X)
-    # @test norm(B - A * X) ≤ 1e-8
+for T in (ComplexF32, ComplexF64)
+  tol = (T == ComplexF32) ? 1e-4 : 1e-12
+  for I in (Int32 , Int64)
+    A = sprand(m, n, 0.3)
+    A = convert(SparseMatrixCSC{T,I}, A)
+    b = rand(T, m)
+    B = rand(T, m, p)
 
-    # for transp ∈ ('n','t','c')
-    #   qrm_analyse!(spmat, spfct, transp=transp)
-    #   qrm_analyse(spmat, transp=transp)
+    spmat = qrm_spmat_init(A)
+    spfct = qrm_analyse(spmat)
+    qrm_factorize!(spmat, spfct)
 
-    #   qrm_factorize!(spmat, spfct, transp=transp)
+    z = qrm_apply(spfct, b, transp='c')
+    x = qrm_solve(spfct, z, transp='n')
+    r = b - A * x
+    @test norm(A' * r) ≤ tol
 
-    #   qrm_solve(spfct, b, x, transp=transp)
-    #   qrm_solve(spfct, B, X, transp=transp)
-    #   qrm_solve!(spfct, b, x, transp=transp)
-    #   qrm_solve!(spfct, B, X, transp=transp)
-    # end
+    Z = qrm_apply(spfct, B, transp='c')
+    X = qrm_solve(spfct, Z, transp='n')
+    R = B - A * X
+    @test norm(A' * R) ≤ tol
   end
 end
 

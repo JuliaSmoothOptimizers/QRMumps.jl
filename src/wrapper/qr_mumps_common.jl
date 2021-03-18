@@ -6,7 +6,7 @@ containing the number of rows, columns and nonzeros, respectively. qr mumps uses
 indices between 1 and n. Duplicate entries are summed during the factorization, out-of-bound entries
 are ignored. The sym field is used to specify if the matrix is symmetric (> 0) or unsymmetric (= 0).
 """
-mutable struct qrm_spmat{T} <: AbstractSparseMatrix{T, Cint}
+mutable struct c_spmat{T}
   irn :: Ptr{Cint}
   jcn :: Ptr{Cint}
   val :: Ptr{T}
@@ -16,10 +16,41 @@ mutable struct qrm_spmat{T} <: AbstractSparseMatrix{T, Cint}
   sym :: Cint
   h   :: Ptr{Cvoid}
 
-  function qrm_spmat{T}() where T
+  function c_spmat{T}() where T
     spmat = new(C_NULL, C_NULL, C_NULL, 0, 0, 0, 0, C_NULL)
     return spmat
   end
+
+  function c_spmat{T}(irn, jcn, val, m, n, nz, sym, h) where T
+    spmat = new(irn, jcn, val, m, n, nz, sym, h)
+    return spmat
+  end
+end
+
+mutable struct qrm_spmat{T} <: AbstractSparseMatrix{T, Cint}
+  irn :: Vector{Cint}
+  jcn :: Vector{Cint}
+  val :: Vector{T}
+  m   :: Cint
+  n   :: Cint
+  nz  :: Cint
+  sym :: Cint
+  h   :: Ptr{Cvoid}
+
+  function qrm_spmat{T}(h :: Ptr{Cvoid}) where T
+    spmat = new(Cint[], Cint[], T[], 0, 0, 0, 0, h)
+    finalizer(qrm_spmat_destroy!, spmat)
+    return spmat
+  end
+end
+
+function Base.cconvert(::Type{Ref{c_spmat{T}}}, spmat :: qrm_spmat{T}) where T
+    return c_spmat{T}(pointer(spmat.irn), pointer(spmat.jcn), pointer(spmat.val), spmat.m, spmat.n, spmat.nz, spmat.sym, spmat.h)
+end
+
+function Base.unsafe_convert(::Type{Ref{c_spmat{T}}}, spmat::c_spmat{T}) where T
+  R = Ref{c_spmat{T}}
+  return Base.unsafe_convert(R, Base.cconvert(R, spmat))
 end
 
 Base.size(spmat :: qrm_spmat) = (spmat.m, spmat.n)
@@ -48,6 +79,7 @@ mutable struct qrm_spfct{T} <: Factorization{T}
 
   function qrm_spfct{T}() where T
     spfct = new(0, 0, 0, 0, C_NULL, ntuple(x -> Cint(0), 20), ntuple(x -> Cfloat(0), 10), ntuple(x -> Clonglong(0), 10), C_NULL)
+    finalizer(qrm_spfct_destroy!, spfct)
     return spfct
   end
 end
