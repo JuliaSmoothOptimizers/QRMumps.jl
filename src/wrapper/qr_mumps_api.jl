@@ -3,28 +3,39 @@ for (fname, lname, elty, subty) in (("sqrm_spmat_init_c", libsqrm, Float32   , F
                                     ("cqrm_spmat_init_c", libcqrm, ComplexF32, Float32),
                                     ("zqrm_spmat_init_c", libzqrm, ComplexF64, Float64))
     @eval begin
-        function qrm_spmat_init!(spmat :: c_spmat{$elty})
+        function qrm_spmat_init!(spmat :: qrm_spmat{$elty})
             err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}},), spmat)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
         function qrm_spmat_init(::Type{$elty})
-            spmat2 = c_spmat{$elty}()
-            qrm_spmat_init!(spmat2)
-            spmat = qrm_spmat{$elty}(spmat2.h)
+            spmat = qrm_spmat{$elty}()
+            qrm_spmat_init!(spmat)
             return spmat
+        end
+
+        function qrm_spmat_init!(spmat :: qrm_spmat{$elty}, A :: SparseMatrixCSC{$elty,I}; sym :: Bool=false) where I <: Integer
+            err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}},), spmat)
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            spmat.irn, spmat.jcn, spmat.val = findnz(A)
+            spmat.mat.m, spmat.mat.n = size(A)
+            spmat.mat.nz  = nnz(A)
+            spmat.mat.irn = pointer(spmat.irn)
+            spmat.mat.jcn = pointer(spmat.jcn)
+            spmat.mat.val = pointer(spmat.val)
+            return nothing
         end
 
         function qrm_spmat_init(A :: SparseMatrixCSC{$elty,I}; sym :: Bool=false) where I <: Integer
-            spmat = qrm_spmat_init($elty)
-            spmat.irn, spmat.jcn, spmat.val = findnz(A)
-            spmat.m, spmat.n = size(A)
-            spmat.nz = nnz(A)
+            spmat = qrm_spmat{$elty}()
+            qrm_spmat_init!(spmat, A, sym=sym)
             return spmat
         end
 
-        # TO DO : check if qr_mumps handles both triangles
+        @inline qrm_spmat_init!(spmat :: qrm_spmat{$elty}, A :: Symmetric{$elty, SparseMatrixCSC{$elty,I}}) where I <: Integer = qrm_spmat_init!(spmat, A.data, sym=true)
+        @inline qrm_spmat_init!(spmat :: qrm_spmat{$elty}, A :: Hermitian{$elty, SparseMatrixCSC{$elty,I}}) where I <: Integer = qrm_spmat_init!(spmat, A.data, sym=true)
+
         @inline qrm_spmat_init(A :: Symmetric{$elty, SparseMatrixCSC{$elty,I}}) where I <: Integer = qrm_spmat_init(A.data, sym=true)
         @inline qrm_spmat_init(A :: Hermitian{$elty, SparseMatrixCSC{$elty,I}}) where I <: Integer = qrm_spmat_init(A.data, sym=true)
     end
@@ -49,7 +60,7 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_init_c", libsqrm, Float32   , F
                                     ("zqrm_spfct_init_c", libzqrm, ComplexF64, Float64))
     @eval begin
         function qrm_spfct_init!(spfct :: qrm_spfct{$elty}, spmat :: qrm_spmat{$elty})
-            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, Ref{c_spmat{$elty}}), spfct, spmat)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, Ref{c_spmat{$elty}}), spfct, spmat)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
@@ -68,7 +79,7 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_destroy_c", libsqrm, Float32   
                                     ("zqrm_spfct_destroy_c", libzqrm, ComplexF64, Float64))
     @eval begin
         function qrm_spfct_destroy!(spfct :: qrm_spfct{$elty})
-            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}},), spfct)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}},), spfct)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
@@ -81,14 +92,14 @@ for (fname, lname, elty, subty) in (("sqrm_analyse_c", libsqrm, Float32   , Floa
                                     ("zqrm_analyse_c", libzqrm, ComplexF64, Float64))
     @eval begin
         function qrm_analyse!(spmat :: qrm_spmat{$elty}, spfct :: qrm_spfct{$elty}; transp :: Char='n')
-            err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ref{qrm_spfct{$elty}}, UInt8), spmat, spfct, transp)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ref{c_spfct{$elty}}, UInt8), spmat, spfct, transp)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
         function qrm_analyse(spmat :: qrm_spmat{$elty}; transp :: Char='n')
             spfct = qrm_spfct_init(spmat)
-            err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ref{qrm_spfct{$elty}}, UInt8), spmat, spfct, transp)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ref{c_spfct{$elty}}, UInt8), spmat, spfct, transp)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return spfct
         end
@@ -107,7 +118,7 @@ for (fname, lname, elty, subty) in (("sqrm_factorize_c", libsqrm, Float32   , Fl
                                     ("zqrm_factorize_c", libzqrm, ComplexF64, Float64))
     @eval begin
         function qrm_factorize!(spmat :: qrm_spmat{$elty}, spfct :: qrm_spfct{$elty}; transp :: Char='n')
-            err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ref{qrm_spfct{$elty}}, UInt8), spmat, spfct, transp)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ref{c_spfct{$elty}}, UInt8), spmat, spfct, transp)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
@@ -124,30 +135,30 @@ for (fname, lname, elty, subty) in (("sqrm_solve_c", libsqrm, Float32   , Float3
     @eval begin
         function qrm_solve!(spfct :: qrm_spfct{$elty}, b :: Vector{$elty}, x :: Vector{$elty}; transp :: Char='n')
             nrhs = 1
-            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), spfct, transp, b, x, nrhs)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), spfct, transp, b, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
         function qrm_solve!(spfct :: qrm_spfct{$elty}, b :: Matrix{$elty}, x :: Matrix{$elty}; transp :: Char='n')
             nrhs = size(b, 2)
-            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), spfct, transp, b, x, nrhs)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), spfct, transp, b, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
         function qrm_solve(spfct :: qrm_spfct{$elty}, b :: Vector{$elty}; transp :: Char='n')
             nrhs = 1
-            x = zeros($elty, spfct.n)
-            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), spfct, transp, b, x, nrhs)
+            x = zeros($elty, spfct.fct.n)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), spfct, transp, b, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
 
         function qrm_solve(spfct :: qrm_spfct{$elty}, b :: Matrix{$elty}; transp :: Char='n')
             nrhs = size(b, 2)
-            x = zeros($elty, spfct.n, nrhs)
-            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), spfct, transp, b, x, nrhs)
+            x = zeros($elty, spfct.fct.n, nrhs)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, UInt8, Ptr{$elty}, Ptr{$elty}, Cint), spfct, transp, b, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
@@ -173,14 +184,14 @@ for (fname, lname, elty, subty) in (("sqrm_apply_c", libsqrm, Float32   , Float3
     @eval begin
         function qrm_apply!(spfct :: qrm_spfct{$elty}, b :: Vector{$elty}; transp :: Char='n')
             nrhs = 1
-            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), spfct, transp, b, nrhs)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), spfct, transp, b, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
         function qrm_apply!(spfct :: qrm_spfct{$elty}, b :: Matrix{$elty}; transp :: Char='n')
             nrhs = size(b, 2)
-            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), spfct, transp, b, nrhs)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), spfct, transp, b, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
@@ -188,7 +199,7 @@ for (fname, lname, elty, subty) in (("sqrm_apply_c", libsqrm, Float32   , Float3
         function qrm_apply(spfct :: qrm_spfct{$elty}, b :: Vector{$elty}; transp :: Char='n')
             nrhs = 1
             z = copy(b)
-            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), spfct, transp, z, nrhs)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), spfct, transp, z, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return z
         end
@@ -196,7 +207,7 @@ for (fname, lname, elty, subty) in (("sqrm_apply_c", libsqrm, Float32   , Float3
         function qrm_apply(spfct :: qrm_spfct{$elty}, b :: Matrix{$elty}; transp :: Char='n')
             nrhs = size(b, 2)
             z = copy(b)
-            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), spfct, transp, z, nrhs)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, UInt8, Ptr{$elty}, Cint), spfct, transp, z, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return z
         end
@@ -215,7 +226,6 @@ for (fname, lname, elty, subty) in (("sqrm_apply_c", libsqrm, Float32   , Float3
     end
 end
 
-# We should use mul!
 # err is a Cvoid and not a Cint
 for (fname, lname, elty, subty) in (("sqrm_spmat_mv_c", libsqrm, Float32   , Float32),
                                     ("dqrm_spmat_mv_c", libdqrm, Float64   , Float64),
@@ -337,14 +347,14 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_backslash_c", libsqrm, Float32 
     @eval begin
         function qrm_spbackslash!(spfct :: qrm_spfct{$elty}, b :: Vector{$elty}, x :: Vector{$elty})
             nrhs = 1
-            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, b, x, nrhs)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, b, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
         function qrm_spbackslash!(spfct :: qrm_spfct{$elty}, b :: Matrix{$elty}, x :: Matrix{$elty})
             nrhs = size(b, 2)
-            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, b, x, nrhs)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, b, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
@@ -352,18 +362,18 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_backslash_c", libsqrm, Float32 
 
         function qrm_spbackslash(spfct :: qrm_spfct{$elty}, b :: Vector{$elty})
             nrhs = 1
-            x = zeros($elty, spfct.n)
+            x = zeros($elty, spfct.fct.n)
             bcopy = copy(b)
-            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, bcopy, x, nrhs)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, bcopy, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
 
         function qrm_spbackslash(spfct :: qrm_spfct{$elty}, b :: Matrix{$elty})
             nrhs = size(b, 2)
-            x = zeros($elty, spfct.n, nrhs)
+            x = zeros($elty, spfct.fct.n, nrhs)
             bcopy = copy(b)
-            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, bcopy, x, nrhs)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, bcopy, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
@@ -403,18 +413,18 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_backslash_c", libsqrm, Float32 
     @eval begin
         function (\)(spfct :: qrm_spfct{$elty}, b :: Vector{$elty})
             nrhs = 1
-            x = zeros($elty, spfct.n)
+            x = zeros($elty, spfct.fct.n)
             bcopy = copy(b)
-            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, bcopy, x, nrhs)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, bcopy, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
 
         function (\)(spfct :: qrm_spfct{$elty}, b :: Matrix{$elty})
             nrhs = size(b, 2)
-            x = zeros($elty, spfct.n, nrhs)
+            x = zeros($elty, spfct.fct.n, nrhs)
             bcopy = copy(b)
-            err = ccall(($fname, $lname), Cint, (Ref{qrm_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, bcopy, x, nrhs)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, bcopy, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
@@ -612,10 +622,10 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_set", libsqrm, Float32   , Floa
         function qrm_set(spfct :: qrm_spfct{$elty}, str :: String, val :: Number)
             if str ∈ PICNTL
                 finame = $fname*"_i4_c"
-                err = ccall((finame, $lname), Cint, (Ref{qrm_spfct{$elty}}, Cstring, Cint), spfct, str, v)
+                err = ccall((finame, $lname), Cint, (Ref{c_spfct{$elty}}, Cstring, Cint), spfct, str, v)
             elseif str ∈ RCNTL
                 frname = $fname*"_r4_c"
-                err = ccall((frname, $lname), Cint, (Ref{qrm_spfct{$elty}}, Cstring, Cfloat), spfct, str, v)
+                err = ccall((frname, $lname), Cint, (Ref{c_spfct{$elty}}, Cstring, Cfloat), spfct, str, v)
             else
                 err = Int32(23)
             end
@@ -648,11 +658,11 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_get", libsqrm, Float32   , Floa
             if (str ∈ PICNTL) || (str ∈ STATS)
                 v = Ref{Clonglong}(0)
                 finame = $fname*"_i8_c"
-                err = ccall((finame, $lname), Cint, (Ref{qrm_spfct{$elty}}, Cstring, Ref{Clonglong}), spfct, str, v)
+                err = ccall((finame, $lname), Cint, (Ref{c_spfct{$elty}}, Cstring, Ref{Clonglong}), spfct, str, v)
             elseif str ∈ RCNTL
                 v = Ref{Float32}(0)
                 frname = $fname*"_r4_c"
-                err = ccall((frname, $lname), Cint, (Ref{qrm_spfct{$elty}}, Cstring, Ref{Cfloat}), spfct, str, v)
+                err = ccall((frname, $lname), Cint, (Ref{c_spfct{$elty}}, Cstring, Ref{Cfloat}), spfct, str, v)
             else
                 err = Int32(23)
             end

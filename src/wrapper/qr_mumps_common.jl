@@ -12,11 +12,6 @@ mutable struct c_spmat{T}
     spmat = new(C_NULL, C_NULL, C_NULL, 0, 0, 0, 0, C_NULL)
     return spmat
   end
-
-  function c_spmat{T}(irn, jcn, val, m, n, nz, sym, h) where T
-    spmat = new(irn, jcn, val, m, n, nz, sym, h)
-    return spmat
-  end
 end
 
 @doc raw"""
@@ -31,24 +26,20 @@ mutable struct qrm_spmat{T} <: AbstractSparseMatrix{T, Cint}
   irn :: Vector{Cint}
   jcn :: Vector{Cint}
   val :: Vector{T}
-  m   :: Cint
-  n   :: Cint
-  nz  :: Cint
-  sym :: Cint
-  h   :: Ptr{Cvoid}
+  mat :: c_spmat{T}
 
-  function qrm_spmat{T}(h :: Ptr{Cvoid}) where T
-    spmat = new(Cint[], Cint[], T[], 0, 0, 0, 0, h)
+  function qrm_spmat{T}() where T
+    spmat = new(Cint[], Cint[], Cint[], c_spmat{T}())
     finalizer(qrm_spmat_destroy!, spmat)
     return spmat
   end
 end
 
 function Base.cconvert(::Type{Ref{c_spmat{T}}}, spmat :: qrm_spmat{T}) where T
-    return c_spmat{T}(pointer(spmat.irn), pointer(spmat.jcn), pointer(spmat.val), spmat.m, spmat.n, spmat.nz, spmat.sym, spmat.h)
+    return spmat.mat
 end
 
-function Base.unsafe_convert(::Type{Ref{c_spmat{T}}}, spmat::c_spmat{T}) where T
+function Base.unsafe_convert(::Type{Ref{c_spmat{T}}}, spmat :: c_spmat{T}) where T
   R = Ref{c_spmat{T}}
   return Base.unsafe_convert(R, Base.cconvert(R, spmat))
 end
@@ -60,13 +51,7 @@ function Base.show(io :: IO, ::MIME"text/plain", spmat :: qrm_spmat)
   println(io, "Sparse matrix -- qrm_spmat of size ", size(spmat), " with ", nnz(spmat), " nonzeros.")
 end
 
-@doc raw"""
-This type is used to set the parameters that control the behavior of a sparse factorization, to collect
-information about its execution (number of flops, memory consumpnion etc) and store the result of 
-the factorization, namely, the factors with all the symbolic information needed to use them in the
-solve phase.
-"""
-mutable struct qrm_spfct{T} <: Factorization{T}
+mutable struct c_spfct{T}
   m        :: Cint
   n        :: Cint
   nz       :: Cint
@@ -77,11 +62,36 @@ mutable struct qrm_spfct{T} <: Factorization{T}
   gstats   :: NTuple{10, Clonglong}
   h        :: Ptr{Cvoid}
 
-  function qrm_spfct{T}() where T
+  function c_spfct{T}() where T
     spfct = new(0, 0, 0, 0, C_NULL, ntuple(x -> Cint(0), 20), ntuple(x -> Cfloat(0), 10), ntuple(x -> Clonglong(0), 10), C_NULL)
+    return spfct
+  end
+end
+
+@doc raw"""
+This type is used to set the parameters that control the behavior of a sparse factorization, to collect
+information about its execution (number of flops, memory consumpnion etc) and store the result of 
+the factorization, namely, the factors with all the symbolic information needed to use them in the
+solve phase.
+"""
+mutable struct qrm_spfct{T} <: Factorization{T}
+  cperm_in :: Vector{Cint}
+  fct      :: c_spfct{T}
+
+  function qrm_spfct{T}() where T
+    spfct = new(Cint[], c_spfct{T}())
     finalizer(qrm_spfct_destroy!, spfct)
     return spfct
   end
+end
+
+function Base.cconvert(::Type{Ref{c_spfct{T}}}, spfct :: qrm_spfct{T}) where T
+    return spfct.fct
+end
+
+function Base.unsafe_convert(::Type{Ref{c_spfct{T}}}, spfct :: c_spfct{T}) where T
+  R = Ref{c_spfct{T}}
+  return Base.unsafe_convert(R, Base.cconvert(R, spfct))
 end
 
 function Base.show(io :: IO, ::MIME"text/plain", spfct :: qrm_spfct)
