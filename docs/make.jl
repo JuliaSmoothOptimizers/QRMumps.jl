@@ -2,6 +2,7 @@ using Documenter, qr_mumps
 
 makedocs(
   modules = [qr_mumps],
+  checkdocs = :exports,
   doctest = true,
   linkcheck = true,
   strict = true,
