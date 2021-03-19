@@ -321,7 +321,7 @@ for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , 
 
         function qrm_spbackslash(spmat :: qrm_spmat{$elty}, b :: Vector{$elty})
             nrhs = 1
-            x = zeros($elty, spmat.n)
+            x = zeros($elty, spmat.mat.n)
             bcopy = copy(b)
             err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, bcopy, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
@@ -330,7 +330,7 @@ for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , 
 
         function qrm_spbackslash(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty})
             nrhs = size(b, 2)
-            x = zeros($elty, spmat.n, nrhs)
+            x = zeros($elty, spmat.mat.n, nrhs)
             bcopy = copy(b)
             err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, bcopy, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
@@ -388,7 +388,7 @@ for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , 
     @eval begin
         function (\)(spmat :: qrm_spmat{$elty}, b :: Vector{$elty})
             nrhs = 1
-            x = zeros($elty, spmat.n)
+            x = zeros($elty, spmat.mat.n)
             bcopy = copy(b)
             err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, bcopy, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
@@ -397,7 +397,7 @@ for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , 
 
         function (\)(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty})
             nrhs = size(b, 2)
-            x = zeros($elty, spmat.n, nrhs)
+            x = zeros($elty, spmat.mat.n, nrhs)
             bcopy = copy(b)
             err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, bcopy, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
@@ -452,7 +452,7 @@ for (fname, lname, elty, subty) in (("sqrm_spposv_c", libsqrm, Float32   , Float
 
         function qrm_spposv(spmat :: qrm_spmat{$elty}, b :: Vector{$elty})
             nrhs = 1
-            x = zeros($elty, spmat.n)
+            x = zeros($elty, spmat.mat.n)
             err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, b, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
@@ -460,7 +460,7 @@ for (fname, lname, elty, subty) in (("sqrm_spposv_c", libsqrm, Float32   , Float
 
         function qrm_spposv(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty})
             nrhs = size(b, 2)
-            x = zeros($elty, spmat.n, nrhs)
+            x = zeros($elty, spmat.mat.n, nrhs)
             err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, b, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
@@ -489,7 +489,7 @@ for (fname, lname, elty, subty) in (("sqrm_least_squares_c", libsqrm, Float32   
 
         function qrm_least_squares(spmat :: qrm_spmat{$elty}, b :: Vector{$elty})
             nrhs = 1
-            x = zeros($elty, spmat.n)
+            x = zeros($elty, spmat.mat.n)
             err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, b, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
@@ -497,7 +497,7 @@ for (fname, lname, elty, subty) in (("sqrm_least_squares_c", libsqrm, Float32   
 
         function qrm_least_squares(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty})
             nrhs = size(b, 2)
-            x = zeros($elty, spmat.n, nrhs)
+            x = zeros($elty, spmat.mat.n, nrhs)
             err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, b, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
@@ -526,7 +526,7 @@ for (fname, lname, elty, subty) in (("sqrm_min_norm_c", libsqrm, Float32   , Flo
 
         function qrm_min_norm(spmat :: qrm_spmat{$elty}, b :: Vector{$elty})
             nrhs = 1
-            x = zeros($elty, spmat.n)
+            x = zeros($elty, spmat.mat.n)
             err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, b, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
@@ -534,7 +534,7 @@ for (fname, lname, elty, subty) in (("sqrm_min_norm_c", libsqrm, Float32   , Flo
 
         function qrm_min_norm(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty})
             nrhs = size(b, 2)
-            x = zeros($elty, spmat.n, nrhs)
+            x = zeros($elty, spmat.mat.n, nrhs)
             err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, b, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
