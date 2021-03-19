@@ -29,7 +29,7 @@ mutable struct qrm_spmat{T} <: AbstractSparseMatrix{T, Cint}
   mat :: c_spmat{T}
 
   function qrm_spmat{T}() where T
-    spmat = new(Cint[], Cint[], Cint[], c_spmat{T}())
+    spmat = new(Cint[], Cint[], T[], c_spmat{T}())
     finalizer(qrm_spmat_destroy!, spmat)
     return spmat
   end
@@ -44,8 +44,8 @@ function Base.unsafe_convert(::Type{Ref{c_spmat{T}}}, spmat :: c_spmat{T}) where
   return Base.unsafe_convert(R, Base.cconvert(R, spmat))
 end
 
-Base.size(spmat :: qrm_spmat) = (spmat.m, spmat.n)
-SparseArrays.nnz(spmat :: qrm_spmat) = spmat.nz
+Base.size(spmat :: qrm_spmat) = (spmat.mat.m, spmat.mat.n)
+SparseArrays.nnz(spmat :: qrm_spmat) = spmat.mat.nz
 
 function Base.show(io :: IO, ::MIME"text/plain", spmat :: qrm_spmat)
   println(io, "Sparse matrix -- qrm_spmat of size ", size(spmat), " with ", nnz(spmat), " nonzeros.")
