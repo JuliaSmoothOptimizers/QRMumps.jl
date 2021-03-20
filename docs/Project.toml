@@ -1,5 +1,8 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 qr_mumps = "422b30a1-cc69-4d85-abe7-cc07b540c444"
 
 [compat]

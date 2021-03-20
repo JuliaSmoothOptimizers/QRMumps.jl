@@ -14,6 +14,7 @@ makedocs(
            "Control parameters" => "control_parameters.md",
            "Information parameters" => "information_parameters.md",
            "Performance tuning" => "performance.md",
+           "Tutorials" => "tutorials.md",
            "Reference" => "reference.md",
           ]
 )
