@@ -323,7 +323,7 @@ for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , 
         function qrm_spbackslash(spmat :: qrm_spmat{$elty}, b :: Vector{$elty})
             nrhs = 1
             x = zeros($elty, spmat.mat.n)
-            bcopy = copy(b)
+            bcopy = (spmat.mat.m ≥ spmat.mat.n) ? copy(b) : b
             err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, bcopy, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
@@ -332,12 +332,14 @@ for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , 
         function qrm_spbackslash(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty})
             nrhs = size(b, 2)
             x = zeros($elty, spmat.mat.n, nrhs)
-            bcopy = copy(b)
+            bcopy = (spmat.mat.m ≥ spmat.mat.n) ? copy(b) : b
             err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, bcopy, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
 
+        @inline (\)(spmat :: qrm_spmat{$elty}, b :: Vector{$elty}) = qrm_spbackslash(spmat, b)
+        @inline (\)(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty}) = qrm_spbackslash(spmat, b)
     end
 end
 
@@ -364,7 +366,7 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_backslash_c", libsqrm, Float32 
         function qrm_spbackslash(spfct :: qrm_spfct{$elty}, b :: Vector{$elty})
             nrhs = 1
             x = zeros($elty, spfct.fct.n)
-            bcopy = copy(b)
+            bcopy = (spfct.fct.m ≥ spfct.fct.n) ? copy(b) : b
             err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, bcopy, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
@@ -373,62 +375,14 @@ for (fname, lname, elty, subty) in (("sqrm_spfct_backslash_c", libsqrm, Float32 
         function qrm_spbackslash(spfct :: qrm_spfct{$elty}, b :: Matrix{$elty})
             nrhs = size(b, 2)
             x = zeros($elty, spfct.fct.n, nrhs)
-            bcopy = copy(b)
-            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, bcopy, x, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
-            return x
-        end
-
-    end
-end
-
-for (fname, lname, elty, subty) in (("sqrm_spbackslash_c", libsqrm, Float32   , Float32),
-                                    ("dqrm_spbackslash_c", libdqrm, Float64   , Float64),
-                                    ("cqrm_spbackslash_c", libcqrm, ComplexF32, Float32),
-                                    ("zqrm_spbackslash_c", libzqrm, ComplexF64, Float64))
-    @eval begin
-        function (\)(spmat :: qrm_spmat{$elty}, b :: Vector{$elty})
-            nrhs = 1
-            x = zeros($elty, spmat.mat.n)
-            bcopy = (spmat.mat.m ≥ spmat.mat.n) ? copy(b) : b
-            err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, bcopy, x, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
-            return x
-        end
-
-        function (\)(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty})
-            nrhs = size(b, 2)
-            x = zeros($elty, spmat.mat.n, nrhs)
-            bcopy = (spmat.mat.m ≥ spmat.mat.n) ? copy(b) : b
-            err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spmat, bcopy, x, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
-            return x
-        end
-    end
-end
-
-for (fname, lname, elty, subty) in (("sqrm_spfct_backslash_c", libsqrm, Float32   , Float32),
-                                    ("dqrm_spfct_backslash_c", libdqrm, Float64   , Float64),
-                                    ("cqrm_spfct_backslash_c", libcqrm, ComplexF32, Float32),
-                                    ("zqrm_spfct_backslash_c", libzqrm, ComplexF64, Float64))
-    @eval begin
-        function (\)(spfct :: qrm_spfct{$elty}, b :: Vector{$elty})
-            nrhs = 1
-            x = zeros($elty, spfct.fct.n)
             bcopy = (spfct.fct.m ≥ spfct.fct.n) ? copy(b) : b
             err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, bcopy, x, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return x
         end
 
-        function (\)(spfct :: qrm_spfct{$elty}, b :: Matrix{$elty})
-            nrhs = size(b, 2)
-            x = zeros($elty, spfct.fct.n, nrhs)
-            bcopy = (spfct.fct.m ≥ spfct.fct.n) ? copy(b) : b
-            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint), spfct, bcopy, x, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
-            return x
-        end
+        @inline (\)(spfct :: qrm_spfct{$elty}, b :: Vector{$elty}) = qrm_spbackslash(spfct, b)
+        @inline (\)(spfct :: qrm_spfct{$elty}, b :: Matrix{$elty}) = qrm_spbackslash(spfct, b)
     end
 end
 
