@@ -75,7 +75,7 @@ spfct = qrm_spfct_init(spmat)
 
 qrm_analyse!(spmat, spfct)
 qrm_factorize!(spmat, spfct)
-z = qrm_solve(spfct, b, transp='t')
+z = qrm_solve(spfct, b, transp=true)
 x = qrm_solve(spfct, z)
 
 error_norm = norm(x - x_star)
@@ -106,7 +106,7 @@ spfct = qrm_spfct_init(spmat)
 
 qrm_analyse!(spmat, spfct)
 qrm_factorize!(spmat, spfct)
-z = qrm_solve(spfct, b, transp='t')
+z = qrm_solve(spfct, b, transp=true)
 x = qrm_solve(spfct, z)
 
 error_norm = norm(x - x_star)
@@ -168,7 +168,7 @@ spfct = qrm_spfct_init(spmat)
 
 qrm_analyse!(spmat, spfct)
 qrm_factorize!(spmat, spfct)
-z = qrm_apply(spfct, b, transp='t')
+z = qrm_apply(spfct, b, transp=true)
 x = qrm_solve(spfct, z)
 
 error_norm = norm(x - x_star)
@@ -228,9 +228,9 @@ qrm_init()
 spmat = qrm_spmat_init(A)
 spfct = qrm_spfct_init(spmat)
 
-qrm_analyse!(spmat, spfct, transp='t')
-qrm_factorize!(spmat, spfct, transp='t')
-z = qrm_solve(spfct, b, transp='t')
+qrm_analyse!(spmat, spfct, transp=true)
+qrm_factorize!(spmat, spfct, transp=true)
+z = qrm_solve(spfct, b, transp=true)
 x = qrm_apply(spfct, z)
 
 error_norm = norm(x - x_star)

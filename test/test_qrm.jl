@@ -5,10 +5,7 @@ p = 5
 
 @testset "least-squares problems" begin
   for T in (Float32, Float64, ComplexF32, ComplexF64)
-
     tol = (real(T) == Float32) ? 1e-4 : 1e-12
-    transp = (T <: Real) ? 't' : 'c'
-
     for I in (Int32 , Int64)
       A = sprand(T, m, n, 0.3)
       A = convert(SparseMatrixCSC{T,I}, A)
@@ -20,23 +17,23 @@ p = 5
       qrm_factorize!(spmat, spfct)
       spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
 
-      z = qrm_apply(spfct, b, transp=transp)
-      x = qrm_solve(spfct, z, transp='n')
+      z = qrm_apply(spfct, b, transp=true)
+      x = qrm_solve(spfct, z)
       r = b - A * x
       @test norm(A' * r) ≤ tol
 
-      Z = qrm_apply(spfct, B, transp=transp)
-      X = qrm_solve(spfct, Z, transp='n')
+      Z = qrm_apply(spfct, B, transp=true)
+      X = qrm_solve(spfct, Z)
       R = B - A * X
       @test norm(A' * R) ≤ tol
 
       z = qrm_apply(spfct2, b)
-      x = qrm_solve(spfct, z, transp='n')
+      x = qrm_solve(spfct, z)
       r = b - A * x
       @test norm(A' * r) ≤ tol
 
       Z = qrm_apply(spfct2, B)
-      X = qrm_solve(spfct, Z, transp='n')
+      X = qrm_solve(spfct, Z)
       R = B - A * X
       @test norm(A' * R) ≤ tol
 
@@ -49,26 +46,26 @@ p = 5
       spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
 
       z = copy(b)
-      qrm_apply!(spfct, z, transp=transp)
-      qrm_solve!(spfct, z, x, transp='n')
+      qrm_apply!(spfct, z, transp=true)
+      qrm_solve!(spfct, z, x)
       r = b - A * x
       @test norm(A' * r) ≤ tol
 
       Z = copy(B)
-      qrm_apply!(spfct, Z, transp=transp)
-      qrm_solve!(spfct, Z, X, transp='n')
+      qrm_apply!(spfct, Z, transp=true)
+      qrm_solve!(spfct, Z, X)
       R = B - A * X
       @test norm(A' * R) ≤ tol
 
       z = copy(b)
       qrm_apply!(spfct2, z)
-      qrm_solve!(spfct, z, x, transp='n')
+      qrm_solve!(spfct, z, x)
       r = b - A * x
       @test norm(A' * r) ≤ tol
 
       Z = copy(B)
       qrm_apply!(spfct2, Z)
-      qrm_solve!(spfct, Z, X, transp='n')
+      qrm_solve!(spfct, Z, X)
       R = B - A * X
       @test norm(A' * R) ≤ tol
 
@@ -147,10 +144,7 @@ end
 
 @testset "least-norm problems" begin
   for T in (Float32, Float64, ComplexF32, ComplexF64)
-
     tol = (real(T) == Float32) ? 1e-4 : 1e-12
-    transp = (T <: Real) ? 't' : 'c'
-
     for I in (Int32 , Int64)
       A = sprand(T, n, m, 0.3)
       A = convert(SparseMatrixCSC{T,I}, A)
@@ -158,27 +152,27 @@ end
       B = rand(T, n, p)
 
       spmat = qrm_spmat_init(A)
-      spfct = qrm_analyse(spmat, transp=transp)
-      qrm_factorize!(spmat, spfct, transp=transp)
+      spfct = qrm_analyse(spmat, transp=true)
+      qrm_factorize!(spmat, spfct, transp=true)
       spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
 
-      z = qrm_solve(spfct, b, transp=transp)
-      x = qrm_apply(spfct, z, transp='n')
+      z = qrm_solve(spfct, b, transp=true)
+      x = qrm_apply(spfct, z)
       r = b - A * x
       @test norm(r) ≤ tol
 
-      Z = qrm_solve(spfct, B, transp=transp)
-      X = qrm_apply(spfct, Z, transp='n')
+      Z = qrm_solve(spfct, B, transp=true)
+      X = qrm_apply(spfct, Z)
       R = B - A * X
       @test norm(R) ≤ tol
 
       z = qrm_solve(spfct2, b)
-      x = qrm_apply(spfct, z, transp='n')
+      x = qrm_apply(spfct, z)
       r = b - A * x
       @test norm(r) ≤ tol
 
       Z = qrm_solve(spfct2, B)
-      X = qrm_apply(spfct, Z, transp='n')
+      X = qrm_apply(spfct, Z)
       R = B - A * X
       @test norm(R) ≤ tol
 
@@ -186,27 +180,27 @@ end
       qrm_spmat_init!(spmat, A)
 
       spfct = qrm_spfct_init(spmat)
-      qrm_analyse!(spmat, spfct, transp=transp)
-      qrm_factorize!(spmat, spfct, transp=transp)
+      qrm_analyse!(spmat, spfct, transp=true)
+      qrm_factorize!(spmat, spfct, transp=true)
       spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
 
-      qrm_solve!(spfct, b, x, transp=transp)
-      qrm_apply!(spfct, x, transp='n')
+      qrm_solve!(spfct, b, x, transp=true)
+      qrm_apply!(spfct, x)
       r = b - A * x
       @test norm(r) ≤ tol
 
-      qrm_solve!(spfct, B, X, transp=transp)
-      qrm_apply!(spfct, X, transp='n')
+      qrm_solve!(spfct, B, X, transp=true)
+      qrm_apply!(spfct, X)
       R = B - A * X
       @test norm(R) ≤ tol
 
       qrm_solve!(spfct2, b, x)
-      qrm_apply!(spfct, x, transp='n')
+      qrm_apply!(spfct, x)
       r = b - A * x
       @test norm(r) ≤ tol
 
       qrm_solve!(spfct2, B, X)
-      qrm_apply!(spfct, X, transp='n')
+      qrm_apply!(spfct, X)
       R = B - A * X
       @test norm(R) ≤ tol
 
@@ -279,10 +273,7 @@ end
 
 # @testset "Symmetric and positive definite linear systems" begin
 #   for T in (Float32, Float64, ComplexF32, ComplexF64)
-
 #     tol = (real(T) == Float32) ? 1e-4 : 1e-12
-#     transp = (T <: Real) ? 't' : 'c'
-
 #     for I in (Int32 , Int64)
 #       A = sprand(T, n, n, 0.1)
 #       A = convert(SparseMatrixCSC{T,I}, A)
@@ -296,12 +287,12 @@ end
 #       qrm_factorize!(spmat, spfct)
 #       spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
 
-#       z = qrm_solve(spfct, b, transp=transp)
+#       z = qrm_solve(spfct, b, transp=true)
 #       x = qrm_solve(spfct, z)
 #       r = b - A * x
 #       @test norm(r) ≤ tol
 
-#       Z = qrm_solve(spfct, B, transp=transp)
+#       Z = qrm_solve(spfct, B, transp=true)
 #       X = qrm_solve(spfct, Z)
 #       R = B - A * X
 #       @test norm(R) ≤ tol
@@ -332,23 +323,23 @@ end
 #       qrm_factorize!(spmat, spfct)
 #       spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
 
-#       qrm_solve!(spfct, b, x, transp=transp)
-#       qrm_solve!(spfct, x, copy(x), transp='n')
+#       qrm_solve!(spfct, b, x, transp=true)
+#       qrm_solve!(spfct, x, copy(x))
 #       r = b - A * x
 #       @test norm(r) ≤ tol
 
-#       qrm_solve!(spfct, B, X, transp=transp)
-#       qrm_solve!(spfct, X, copy(X), transp='n')
+#       qrm_solve!(spfct, B, X, transp=true)
+#       qrm_solve!(spfct, X, copy(X))
 #       R = B - A * X
 #       @test norm(R) ≤ tol
 
 #       qrm_solve!(spfct2, b, x)
-#       qrm_solve!(spfct, x, copy(x), transp='n')
+#       qrm_solve!(spfct, x, copy(x))
 #       r = b - A * x
 #       @test norm(r) ≤ tol
 
 #       qrm_solve!(spfct2, B, X)
-#       qrm_solve!(spfct, X, copy(X), transp='n')
+#       qrm_solve!(spfct, X, copy(X))
 #       R = B - A * X
 #       @test norm(R) ≤ tol
 
