@@ -5,7 +5,7 @@ irn = [1, 1, 1, 1, 2, 3, 3, 4, 4, 5]
 jcn = [1, 3, 4, 5, 2, 3, 5, 4, 5, 5]
 val = [53.0, 8.0, 4.0, 3.0, 10.0, 6.0, 8.0, 26.0, 5.0, 14.0]
 
-A = Symmetric(sparse(irn, jcn, val, 5, 5), :U)  # Symmetric(sparse(jcn, irn, val, 5, 5), :L) also works
+A = Symmetric(sparse(irn, jcn, val, 5, 5), :U)
 b = [108.0, 20.0, 66.0, 133.0, 117.0]
 x_star = [1.0, 2.0, 3.0, 4.0, 5.0]
 
@@ -20,14 +20,37 @@ residual_norm = norm(A * x - b)
 @printf(&quot;Error norm ‖x* - x‖ = %10.5e\n&quot;, error_norm)
 @printf(&quot;Residual norm ‖Ax - b‖ = %10.5e\n&quot;, residual_norm)
 
-qrm_finalize()</code></pre><pre class="documenter-example-output">Error norm ‖x* - x‖ = 5.33092e-14
-Residual norm ‖Ax - b‖ = 1.42109e-14</pre><h3 id="Full"><a class="docs-heading-anchor" href="#Full">Full</a><a id="Full-1"></a><a class="docs-heading-anchor-permalink" href="#Full" title="Permalink"></a></h3><pre><code class="language-julia">using qr_mumps, LinearAlgebra, SparseArrays, Printf
+qrm_finalize()</code></pre><pre class="documenter-example-output">Error norm ‖x* - x‖ = 5.56867e-14
+Residual norm ‖Ax - b‖ = 0.00000e+00</pre><pre><code class="language-julia">using qr_mumps, LinearAlgebra, SparseArrays, Printf
+
+irn = [1, 2, 1, 2, 3, 2, 3, 4, 3, 4, 5, 4, 5]
+jcn = [1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5]
+val = [4.0, 1.0, 1.0, 4.0, 1.0, 1.0, 4.0, 1.0, 1.0, 4.0, 1.0, 1.0, 4.0]
+
+A = sparse(irn, jcn, val, 5, 5)
+A_L = tril(A)
+b = [5.0, 6.0, 6.0, 6.0, 5.0]
+x_star = [1.0, 1.0, 1.0, 1.0, 1.0]
+
+qrm_init()
+
+spmat = qrm_spmat_init(A_L, sym=true)
+x = qrm_spposv(spmat, b)
+
+error_norm = norm(x - x_star)
+residual_norm = norm(A * x - b)
+
+@printf(&quot;Error norm ‖x* - x‖ = %10.5e\n&quot;, error_norm)
+@printf(&quot;Residual norm ‖Ax - b‖ = %10.5e\n&quot;, residual_norm)
+
+qrm_finalize()</code></pre><pre class="documenter-example-output">Error norm ‖x* - x‖ = 2.71948e-16
+Residual norm ‖Ax - b‖ = 1.25607e-15</pre><h3 id="Full"><a class="docs-heading-anchor" href="#Full">Full</a><a id="Full-1"></a><a class="docs-heading-anchor-permalink" href="#Full" title="Permalink"></a></h3><pre><code class="language-julia">using qr_mumps, LinearAlgebra, SparseArrays, Printf
 
 irn = [1, 3, 4, 5, 2, 3, 5, 4, 5, 5]
 jcn = [1, 1, 1, 1, 2, 3, 3, 4, 4, 5]
 val = [53.0, 8.0, 4.0, 3.0, 10.0, 6.0, 8.0, 26.0, 5.0, 14.0]
 
-A = Symmetric(sparse(irn, jcn, val, 5, 5), :L)  # Symmetric(sparse(jcn, irn, val, 5, 5), :U) also works
+A = Symmetric(sparse(irn, jcn, val, 5, 5), :L)
 b = [108.0, 20.0, 66.0, 133.0, 117.0]
 x_star = [1.0, 2.0, 3.0, 4.0, 5.0]
 
@@ -47,8 +70,36 @@ residual_norm = norm(A * x - b)
 @printf(&quot;Error norm ‖x* - x‖ = %10.5e\n&quot;, error_norm)
 @printf(&quot;Residual norm ‖Ax - b‖ = %10.5e\n&quot;, residual_norm)
 
-qrm_finalize()</code></pre><pre class="documenter-example-output">Error norm ‖x* - x‖ = 5.33092e-14
-Residual norm ‖Ax - b‖ = 1.42109e-14</pre><h2 id="Least-squares-problems"><a class="docs-heading-anchor" href="#Least-squares-problems">Least-squares problems</a><a id="Least-squares-problems-1"></a><a class="docs-heading-anchor-permalink" href="#Least-squares-problems" title="Permalink"></a></h2><h3 id="Basic-2"><a class="docs-heading-anchor" href="#Basic-2">Basic</a><a class="docs-heading-anchor-permalink" href="#Basic-2" title="Permalink"></a></h3><pre><code class="language-julia">using qr_mumps, LinearAlgebra, SparseArrays, Printf
+qrm_finalize()</code></pre><pre class="documenter-example-output">Error norm ‖x* - x‖ = 5.56867e-14
+Residual norm ‖Ax - b‖ = 2.84217e-14</pre><pre><code class="language-julia">using qr_mumps, LinearAlgebra, SparseArrays, Printf
+
+irn = [1, 2, 1, 2, 3, 2, 3, 4, 3, 4, 5, 4, 5]
+jcn = [1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5]
+val = [4.0, 1.0, 1.0, 4.0, 1.0, 1.0, 4.0, 1.0, 1.0, 4.0, 1.0, 1.0, 4.0]
+
+A = sparse(irn, jcn, val, 5, 5)
+A_U = triu(A)
+b = [5.0, 6.0, 6.0, 6.0, 5.0]
+x_star = [1.0, 1.0, 1.0, 1.0, 1.0]
+
+qrm_init()
+
+spmat = qrm_spmat_init(A_U, sym=true)
+spfct = qrm_spfct_init(spmat)
+
+qrm_analyse!(spmat, spfct)
+qrm_factorize!(spmat, spfct)
+z = qrm_solve(spfct, b, transp=&#39;t&#39;)
+x = qrm_solve(spfct, z)
+
+error_norm = norm(x - x_star)
+residual_norm = norm(A * x - b)
+
+@printf(&quot;Error norm ‖x* - x‖ = %10.5e\n&quot;, error_norm)
+@printf(&quot;Residual norm ‖Ax - b‖ = %10.5e\n&quot;, residual_norm)
+
+qrm_finalize()</code></pre><pre class="documenter-example-output">Error norm ‖x* - x‖ = 2.71948e-16
+Residual norm ‖Ax - b‖ = 1.25607e-15</pre><h2 id="Least-squares-problems"><a class="docs-heading-anchor" href="#Least-squares-problems">Least-squares problems</a><a id="Least-squares-problems-1"></a><a class="docs-heading-anchor-permalink" href="#Least-squares-problems" title="Permalink"></a></h2><h3 id="Basic-2"><a class="docs-heading-anchor" href="#Basic-2">Basic</a><a class="docs-heading-anchor-permalink" href="#Basic-2" title="Permalink"></a></h3><pre><code class="language-julia">using qr_mumps, LinearAlgebra, SparseArrays, Printf
 
 irn = [1, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6, 7, 7]
 jcn = [1, 3, 5, 2, 3, 5, 1, 4, 4, 5, 2, 1, 3]
@@ -70,8 +121,8 @@ optimality_residual_norm = norm(A&#39; * r)
 @printf(&quot;Error norm ‖x* - x‖ = %10.5e\n&quot;, error_norm)
 @printf(&quot;Optimality residual norm ‖Aᵀr‖ = %10.5e\n&quot;, optimality_residual_norm)
 
-qrm_finalize()</code></pre><pre class="documenter-example-output">Error norm ‖x* - x‖ = 1.09344e-15
-Optimality residual norm ‖Aᵀr‖ = 1.83372e-14</pre><h3 id="Full-2"><a class="docs-heading-anchor" href="#Full-2">Full</a><a class="docs-heading-anchor-permalink" href="#Full-2" title="Permalink"></a></h3><pre><code class="language-julia">using qr_mumps, LinearAlgebra, SparseArrays, Printf
+qrm_finalize()</code></pre><pre class="documenter-example-output">Error norm ‖x* - x‖ = 4.84444e-15
+Optimality residual norm ‖Aᵀr‖ = 2.18689e-14</pre><h3 id="Full-2"><a class="docs-heading-anchor" href="#Full-2">Full</a><a class="docs-heading-anchor-permalink" href="#Full-2" title="Permalink"></a></h3><pre><code class="language-julia">using qr_mumps, LinearAlgebra, SparseArrays, Printf
 
 irn = [1, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6, 7, 7]
 jcn = [1, 3, 5, 2, 3, 5, 1, 4, 4, 5, 2, 1, 3]
@@ -98,8 +149,8 @@ optimality_residual_norm = norm(A&#39; * r)
 @printf(&quot;Error norm ‖x* - x‖ = %10.5e\n&quot;, error_norm)
 @printf(&quot;Optimality residual norm ‖Aᵀr‖ = %10.5e\n&quot;, optimality_residual_norm)
 
-qrm_finalize()</code></pre><pre class="documenter-example-output">Error norm ‖x* - x‖ = 1.09344e-15
-Optimality residual norm ‖Aᵀr‖ = 1.83372e-14</pre><h2 id="Least-norm-problems"><a class="docs-heading-anchor" href="#Least-norm-problems">Least-norm problems</a><a id="Least-norm-problems-1"></a><a class="docs-heading-anchor-permalink" href="#Least-norm-problems" title="Permalink"></a></h2><h3 id="Basic-3"><a class="docs-heading-anchor" href="#Basic-3">Basic</a><a class="docs-heading-anchor-permalink" href="#Basic-3" title="Permalink"></a></h3><pre><code class="language-julia">using qr_mumps, LinearAlgebra, SparseArrays, Printf
+qrm_finalize()</code></pre><pre class="documenter-example-output">Error norm ‖x* - x‖ = 4.84444e-15
+Optimality residual norm ‖Aᵀr‖ = 2.18689e-14</pre><h2 id="Least-norm-problems"><a class="docs-heading-anchor" href="#Least-norm-problems">Least-norm problems</a><a id="Least-norm-problems-1"></a><a class="docs-heading-anchor-permalink" href="#Least-norm-problems" title="Permalink"></a></h2><h3 id="Basic-3"><a class="docs-heading-anchor" href="#Basic-3">Basic</a><a class="docs-heading-anchor-permalink" href="#Basic-3" title="Permalink"></a></h3><pre><code class="language-julia">using qr_mumps, LinearAlgebra, SparseArrays, Printf
 
 irn = [1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 5]
 jcn = [3, 5, 7, 1, 4, 6, 2, 6, 5, 6, 3, 4, 7]
@@ -120,8 +171,8 @@ residual_norm = norm(A * x - b)
 @printf(&quot;Error norm ‖x* - x‖ = %10.5e\n&quot;, error_norm)
 @printf(&quot;Residual norm ‖Ax - b‖ = %10.5e\n&quot;, residual_norm)
 
-qrm_finalize()</code></pre><pre class="documenter-example-output">Error norm ‖x* - x‖ = 3.15585e-15
-Residual norm ‖Ax - b‖ = 5.02430e-15</pre><h3 id="Full-3"><a class="docs-heading-anchor" href="#Full-3">Full</a><a class="docs-heading-anchor-permalink" href="#Full-3" title="Permalink"></a></h3><pre><code class="language-julia">using qr_mumps, LinearAlgebra, SparseArrays, Printf
+qrm_finalize()</code></pre><pre class="documenter-example-output">Error norm ‖x* - x‖ = 3.72876e-15
+Residual norm ‖Ax - b‖ = 6.15348e-15</pre><h3 id="Full-3"><a class="docs-heading-anchor" href="#Full-3">Full</a><a class="docs-heading-anchor-permalink" href="#Full-3" title="Permalink"></a></h3><pre><code class="language-julia">using qr_mumps, LinearAlgebra, SparseArrays, Printf
 
 irn = [1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 5]
 jcn = [3, 5, 7, 1, 4, 6, 2, 6, 5, 6, 3, 4, 7]
@@ -147,5 +198,5 @@ residual_norm = norm(A * x - b)
 @printf(&quot;Error norm ‖x* - x‖ = %10.5e\n&quot;, error_norm)
 @printf(&quot;Residual norm ‖Ax - b‖ = %10.5e\n&quot;, residual_norm)
 
-qrm_finalize()</code></pre><pre class="documenter-example-output">Error norm ‖x* - x‖ = 3.15585e-15
-Residual norm ‖Ax - b‖ = 5.02430e-15</pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../performance/">« Performance tuning</a><a class="docs-footer-nextpage" href="../reference/">Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Sunday 21 March 2021 00:12">Sunday 21 March 2021</span>. Using Julia version 1.5.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+qrm_finalize()</code></pre><pre class="documenter-example-output">Error norm ‖x* - x‖ = 3.72876e-15
+Residual norm ‖Ax - b‖ = 6.15348e-15</pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../performance/">« Performance tuning</a><a class="docs-footer-nextpage" href="../reference/">Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Sunday 21 March 2021 02:09">Sunday 21 March 2021</span>. Using Julia version 1.5.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
