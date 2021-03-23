@@ -277,146 +277,153 @@ end
   end
 end
 
-# @testset "Symmetric and positive definite linear systems" begin
-#   for T in (Float32, Float64, ComplexF32, ComplexF64)
+@testset "Symmetric and positive definite linear systems" begin
+  for T in (Float32, Float64) # (ComplexF32, ComplexF64)
 
-#     tol = (real(T) == Float32) ? 1e-4 : 1e-12
-#     transp = (T <: Real) ? 't' : 'c'
+    tol = (real(T) == Float32) ? 1e-4 : 1e-12
+    transp = (T <: Real) ? 't' : 'c'
+    Id = Diagonal(ones(T, n))
 
-#     for I in (Int32 , Int64)
-#       A = sprand(T, n, n, 0.1)
-#       A = convert(SparseMatrixCSC{T,I}, A)
-#       A = A * A'
-#       A = (T <: Real) ? Symmetric(tril(A), :L) : Hermitian(tril(A), :L)
-#       b = rand(T, n)
-#       B = rand(T, n, p)
+    for I in (Int32 , Int64)
+      A = sprand(T, n, n, 0.01)
+      A = convert(SparseMatrixCSC{T,I}, A)
+      A = A * A' + Id
+      A = (T <: Real) ? Symmetric(tril(A), :L) : Hermitian(tril(A), :L)
+      b = rand(T, n)
+      B = rand(T, n, p)
 
-#       spmat = qrm_spmat_init(A)
-#       spfct = qrm_analyse(spmat)
-#       qrm_factorize!(spmat, spfct)
-#       spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
+      spmat = qrm_spmat_init(A)
+      spfct = qrm_analyse(spmat)
+      qrm_factorize!(spmat, spfct)
+      spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
 
-#       z = qrm_solve(spfct, b, transp=transp)
-#       x = qrm_solve(spfct, z)
-#       r = b - A * x
-#       @test norm(r) ≤ tol
+      z = qrm_solve(spfct, b, transp=transp)
+      x = qrm_solve(spfct, z)
+      r = b - A * x
+      @test norm(r) ≤ tol
 
-#       Z = qrm_solve(spfct, B, transp=transp)
-#       X = qrm_solve(spfct, Z)
-#       R = B - A * X
-#       @test norm(R) ≤ tol
+      Z = qrm_solve(spfct, B, transp=transp)
+      X = qrm_solve(spfct, Z)
+      R = B - A * X
+      @test norm(R) ≤ tol
 
-#       z = qrm_solve(spfct2, b)
-#       x = qrm_solve(spfct, z)
-#       r = b - A * x
-#       @test norm(r) ≤ tol
+      z = qrm_solve(spfct2, b)
+      x = qrm_solve(spfct, z)
+      r = b - A * x
+      @test norm(r) ≤ tol
 
-#       Z = qrm_solve(spfct2, B)
-#       X = qrm_solve(spfct, Z)
-#       R = B - A * X
-#       @test norm(R) ≤ tol
+      Z = qrm_solve(spfct2, B)
+      X = qrm_solve(spfct, Z)
+      R = B - A * X
+      @test norm(R) ≤ tol
 
-#       A = sprand(T, n, n, 0.1)
-#       A = convert(SparseMatrixCSC{T,I}, A)
-#       A = A * A'
-#       A = (T <: Real) ? Symmetric(triu(A), :U) : Hermitian(triu(A), :U)
-#       x = zeros(T, n)
-#       X = zeros(T, n, p)
-#       b = rand(T, n)
-#       B = rand(T, n, p)
+      A = sprand(T, n, n, 0.01)
+      A = convert(SparseMatrixCSC{T,I}, A)
+      A = A * A' + Id
+      A = (T <: Real) ? Symmetric(triu(A), :U) : Hermitian(triu(A), :U)
+      x = zeros(T, n)
+      X = zeros(T, n, p)
+      b = rand(T, n)
+      B = rand(T, n, p)
 
-#       spmat = qrm_spmat_init(T)
-#       qrm_spmat_init!(spmat, A)
-#       spfct = qrm_spfct_init(spmat)
-#       qrm_analyse!(spmat, spfct)
-#       qrm_factorize!(spmat, spfct)
-#       spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
+      spmat = qrm_spmat_init(T)
+      qrm_spmat_init!(spmat, A)
+      spfct = qrm_spfct_init(spmat)
+      qrm_analyse!(spmat, spfct)
+      qrm_factorize!(spmat, spfct)
+      spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
 
-#       qrm_solve!(spfct, b, x, transp=transp)
-#       qrm_solve!(spfct, x, copy(x), transp='n')
-#       r = b - A * x
-#       @test norm(r) ≤ tol
+      qrm_solve!(spfct, copy(b), x, transp=transp)
+      qrm_solve!(spfct, x, x, transp='n')
+      r = b - A * x
+      @test norm(r) ≤ tol
 
-#       qrm_solve!(spfct, B, X, transp=transp)
-#       qrm_solve!(spfct, X, copy(X), transp='n')
-#       R = B - A * X
-#       @test norm(R) ≤ tol
+      qrm_solve!(spfct, copy(B), X, transp=transp)
+      qrm_solve!(spfct, X, X, transp='n')
+      R = B - A * X
+      @test norm(R) ≤ tol
 
-#       qrm_solve!(spfct2, b, x)
-#       qrm_solve!(spfct, x, copy(x), transp='n')
-#       r = b - A * x
-#       @test norm(r) ≤ tol
+      qrm_solve!(spfct2, copy(b), x)
+      qrm_solve!(spfct, x, x, transp='n')
+      r = b - A * x
+      @test norm(r) ≤ tol
 
-#       qrm_solve!(spfct2, B, X)
-#       qrm_solve!(spfct, X, copy(X), transp='n')
-#       R = B - A * X
-#       @test norm(R) ≤ tol
+      qrm_solve!(spfct2, copy(B), X)
+      qrm_solve!(spfct, X, X, transp='n')
+      R = B - A * X
+      @test norm(R) ≤ tol
 
-#       x = qrm_spposv(spmat, b)
-#       r = b - A * x
-#       @test norm(r) ≤ tol
+      x = qrm_spposv(spmat, b)
+      r = b - A * x
+      @test norm(r) ≤ tol
 
-#       X = qrm_spposv(spmat, B)
-#       R = B - A * X
-#       @test norm(R) ≤ tol
+      X = qrm_spposv(spmat, B)
+      R = B - A * X
+      @test norm(R) ≤ tol
 
-#       qrm_spposv!(spmat, b, x)
-#       r = b - A * x
-#       @test norm(r) ≤ tol
+      bc = copy(b)
+      qrm_spposv!(spmat, bc, x)
+      r = b - A * x
+      @test norm(r) ≤ tol
 
-#       qrm_spposv!(spmat, B, X)
-#       R = B - A * X
-#       @test norm(R) ≤ tol
+      Bc = copy(B)
+      qrm_spposv!(spmat, Bc, X)
+      R = B - A * X
+      @test norm(R) ≤ tol
 
-#       x = qrm_spbackslash(spmat, b)
-#       r = b - A * x
-#       @test norm(r) ≤ tol
+      x = qrm_spbackslash(spmat, b)
+      r = b - A * x
+      @test norm(r) ≤ tol
 
-#       X = qrm_spbackslash(spmat, B)
-#       R = B - A * X
-#       @test norm(R) ≤ tol
+      X = qrm_spbackslash(spmat, B)
+      R = B - A * X
+      @test norm(R) ≤ tol
 
-#       qrm_spbackslash!(spmat, b, x)
-#       r = b - A * x
-#       @test norm(r) ≤ tol
+      bc = copy(b)
+      qrm_spbackslash!(spmat, bc, x)
+      r = b - A * x
+      @test norm(r) ≤ tol
 
-#       qrm_spbackslash!(spmat, B, X)
-#       R = B - A * X
-#       @test norm(R) ≤ tol
+      Bc = copy(B)
+      qrm_spbackslash!(spmat, Bc, X)
+      R = B - A * X
+      @test norm(R) ≤ tol
 
-#       x = spmat \ b
-#       r = b - A * x
-#       @test norm(r) ≤ tol
+      x = spmat \ b
+      r = b - A * x
+      @test norm(r) ≤ tol
 
-#       X = spmat \ B
-#       R = B - A * X
-#       @test norm(R) ≤ tol
+      X = spmat \ B
+      R = B - A * X
+      @test norm(R) ≤ tol
 
-#       x = qrm_spbackslash(spfct, b)
-#       r = b - A * x
-#       @test norm(r) ≤ tol
+      x = qrm_spbackslash(spfct, b)
+      r = b - A * x
+      @test norm(r) ≤ tol
 
-#       X = qrm_spbackslash(spfct, B)
-#       R = B - A * X
-#       @test norm(R) ≤ tol
+      X = qrm_spbackslash(spfct, B)
+      R = B - A * X
+      @test norm(R) ≤ tol
 
-#       qrm_spbackslash!(spfct, b, x)
-#       r = b - A * x
-#       @test norm(r) ≤ tol
+      bc = copy(b)
+      qrm_spbackslash!(spfct, bc, x)
+      r = b - A * x
+      @test norm(r) ≤ tol
 
-#       qrm_spbackslash!(spfct, B, X)
-#       R = B - A * X
-#       @test norm(R) ≤ tol
+      Bc = copy(B)
+      qrm_spbackslash!(spfct, Bc, X)
+      R = B - A * X
+      @test norm(R) ≤ tol
 
-#       x = spfct \ b
-#       r = b - A * x
-#       @test norm(r) ≤ tol
+      x = spfct \ b
+      r = b - A * x
+      @test norm(r) ≤ tol
 
-#       X = spfct \ B
-#       R = B - A * X
-#       @test norm(R) ≤ tol
-#     end
-#   end
-# end
+      X = spfct \ B
+      R = B - A * X
+      @test norm(R) ≤ tol
+    end
+  end
+end
 
 qrm_finalize()
