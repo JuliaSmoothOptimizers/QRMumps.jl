@@ -563,9 +563,9 @@ end
 
 function qrm_set(str :: String, val :: Number)
     if (str ∈ GICNTL) || (str ∈ PICNTL)
-        err = ccall(("qrm_glob_set_i4_c", libqrm_common), Cint, (Cstring, Cint), str, v)
+        err = ccall(("qrm_glob_set_i4_c", libqrm_common), Cint, (Cstring, Cint), str, val)
     elseif str ∈ RCNTL
-        err = ccall(("qrm_glob_set_r4_c", libqrm_common), Cint, (Cstring, Cfloat), str, v)
+        err = ccall(("qrm_glob_set_r4_c", libqrm_common), Cint, (Cstring, Cfloat), str, val)
     else
         err = Int32(23)
     end
@@ -573,18 +573,16 @@ function qrm_set(str :: String, val :: Number)
     return nothing
 end
 
-for (fname, lname, elty, subty) in (("sqrm_spfct_set", libsqrm, Float32   , Float32),
-                                    ("dqrm_spfct_set", libdqrm, Float64   , Float64),
-                                    ("cqrm_spfct_set", libcqrm, ComplexF32, Float32),
-                                    ("zqrm_spfct_set", libzqrm, ComplexF64, Float64))
+for (finame, frname, lname, elty, subty) in (("sqrm_spfct_set_i4_c", "sqrm_spfct_set_r4_c", libsqrm, Float32   , Float32),
+                                             ("dqrm_spfct_set_i4_c", "dqrm_spfct_set_r4_c", libdqrm, Float64   , Float64),
+                                             ("cqrm_spfct_set_i4_c", "cqrm_spfct_set_r4_c", libcqrm, ComplexF32, Float32),
+                                             ("zqrm_spfct_set_i4_c", "zqrm_spfct_set_r4_c", libzqrm, ComplexF64, Float64))
     @eval begin
         function qrm_set(spfct :: qrm_spfct{$elty}, str :: String, val :: Number)
             if str ∈ PICNTL
-                finame = $fname*"_i4_c"
-                err = ccall((finame, $lname), Cint, (Ref{c_spfct{$elty}}, Cstring, Cint), spfct, str, v)
+                err = ccall(($finame, $lname), Cint, (Ref{c_spfct{$elty}}, Cstring, Cint), spfct, str, val)
             elseif str ∈ RCNTL
-                frname = $fname*"_r4_c"
-                err = ccall((frname, $lname), Cint, (Ref{c_spfct{$elty}}, Cstring, Cfloat), spfct, str, v)
+                err = ccall(($frname, $lname), Cint, (Ref{c_spfct{$elty}}, Cstring, Cfloat), spfct, str, val)
             else
                 err = Int32(23)
             end
@@ -596,37 +594,35 @@ end
 
 function qrm_get(str :: String)
     if (str ∈ GICNTL) || (str ∈ PICNTL)
-        v = Ref{Clonglong}(0)
-        err = ccall(("qrm_glob_get_i8_c", libqrm_common), Cint, (Cstring, Ref{Clonglong}), str, v)
+        val = Ref{Clonglong}(0)
+        err = ccall(("qrm_glob_get_i8_c", libqrm_common), Cint, (Cstring, Ref{Clonglong}), str, val)
     elseif str ∈ RCNTL
-        v = Ref{Float32}(0)
-        err = ccall(("qrm_glob_get_r4_c", libqrm_common), Cint, (Cstring, Ref{Cfloat}), str, v)
+        val = Ref{Float32}(0)
+        err = ccall(("qrm_glob_get_r4_c", libqrm_common), Cint, (Cstring, Ref{Cfloat}), str, val)
     else
         err = Int32(23)
     end
     (err ≠ 0) && throw(ErrorException(error_handling(err)))
-    return v[]
+    return val[]
 end
 
-for (fname, lname, elty, subty) in (("sqrm_spfct_get", libsqrm, Float32   , Float32),
-                                    ("dqrm_spfct_get", libdqrm, Float64   , Float64),
-                                    ("cqrm_spfct_get", libcqrm, ComplexF32, Float32),
-                                    ("zqrm_spfct_get", libzqrm, ComplexF64, Float64))
+for (finame, frname, lname, elty, subty) in (("sqrm_spfct_get_i8_c", "sqrm_spfct_get_r4_c", libsqrm, Float32   , Float32),
+                                             ("dqrm_spfct_get_i8_c", "dqrm_spfct_get_r4_c", libdqrm, Float64   , Float64),
+                                             ("cqrm_spfct_get_i8_c", "cqrm_spfct_get_r4_c", libcqrm, ComplexF32, Float32),
+                                             ("zqrm_spfct_get_i8_c", "zqrm_spfct_get_r4_c", libzqrm, ComplexF64, Float64))
     @eval begin
         function qrm_get(spfct :: qrm_spfct{$elty}, str :: String)
             if (str ∈ PICNTL) || (str ∈ STATS)
-                v = Ref{Clonglong}(0)
-                finame = $fname*"_i8_c"
-                err = ccall((finame, $lname), Cint, (Ref{c_spfct{$elty}}, Cstring, Ref{Clonglong}), spfct, str, v)
+                val = Ref{Clonglong}(0)
+                err = ccall(($finame, $lname), Cint, (Ref{c_spfct{$elty}}, Cstring, Ref{Clonglong}), spfct, str, val)
             elseif str ∈ RCNTL
-                v = Ref{Float32}(0)
-                frname = $fname*"_r4_c"
-                err = ccall((frname, $lname), Cint, (Ref{c_spfct{$elty}}, Cstring, Ref{Cfloat}), spfct, str, v)
+                val = Ref{Float32}(0)
+                err = ccall(($frname, $lname), Cint, (Ref{c_spfct{$elty}}, Cstring, Ref{Cfloat}), spfct, str, val)
             else
                 err = Int32(23)
             end
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
-            return v[]
+            return val[]
         end
     end
 end
