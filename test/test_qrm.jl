@@ -108,11 +108,11 @@ p = 5
       R = B - A * X
       @test norm(A' * R) ≤ tol
 
-      x = spmat \ b
+      x = spmat \ b
       r = b - A * x
       @test norm(A' * r) ≤ tol
 
-      X = spmat \ B
+      X = spmat \ B
       R = B - A * X
       @test norm(A' * R) ≤ tol
 
@@ -134,11 +134,11 @@ p = 5
       R = B - A * X
       @test norm(A' * R) ≤ tol
 
-      x = spfct \ b
+      x = spfct \ b
       r = b - A * x
       @test norm(A' * r) ≤ tol
 
-      X = spfct \ B
+      X = spfct \ B
       R = B - A * X
       @test norm(A' * R) ≤ tol
     end
@@ -242,11 +242,11 @@ end
       R = B - A * X
       @test norm(R) ≤ tol
 
-      x = spmat \ b
+      x = spmat \ b
       r = b - A * x
       @test norm(r) ≤ tol
 
-      X = spmat \ B
+      X = spmat \ B
       R = B - A * X
       @test norm(R) ≤ tol
 
@@ -266,11 +266,11 @@ end
       R = B - A * X
       @test norm(R) ≤ tol
 
-      x = spfct \ b
+      x = spfct \ b
       r = b - A * x
       @test norm(r) ≤ tol
 
-      X = spfct \ B
+      X = spfct \ B
       R = B - A * X
       @test norm(R) ≤ tol
     end
@@ -278,7 +278,7 @@ end
 end
 
 @testset "Symmetric and positive definite linear systems" begin
-  for T in (Float32, Float64) # (ComplexF32, ComplexF64)
+  for T in (Float32, Float64, ComplexF32, ComplexF64)
 
     tol = (real(T) == Float32) ? 1e-4 : 1e-12
     transp = (T <: Real) ? 't' : 'c'
@@ -389,11 +389,11 @@ end
       R = B - A * X
       @test norm(R) ≤ tol
 
-      x = spmat \ b
+      x = spmat \ b
       r = b - A * x
       @test norm(r) ≤ tol
 
-      X = spmat \ B
+      X = spmat \ B
       R = B - A * X
       @test norm(R) ≤ tol
 
@@ -415,11 +415,11 @@ end
       R = B - A * X
       @test norm(R) ≤ tol
 
-      x = spfct \ b
+      x = spfct \ b
       r = b - A * x
       @test norm(r) ≤ tol
 
-      X = spfct \ B
+      X = spfct \ B
       R = B - A * X
       @test norm(R) ≤ tol
     end
