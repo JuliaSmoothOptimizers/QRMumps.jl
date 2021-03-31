@@ -14,7 +14,10 @@ makedocs(
            "Control parameters" => "control_parameters.md",
            "Information parameters" => "information_parameters.md",
            "Performance tuning" => "performance.md",
-           "Tutorials" => "tutorials.md",
+           "Tutorials" => ["Symmetric and positive definite linear systems" => "tutorials/spd.md",
+                           "Least-squares problems" => "tutorials/ls.md",
+                           "Least-norm problems" => "tutorials/ln.md"
+                          ],
            "Reference" => "reference.md",
           ]
 )
