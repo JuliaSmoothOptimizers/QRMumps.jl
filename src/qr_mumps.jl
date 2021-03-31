@@ -24,7 +24,7 @@ export qrm_spmat, qrm_spfct,
     qrm_spmat_init!, qrm_spmat_init, qrm_spmat_destroy!,
     qrm_spfct_init!, qrm_spfct_init, qrm_spfct_destroy!,
     qrm_analyse!, qrm_analyse,
-    qrm_factorize!,
+    qrm_update!, qrm_factorize!,
     qrm_solve!, qrm_solve,
     qrm_apply!, qrm_apply,
     qrm_spmat_mv!, qrm_spmat_nrm,
@@ -117,6 +117,19 @@ This routine cleans up a **qrm_spfct** type data structure by deleting the resul
 * `spfct`: the sparse factorization object to be destroyed.
 """
 function qrm_spfct_destroy! end
+
+@doc raw"""
+    qrm_update!(spmat, A)
+
+This routine updates a **qrm_spmat** type data structure from a **sparseMatrixCSC**.
+`spmat` and `A` must have the same sparsity pattern.
+
+#### Input Arguments :
+
+* `spmat`: the **qrm_spmat** sparse matrix to be updated.
+* `A` : a Julia sparse matrix stored in **SparseMatrixCSC** format.
+"""
+function qrm_update! end
 
 @doc raw"""
     qrm_analyse!(spmat, spfct; transp='n')
@@ -251,10 +264,10 @@ This function can be used to solve a linear symmetric, positive definite problem
 It is a shortcut for the sequence
 
     x = b
-    qrm_analyse!(spmat, 'n')
-    qrm_factorize!(spmat, 'n')
-    qrm_solve!(spmat, 'c', x, b)
-    qrm_solve!(spmat, 'n', b, x)
+    qrm_analyse!(spmat, spfct; transp='n')
+    qrm_factorize!(spmat, spfct; transp='n')
+    qrm_solve!(spfct, x, x; transp='t')
+    qrm_solve!(spfct, x, x; transp='t')
 
 #### Input Arguments :
 
@@ -281,10 +294,10 @@ This function can be used to solve a linear least squares problem
 in the case where the input matrix is square or overdetermined.
 It is a shortcut for the sequence
 
-    qrm_analyse!(spmat, spfct, 'n')
-    qrm_factorize!(spmat, spfct, 'n')
-    qrm_apply!(spfct, 'c', b)
-    qrm_solve!(spfct, 'n', b, x)
+    qrm_analyse!(spmat, spfct; transp='n')
+    qrm_factorize!(spmat, spfct; transp='n')
+    qrm_apply!(spfct, b; transp='t')
+    qrm_solve!(spfct, b, x; transp='n')
 
 #### Input Arguments :
 
@@ -311,10 +324,10 @@ This function can be used to solve a linear minimum norm problem
 in the case where the input matrix is square or underdetermined.
 It is a shortcut for the sequence
 
-    qrm_analyse!(spmat, 'c')
-    qrm_factorize!(spmat, 'c')
-    qrm_solve!(spmat, 'c', b, x)
-    qrm_apply!(spmat, 'n', x)
+    qrm_analyse!(spmat, spfct; transp='t')
+    qrm_factorize!(spmat, spfct; transp='t')
+    qrm_solve!(spfct, b, x; transp='t')
+    qrm_apply!(spfct, x; transp='n')
 
 #### Input Arguments :
 

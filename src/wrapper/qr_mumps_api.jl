@@ -637,3 +637,8 @@ function qrm_finalize()
     ccall(("qrm_finalize_c", libqrm_common), Cvoid, ())
     return nothing
 end
+
+function qrm_update!(spmat :: qrm_spmat{T}, A :: SparseMatrixCSC{T,I}) where {T, I <: Integer}
+    spmat.val .= A.nzval
+    return nothing
+end
