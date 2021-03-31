@@ -25,6 +25,7 @@ qrm_spfct_destroy!
 ```@docs
 qrm_analyse
 qrm_analyse!
+qrm_update!
 qrm_factorize!
 qrm_solve
 qrm_solve!
