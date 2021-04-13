@@ -246,14 +246,14 @@ function qrm_vecnrm! end
 function qrm_vecnrm end
 
 @doc raw"""
-    qrm_spbackslash!(spmat, b, x)
+    qrm_spbackslash!(spmat, b, x; transp='n')
 
 TO DO !
 """
 function qrm_spbackslash! end
 
 @doc raw"""
-    x = qrm_spbackslash(spmat, b)
+    x = qrm_spbackslash(spmat, b; transp='n')
 """
 function qrm_spbackslash end
 
@@ -283,7 +283,7 @@ function qrm_spposv! end
 function qrm_spposv end
 
 @doc raw"""
-    qrm_least_squares!(spmat, b, x)
+    qrm_least_squares!(spmat, b, x; transp='n')
 
 This function can be used to solve a linear least squares problem
 
@@ -304,16 +304,17 @@ It is a shortcut for the sequence
 * `spmat`: the input matrix.
 * `b`: the ight-hand side(s).
 * `x`: the solution vector(s).
+* `transp`: whether to use A or Aᵀ. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_least_squares! end
 
 @doc raw"""
-    x = qrm_least_squares(spmat, b)
+    x = qrm_least_squares(spmat, b; transp='n')
 """
 function qrm_least_squares end
 
 @doc raw"""
-    qrm_min_norm!(spmat, b, x)
+    qrm_min_norm!(spmat, b, x; transp='n')
 
 This function can be used to solve a linear minimum norm problem
 
@@ -334,16 +335,17 @@ It is a shortcut for the sequence
 * `spmat`: the input matrix.
 * `b`: the right-hand side(s).
 * `x`: the solution vector(s).
+* `transp`: whether to use A or Aᵀ. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_min_norm! end
 
 """
-    x = qrm_min_norm(spmat, b)
+    x = qrm_min_norm(spmat, b; transp='n')
 """
 function qrm_min_norm end
 
 @doc raw"""
-    qrm_residual_norm!(spmat, b, x, nrm)
+    qrm_residual_norm!(spmat, b, x, nrm; transp='n')
 
 This function computes the scaled norm of the residual ``\frac{\|b - Ax\|_{\infty}}{\|b\|_{\infty} + \|x\|_{\infty} \|A\|_{\infty}}``, i.e., the normwise backward error.
 
@@ -353,16 +355,17 @@ This function computes the scaled norm of the residual ``\frac{\|b - Ax\|_{\inft
 * `b`: the right-hand side(s).
 * `x`: the solution vector(s).
 * `nrm`: the computed norm(s).
+* `transp`: whether to use A or Aᵀ. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_residual_norm! end
 
 @doc raw"""
-    nrm = qrm_residual_norm(spmat, b, x)
+    nrm = qrm_residual_norm(spmat, b, x; transp='n')
 """
 function qrm_residual_norm end
 
 @doc raw"""
-    qrm_residual_orth!(spmat, r, nrm)
+    qrm_residual_orth!(spmat, r, nrm; transp='n')
 
 Computes the quantity ``\frac{\|A^T r\|_2}{\|r\|_2}`` which can be used to evaluate the quality of the solution of a least squares problem.
 
@@ -371,11 +374,12 @@ Computes the quantity ``\frac{\|A^T r\|_2}{\|r\|_2}`` which can be used to evalu
 * `spmat`: the input matrix.
 * `r`: the residual(s).
 * `nrm`: the computed norm(s).
+* `transp`: whether to use A or Aᵀ. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_residual_orth! end
 
 @doc raw"""
-    nrm = qrm_residual_orth(spmat, r)
+    nrm = qrm_residual_orth(spmat, r; transp='n')
 """
 function qrm_residual_orth end
 

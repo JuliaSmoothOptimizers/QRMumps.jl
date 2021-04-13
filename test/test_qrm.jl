@@ -156,7 +156,6 @@ end
       A = convert(SparseMatrixCSC{T,I}, A)
       b = rand(T, n)
       B = rand(T, n, p)
-
       spmat = qrm_spmat_init(A)
       spfct = qrm_analyse(spmat, transp=transp)
       qrm_factorize!(spmat, spfct, transp=transp)
@@ -250,27 +249,27 @@ end
       R = B - A * X
       @test norm(R) ≤ tol
 
-      x = qrm_spbackslash(spfct, b)
+      x = qrm_spbackslash(spfct, b, transp=transp)
       r = b - A * x
       @test norm(r) ≤ tol
 
-      X = qrm_spbackslash(spfct, B)
+      X = qrm_spbackslash(spfct, B, transp=transp)
       R = B - A * X
       @test norm(R) ≤ tol
 
-      qrm_spbackslash!(spfct, b, x)
+      qrm_spbackslash!(spfct, b, x, transp=transp)
       r = b - A * x
       @test norm(r) ≤ tol
 
-      qrm_spbackslash!(spfct, B, X)
+      qrm_spbackslash!(spfct, B, X, transp=transp)
       R = B - A * X
       @test norm(R) ≤ tol
 
-      x = spfct \ b
+      x = spfct2 \ b
       r = b - A * x
       @test norm(r) ≤ tol
 
-      X = spfct \ B
+      X = spfct2 \ B
       R = B - A * X
       @test norm(R) ≤ tol
     end
