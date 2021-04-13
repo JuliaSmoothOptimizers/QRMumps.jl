@@ -131,5 +131,6 @@ function error_handling(err :: Cint)
   err == 30 && (status = "qrm_apply cannot be called if the Q matrix is discarded.")
   err == 31 && (status = "StarPU initialization error.")
   err == 32 && (status = "Matrix is rank deficient.")
+  err == 37 && (status = "Matrix is indefinite.")
   return status
 end
