@@ -26,8 +26,6 @@ All the control parameters can be set through the **qrm\_set** routine.
 * **qrm\_dunit**: ...
 
 
-* **qrm\_print\_etree**: ...
-
 ## Problem specific parameters
 
 * **qrm\_ordering**: this parameter specifies what permutation to apply to the columns of the input matrix in order to reduce the fill-in and, consequently, the operation count of the factorization and solve phases. This parameter is used by **qr\_mumps** during the analysis phase and, therefore, has to be set before it starts. The following pre-defined values are accepted:
@@ -37,12 +35,6 @@ All the control parameters can be set through the **qrm\_set** routine.
     * **qrm\_colamd\_** : the COLAMD software package (if installed) is used for computing the column permutation.
     * **qrm\_scotch\_** : the SCOTCH software package (if installed) is used for computing the column permutation.
     * **qrm\_metis\_** : the Metis software package (if installed) is used for computing the column permutation.
-
-
-* **qrm\_sing**: ... ???
-
-
-* **qrm\_minamalg**: ...
 
 
 * **qrm\_keeph**: this parameter says whether the **Q** matrix should be kept for later use or discarded. This parameter is used by **qr\_mumps** during the factorization phase and, therefore, has to be set before it starts. Accepted value are:
@@ -59,19 +51,10 @@ All the control parameters can be set through the **qrm\_set** routine.
 * **qrm\_bh**: this parameter defines the type of algorithm for the communication-avoiding QR factorization of frontal matrices. Smaller values mean more concurrency but worse tasks efficiency; if lower or equal to zero the largest possible value is chosen for each front. Default value is -1.
 
 
-* **qrm\_nlz**: ...
-
-
 * **qrm\_rhsnb**: in the case where multiple right-hand sides are passed to the **qrm\_apply** or the **qrm\_solve** routines, this parameter can be used to define a blocking of the right-hand sides. This parameter is used by **qr\_mumps** during the solve phase and, therefore, has to be set before it starts. By default, all the right-hand sides are treated in a single block.
 
 
 * **qrm\_pinth**: an integer value to control memory pinning when GPUs are used: all frontal matrices whose size (min(rows,cols)) is bigger than this value will be pinned.
-
-
-* **qrm\_amalgthr**: a value ...
-
-
-* **qrm\_rweigh**: a value ...
 
 
 * **qrm\_mem\_relax**: a value (≥ 1) that sets a relaxation parameter, with respect to the sequential peak, for the memory consumption in the factorization phase. If negative, the memory consumption is not bounded. Default value is −1.0.
