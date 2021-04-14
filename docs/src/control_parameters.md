@@ -14,32 +14,30 @@ All the control parameters can be set through the **qrm\_set** routine.
 * **qrm\_ncpu**: integer specifying the number of CPU cores to use for the subsequent **qr\_mumps** calls. It is an argument to the **qrm\_init** routine. Default is 1.
 
 
-* **qrm\_ngpu**: integer specifying the number of GPUs to use for the subsequent **qr\_mumps** calls. It is an argument to the **qrm\_init** routine. Default is 0.
+<!-- * **qrm\_ngpu**: integer specifying the number of GPUs to use for the subsequent **qr\_mumps** calls. It is an argument to the **qrm\_init** routine. Default is 0. -->
 
 
-* **qrm\_ounit**: integer specifying the unit for output messages; if negative, output messages are suppressed. Default is 6.
+* **qrm\_ounit**: integer specifying the unit for output messages; if negative, output messages are suppressed. Default is 6 (stdout).
 
 
 * **qrm\_eunit**: an integer specifying the unit for error messages; if negative, error messages are suppressed. Default is 0.
 
 
-* **qrm\_dunit**: ...
-
 
 ## Problem specific parameters
 
 * **qrm\_ordering**: this parameter specifies what permutation to apply to the columns of the input matrix in order to reduce the fill-in and, consequently, the operation count of the factorization and solve phases. This parameter is used by **qr\_mumps** during the analysis phase and, therefore, has to be set before it starts. The following pre-defined values are accepted:
-    * **qrm\_auto\_** : the choice is automatically made by **qr\_mumps**. This is the default.
-    * **qrm\_natural\_** : no permutation is applied.
-    * **qrm\_given\_** : a column permutation is provided by the user through the **cperm\_in** attribute of a **qrm\_spfct** factorization.
-    * **qrm\_colamd\_** : the COLAMD software package (if installed) is used for computing the column permutation.
-    * **qrm\_scotch\_** : the SCOTCH software package (if installed) is used for computing the column permutation.
-    * **qrm\_metis\_** : the Metis software package (if installed) is used for computing the column permutation.
+    * **qrm\_auto** (0) : the choice is automatically made by **qr\_mumps**. This is the default.
+    * **qrm\_natural** (1) : no permutation is applied.
+    * **qrm\_given** (2) : a column permutation is provided by the user through the **cperm\_in** attribute of a **qrm\_spfct** factorization.
+    * **qrm\_colamd** (3) : the COLAMD software package (if installed) is used for computing the column permutation.
+    * **qrm\_metis** (4) : the Metis software package (if installed) is used for computing the column permutation.
+    * **qrm\_scotch** (5) : the SCOTCH software package (if installed) is used for computing the column permutation.
 
 
 * **qrm\_keeph**: this parameter says whether the **Q** matrix should be kept for later use or discarded. This parameter is used by **qr\_mumps** during the factorization phase and, therefore, has to be set before it starts. Accepted value are:
-    * **qrm\_yes\_** : the **Q** matrix is kept. This is the default.
-    * **qrm\_no\_** : the **Q** matrix is discarded.
+    * **qrm\_yes** (1) : the **Q** matrix is kept. This is the default.
+    * **qrm\_no** (0) : the **Q** matrix is discarded.
 
 
 * **qrm\_mb** and **qrm\_nb**: These parameters define the block-size (rows and columns, respectively) for data partitioning and, thus, granularity of parallel tasks. Smaller values mean higher concurrence. This parameter, however, implicitly defines an upper bound for the granularity of call to BLAS and LAPACK routines (defined by the **qrm\_ib** parameter described below); therefore, excessively small values may result in poor performance. This parameter is used by **qr\_mumps** during the analysis and factorization phases and, therefore, has to be set before these start. The default value is 256 for both. Note that **qrm\_mb** has to be a multiple of **qrm\_nb**.
@@ -54,7 +52,7 @@ All the control parameters can be set through the **qrm\_set** routine.
 * **qrm\_rhsnb**: in the case where multiple right-hand sides are passed to the **qrm\_apply** or the **qrm\_solve** routines, this parameter can be used to define a blocking of the right-hand sides. This parameter is used by **qr\_mumps** during the solve phase and, therefore, has to be set before it starts. By default, all the right-hand sides are treated in a single block.
 
 
-* **qrm\_pinth**: an integer value to control memory pinning when GPUs are used: all frontal matrices whose size (min(rows,cols)) is bigger than this value will be pinned.
+<!-- * **qrm\_pinth**: an integer value to control memory pinning when GPUs are used: all frontal matrices whose size (min(rows,cols)) is bigger than this value will be pinned. -->
 
 
 * **qrm\_mem\_relax**: a value (≥ 1) that sets a relaxation parameter, with respect to the sequential peak, for the memory consumption in the factorization phase. If negative, the memory consumption is not bounded. Default value is −1.0.
