@@ -2,7 +2,7 @@
 
 ## **Types of problems**
 
-* **qr\_mumps** can handle unsymmetric and symmetric, positive definite problems. In the first case it will use a QR factorization whereas, in the second, it will use a Cholesky factorization. In order to choose one or the other method, **qr\_mumps** must be informed about the type of the problem through the **sym** attribute of the **qrm\_spmat** matrix struture: 0 means that the problem is unsymmetric and > 0 means symmetric, positive definite. Note that in the second case, only half of the matrix must be provided, i.e., if the coefficient (i, j) is provided (j, i) must not be given.
+* **qr\_mumps** can handle unsymmetric and symmetric, positive definite problems. In the first case it will use a QR factorization whereas, in the second, it will use a Cholesky factorization. In order to choose one or the other method, **qr\_mumps** must be informed about the type of the problem through the **sym** argument of the **qrm\_spmat\_init** function: **false** means that the problem is unsymmetric and **true** means symmetric, positive definite. Note that in the second case, only half of the matrix must be provided, i.e., if the coefficient (i, j) is provided (j, i) must not be given.
 
 ## **Memory consumption control**
 
