@@ -15,7 +15,3 @@ In this section we provide a list of these parameters and explain how do they ha
 ## **Ordering** 
 
 * Fill-reducing ordering is essential to limit the fill-in produced by the factorization. This ordering (set through the **qrm\_ordering** control parameter) is computed during the analysis phase and corresponds to a matrix permutation that defines the order in which unknowns are eliminated. The ordering will also affect the shape of the elimination tree which can be more or less balanced or deep with obvious consequences on parallelism, efficiency and, ultimately, execution time. Nested Dissection methods, such as those implemented in the Metis and SCOTCH packages, usually provide the best results and their running time may be high; local orderings such as AMD/COLAMD typically have a lower running time, which results in a faster analysis step, but lead to higher fill-in and thus higher running time and memory consumption for the factorization and the solve.
-
-## **GPU streams**
-
-* When GPUs are used, it can be helpful (and it usually is) to use multiple streams per GPU to allow a single GPU to execute multiple tasks concurrently. Using multiple GPU streams is especially beneficial to achieve high GPU occupancy when a relatively small block size _mb_ is chosen to prevent CPU starvation. This can be controlled through the **STARPU\_NWORKER\_PER\_CUDA** StarPU environment variable. By default one stream is active per GPU device and higher performance can be commonly achieved with values of 2 up to 20.

@@ -14,15 +14,10 @@ All the control parameters can be set through the **qrm\_set** routine.
 * **qrm\_ncpu**: integer specifying the number of CPU cores to use for the subsequent **qr\_mumps** calls. It is an argument to the **qrm\_init** routine. Default is 1.
 
 
-<!-- * **qrm\_ngpu**: integer specifying the number of GPUs to use for the subsequent **qr\_mumps** calls. It is an argument to the **qrm\_init** routine. Default is 0. -->
-
-
 * **qrm\_ounit**: integer specifying the unit for output messages; if negative, output messages are suppressed. Default is 6 (stdout).
 
 
 * **qrm\_eunit**: an integer specifying the unit for error messages; if negative, error messages are suppressed. Default is 0.
-
-
 
 ## Problem specific parameters
 
@@ -50,9 +45,6 @@ All the control parameters can be set through the **qrm\_set** routine.
 
 
 * **qrm\_rhsnb**: in the case where multiple right-hand sides are passed to the **qrm\_apply** or the **qrm\_solve** routines, this parameter can be used to define a blocking of the right-hand sides. This parameter is used by **qr\_mumps** during the solve phase and, therefore, has to be set before it starts. By default, all the right-hand sides are treated in a single block.
-
-
-<!-- * **qrm\_pinth**: an integer value to control memory pinning when GPUs are used: all frontal matrices whose size (min(rows,cols)) is bigger than this value will be pinned. -->
 
 
 * **qrm\_mem\_relax**: a value (≥ 1) that sets a relaxation parameter, with respect to the sequential peak, for the memory consumption in the factorization phase. If negative, the memory consumption is not bounded. Default value is −1.0.
