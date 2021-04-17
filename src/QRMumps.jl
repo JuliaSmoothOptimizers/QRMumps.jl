@@ -1,9 +1,9 @@
-module qr_mumps
+module QRMumps
 
 using Libdl, SparseArrays, LinearAlgebra
 
 import Base: \
-    
+
 if haskey(ENV, "JULIA_QR_MUMPS_LIBRARY_PATH")
   println("Custom Installation")
   const libsqrm = joinpath(ENV["JULIA_QR_MUMPS_LIBRARY_PATH"], "libsqrm.$dlext")

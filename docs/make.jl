@@ -1,13 +1,13 @@
-using Documenter, qr_mumps
+using Documenter, QRMumps
 
 makedocs(
-  modules = [qr_mumps],
+  modules = [QRMumps],
   checkdocs = :exports,
   doctest = true,
   linkcheck = true,
   strict = true,
   format = Documenter.HTML(assets = ["assets/style.css"], prettyurls = get(ENV, "CI", nothing) == "true"),
-  sitename = "qr_mumps.jl",
+  sitename = "QRMumps.jl",
   pages = ["Introduction" => "index.md",
            "Features" => "features.md",
            "Optional features" => "optional_features.md",
@@ -22,4 +22,4 @@ makedocs(
           ]
 )
 
-deploydocs(repo = "github.com/JuliaSmoothOptimizers/qr_mumps.jl.git")
+deploydocs(repo = "github.com/JuliaSmoothOptimizers/QRMumps.jl.git")
