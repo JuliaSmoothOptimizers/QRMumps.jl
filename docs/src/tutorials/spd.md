@@ -1,5 +1,5 @@
 ```@example spd1
-using qr_mumps, LinearAlgebra, SparseArrays, Printf
+using QRMumps, LinearAlgebra, SparseArrays, Printf
 
 irn = [1, 1, 1, 1, 2, 3, 3, 4, 4, 5]
 jcn = [1, 3, 4, 5, 2, 3, 5, 4, 5, 5]
@@ -22,7 +22,7 @@ residual_norm = norm(A * x - b)
 ```
 
 ```@example spd2
-using qr_mumps, LinearAlgebra, SparseArrays, Printf
+using QRMumps, LinearAlgebra, SparseArrays, Printf
 
 irn = [1, 2, 1, 2, 3, 2, 3, 4, 3, 4, 5, 4, 5]
 jcn = [1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5]
@@ -46,7 +46,7 @@ residual_norm = norm(A * x - b)
 ```
 
 ```@example spd3
-using qr_mumps, LinearAlgebra, SparseArrays, Printf
+using QRMumps, LinearAlgebra, SparseArrays, Printf
 
 irn = [1, 3, 4, 5, 2, 3, 5, 4, 5, 5]
 jcn = [1, 1, 1, 1, 2, 3, 3, 4, 4, 5]
@@ -74,7 +74,7 @@ residual_norm = norm(A * x - b)
 ```
 
 ```@example spd4
-using qr_mumps, LinearAlgebra, SparseArrays, Printf
+using QRMumps, LinearAlgebra, SparseArrays, Printf
 
 irn = [1, 2, 1, 2, 3, 2, 3, 4, 3, 4, 5, 4, 5]
 jcn = [1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5]
@@ -103,7 +103,7 @@ residual_norm = norm(A * x - b)
 ```
 
 ```@example spd5
-using qr_mumps, LinearAlgebra, SparseArrays, Printf
+using QRMumps, LinearAlgebra, SparseArrays, Printf
 
 irn = [1, 2, 2, 3, 3, 3]
 jcn = [1, 1, 2, 1, 2, 3]
@@ -133,7 +133,7 @@ residual_norm = norm(A * x - b)
 ```
 
 ```@example spd6
-using qr_mumps, LinearAlgebra, SparseArrays, Printf
+using QRMumps, LinearAlgebra, SparseArrays, Printf
 
 irn = [1, 1, 1, 2, 2, 3]
 jcn = [1, 2, 3, 2, 3, 3]
