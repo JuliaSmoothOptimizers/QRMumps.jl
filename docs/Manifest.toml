@@ -134,6 +134,14 @@ version = "1.2.1"
 deps = ["Unicode"]
 uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
+[[QRMumps]]
+deps = ["Libdl", "LinearAlgebra", "Printf", "SparseArrays", "qr_mumps_jll"]
+git-tree-sha1 = "3f25ae4449999c6a4c0bf4aa9092fbc0f59ae178"
+repo-rev = "master"
+repo-url = "https://github.com/JuliaSmoothOptimizers/QRMumps.jl.git"
+uuid = "422b30a1-cc69-4d85-abe7-cc07b540c444"
+version = "0.1.0"
+
 [[REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
 uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
@@ -195,14 +203,6 @@ uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
 [[p7zip_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
-
-[[QRMumps]]
-deps = ["Libdl", "LinearAlgebra", "Printf", "SparseArrays", "qr_mumps_jll"]
-git-tree-sha1 = "570bd597f0dd42f0ac7b85865591bc2fd2bcd7f7"
-repo-rev = "master"
-repo-url = "https://github.com/JuliaSmoothOptimizers/QRMumps.jl.git"
-uuid = "422b30a1-cc69-4d85-abe7-cc07b540c444"
-version = "0.1.0"
 
 [[qr_mumps_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "METIS_jll", "OpenBLAS32_jll", "Pkg", "SCOTCH_jll", "SuiteSparse_jll"]
