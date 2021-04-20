@@ -1,5 +1,5 @@
 ```@example ln1
-using qr_mumps, LinearAlgebra, SparseArrays, Printf
+using QRMumps, LinearAlgebra, SparseArrays, Printf
 
 irn = [1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 5]
 jcn = [3, 5, 7, 1, 4, 6, 2, 6, 5, 6, 3, 4, 7]
@@ -22,7 +22,7 @@ residual_norm = norm(A * x - b)
 ```
 
 ```@example ln2
-using qr_mumps, LinearAlgebra, SparseArrays, Printf
+using QRMumps, LinearAlgebra, SparseArrays, Printf
 
 irn = [1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 5]
 jcn = [3, 5, 7, 1, 4, 6, 2, 6, 5, 6, 3, 4, 7]
@@ -50,7 +50,7 @@ residual_norm = norm(A * x - b)
 ```
 
 ```@example ln3
-using qr_mumps, LinearAlgebra, SparseArrays, Printf
+using QRMumps, LinearAlgebra, SparseArrays, Printf
 
 irn = [1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 5]
 jcn = [3, 5, 7, 1, 4, 6, 2, 6, 5, 6, 3, 4, 7]
