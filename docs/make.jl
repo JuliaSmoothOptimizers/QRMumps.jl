@@ -5,7 +5,7 @@ makedocs(
   checkdocs = :exports,
   doctest = true,
   linkcheck = true,
-  strict = true,
+  strict = false,
   format = Documenter.HTML(assets = ["assets/style.css"], prettyurls = get(ENV, "CI", nothing) == "true"),
   sitename = "QRMumps.jl",
   pages = ["Introduction" => "index.md",
