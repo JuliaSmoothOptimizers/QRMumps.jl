@@ -1,5 +1,7 @@
 # A [Julia](http://julialang.org) Interface to [qr_mumps](http://buttari.perso.enseeiht.fr/qr_mumps/)
 
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.4716114-blue)](https://doi.org/10.5281/zenodo.4716114)
+
 | **Documentation** | **Linux/macOS/Windows/FreeBSD** | **Coverage** |
 |:-----------------:|:-------------------------------:|:------------:|
 | [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://JuliaSmoothOptimizers.github.io/QRMumps.jl/dev) | ![CI](https://github.com/JuliaSmoothOptimizers/QRMumps.jl/workflows/CI/badge.svg?branch=master) [![Build Status](https://img.shields.io/cirrus/github/JuliaSmoothOptimizers/QRMumps.jl?logo=Cirrus%20CI)](https://cirrus-ci.com/github/JuliaSmoothOptimizers/QRMumps.jl) | [![codecov.io](https://codecov.io/github/JuliaSmoothOptimizers/QRMumps.jl/coverage.svg?branch=master)](https://codecov.io/github/JuliaSmoothOptimizers/QRMumps.jl?branch=master) |
@@ -37,3 +39,7 @@ using QRMumps
 ```
 
 Alternatively, you can set these permanently through your operating system.
+
+## How to Cite
+
+If you use QRMumps.jl in your work, please cite using the format given in [`CITATION.bib`](https://github.com/JuliaSmoothOptimizers/QRMumps.jl/blob/master/CITATION.bib).
