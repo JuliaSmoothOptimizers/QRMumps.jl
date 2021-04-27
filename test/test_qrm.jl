@@ -425,4 +425,64 @@ end
   end
 end
 
+@testset "Auxiliary functions" begin
+  for str ∈ QRMumps.GICNTL ∪ QRMumps.PICNTL ∪ QRMumps.RCNTL
+    qrm_get(str)
+    qrm_set(str, 1)
+  end
+
+  for T in (Float32, Float64, ComplexF32, ComplexF64)
+    transp = (T <: Real) ? 't' : 'c'
+    A = sprand(T, n, n, 0.3)
+    spmat = qrm_spmat_init(A)
+    spfct = qrm_analyse(spmat)
+    qrm_factorize!(spmat, spfct)
+
+    for str ∈ QRMumps.PICNTL ∪ QRMumps.RCNTL
+      qrm_get(spfct, str)
+      qrm_set(spfct, str, 1)
+    end
+
+    for str ∈ QRMumps.STATS
+      qrm_get(spfct, str)
+    end
+
+    A = 2 * A
+    qrm_update!(spmat, A)
+
+    for ntype ∈ ('i', '1', 'f')
+      qrm_spmat_nrm(spmat, ntype=ntype)
+    end
+
+    for ntype ∈ ('i', '1', '2')
+      x = rand(T, 10)
+      qrm_vecnrm(x, ntype=ntype)
+
+      X = rand(T, 10, 5)
+      nrm = qrm_vecnrm(X, ntype=ntype)
+
+      X = 2 * X
+      qrm_vecnrm!(X, nrm, ntype=ntype)
+    end
+
+    b = rand(T, n)
+    x = rand(T, n)
+    r = b - A * x
+    qrm_residual_orth(spmat, r)
+    qrm_residual_orth(spmat, r, transp=transp)
+    qrm_residual_norm(spmat, b, x)
+    qrm_residual_norm(spmat, b, x, transp=transp)
+
+    B = rand(T, n, 5)
+    X = rand(T, n, 5)
+    R = B - A * X
+    nrm = qrm_residual_orth(spmat, R)
+    qrm_residual_orth!(spmat, R, nrm)
+    qrm_residual_orth(spmat, R, transp=transp)
+    nrm = qrm_residual_norm(spmat, B, X)
+    qrm_residual_norm!(spmat, B, X, nrm)
+    qrm_residual_norm(spmat, B, X, transp=transp)
+  end
+end
+
 qrm_finalize()
