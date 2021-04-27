@@ -628,15 +628,15 @@ for (fname, lname, elty, subty) in (("sqrm_residual_norm_c", libsqrm, Float32   
             return nrm
         end
 
-        function qrm_residual_norm!(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty}, x :: Matrix{$elty}, nrm :: Vector{$elty}; transp :: Char='n')
+        function qrm_residual_norm!(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty}, x :: Matrix{$elty}, nrm :: Vector{$subty}; transp :: Char='n')
             nrhs = size(x, 2)
             err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ptr{$elty}, Ptr{$elty}, Cint, Ptr{$subty}, UInt8), spmat, b, x, nrhs, nrm, transp)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
-        @inline qrm_residual_norm!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}, x :: Matrix{$elty}, nrm :: Vector{$elty}) = qrm_residual_norm!(spmat.parent, b, x, transp='t')
-        @inline qrm_residual_norm!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}  , b :: Matrix{$elty}, x :: Matrix{$elty}, nrm :: Vector{$elty}) = qrm_residual_norm!(spmat.parent, b, x, transp='c')
+        @inline qrm_residual_norm!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}, x :: Matrix{$elty}, nrm :: Vector{$subty}) = qrm_residual_norm!(spmat.parent, b, x, transp='t')
+        @inline qrm_residual_norm!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}  , b :: Matrix{$elty}, x :: Matrix{$elty}, nrm :: Vector{$subty}) = qrm_residual_norm!(spmat.parent, b, x, transp='c')
 
         @inline qrm_residual_norm(spmat  :: Transpose{$elty,qrm_spmat{$elty}}, b :: Vector{$elty}, x :: Vector{$elty}) = qrm_residual_norm(spmat.parent, b, x, transp='t')
         @inline qrm_residual_norm(spmat  :: Transpose{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}, x :: Matrix{$elty}) = qrm_residual_norm(spmat.parent, b, x, transp='t')
@@ -669,22 +669,21 @@ for (fname, lname, elty, subty) in (("sqrm_residual_orth_c", libsqrm, Float32   
             return nrm
         end
 
-        function qrm_residual_orth!(spmat :: qrm_spmat{$elty}, r :: Matrix{$elty}, nrm :: Vector{$elty}; transp :: Char='n')
+        function qrm_residual_orth!(spmat :: qrm_spmat{$elty}, r :: Matrix{$elty}, nrm :: Vector{$subty}; transp :: Char='n')
             nrhs = size(r, 2)
             err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, Ptr{$elty}, Cint, Ptr{$subty}, UInt8), spmat, r, nrhs, nrm, transp)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
-        @inline qrm_residual_orth!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, r :: Matrix{$elty}, nrm :: Vector{$elty}) = qrm_residual_orth!(spmat.parent, r, transp='t')
-        @inline qrm_residual_orth!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}  , r :: Matrix{$elty}, nrm :: Vector{$elty}) = qrm_residual_orth!(spmat.parent, r, transp='c')
+        @inline qrm_residual_orth!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, r :: Matrix{$elty}, nrm :: Vector{$subty}) = qrm_residual_orth!(spmat.parent, r, transp='t')
+        @inline qrm_residual_orth!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}  , r :: Matrix{$elty}, nrm :: Vector{$subty}) = qrm_residual_orth!(spmat.parent, r, transp='c')
 
         @inline qrm_residual_orth(spmat  :: Transpose{$elty,qrm_spmat{$elty}}, r :: Vector{$elty}) = qrm_residual_orth(spmat.parent, r, transp='t')
         @inline qrm_residual_orth(spmat  :: Transpose{$elty,qrm_spmat{$elty}}, r :: Matrix{$elty}) = qrm_residual_orth(spmat.parent, r, transp='t')
 
         @inline qrm_residual_orth(spmat  :: Adjoint{$elty,qrm_spmat{$elty}}  , r :: Vector{$elty}) = qrm_residual_orth(spmat.parent, r, transp='c')
         @inline qrm_residual_orth(spmat  :: Adjoint{$elty,qrm_spmat{$elty}}  , r :: Matrix{$elty}) = qrm_residual_orth(spmat.parent, r, transp='c')
-
     end
 end
 

@@ -215,14 +215,13 @@ This subroutine performs a matrix-vector product of the type y = αAx + βy or y
 function qrm_spmat_mv! end
 
 @doc raw"""
-    qrm_spmat_nrm(spmat, nrm; ntype='f')
+    qrm_spmat_nrm(spmat; ntype='f')
 
 This routine computes the one-norm ``\|A\|_1``, the infinity-norm ``\|x\|_{\infty}`` or the two-norm ``\|x\|_2`` of a matrix.
 
 #### Input Arguments :
 
 * `spmat`: the input matrix.
-* `nrm`: the computed norm.
 * `ntype`: the type of norm to be computed. It can be either `'i'`, `'1'` or `'f'` for the infinity, one and Frobenius norms, respectively.
 """
 function qrm_spmat_nrm end
