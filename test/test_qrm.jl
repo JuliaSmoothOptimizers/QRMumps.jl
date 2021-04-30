@@ -1,4 +1,4 @@
-qrm_init(2,0)
+qrm_init()
 m = 200
 n = 100
 p = 5
