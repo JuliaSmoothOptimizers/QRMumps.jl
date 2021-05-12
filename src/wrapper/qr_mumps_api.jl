@@ -243,23 +243,30 @@ for (fname, lname, elty, subty) in (("sqrm_spmat_mv_c", libsqrm, Float32   , Flo
     @eval begin
         function qrm_spmat_mv!(spmat :: qrm_spmat{$elty}, alpha :: $elty, x :: Vector{$elty}, beta :: $elty, y :: Vector{$elty}; transp :: Char='n')
             nrhs = 1
-            err = ccall(($fname, $lname), Cvoid, (Ref{c_spmat{$elty}}, UInt8, $elty, Ptr{$elty}, $elty, Ptr{$elty}, Cint), spmat, transp, alpha, x, beta, y, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            ccall(($fname, $lname), Cvoid, (Ref{c_spmat{$elty}}, UInt8, $elty, Ptr{$elty}, $elty, Ptr{$elty}, Cint), spmat, transp, alpha, x, beta, y, nrhs)
             return nothing
         end
 
         function qrm_spmat_mv!(spmat :: qrm_spmat{$elty}, alpha :: $elty, x :: Matrix{$elty}, beta :: $elty, y :: Matrix{$elty}; transp :: Char='n')
             nrhs = size(y, 2)
-            err = ccall(($fname, $lname), Cvoid, (Ref{c_spmat{$elty}}, UInt8, $elty, Ptr{$elty}, $elty, Ptr{$elty}, Cint), spmat, transp, alpha, x, beta, y, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            ccall(($fname, $lname), Cvoid, (Ref{c_spmat{$elty}}, UInt8, $elty, Ptr{$elty}, $elty, Ptr{$elty}, Cint), spmat, transp, alpha, x, beta, y, nrhs)
             return nothing
         end
 
-        @inline qrm_spmat_mv!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, alpha :: $elty, x :: Vector{$elty}, beta :: $elty, y :: Vector{$elty}) = qrm_matmul(spmat.parent, alpha, x, beta, y, transp='t')
-        @inline qrm_spmat_mv!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, alpha :: $elty, x :: Matrix{$elty}, beta :: $elty, y :: Matrix{$elty}) = qrm_matmul(spmat.parent, alpha, x, beta, y, transp='t')
+        @inline qrm_spmat_mv!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, alpha :: $elty, x :: Vector{$elty}, beta :: $elty, y :: Vector{$elty}) = qrm_spmat_mv!(spmat.parent, alpha, x, beta, y, transp='t')
+        @inline qrm_spmat_mv!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, alpha :: $elty, x :: Matrix{$elty}, beta :: $elty, y :: Matrix{$elty}) = qrm_spmat_mv!(spmat.parent, alpha, x, beta, y, transp='t')
 
-        @inline qrm_spmat_mv!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}, alpha :: $elty, x :: Vector{$elty}, beta :: $elty, y :: Vector{$elty}) = qrm_matmul(spmat.parent, alpha, x, beta, y, transp='c')
-        @inline qrm_spmat_mv!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}, alpha :: $elty, x :: Matrix{$elty}, beta :: $elty, y :: Matrix{$elty}) = qrm_matmul(spmat.parent, alpha, x, beta, y, transp='c')
+        @inline qrm_spmat_mv!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}, alpha :: $elty, x :: Vector{$elty}, beta :: $elty, y :: Vector{$elty}) = qrm_spmat_mv!(spmat.parent, alpha, x, beta, y, transp='c')
+        @inline qrm_spmat_mv!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}, alpha :: $elty, x :: Matrix{$elty}, beta :: $elty, y :: Matrix{$elty}) = qrm_spmat_mv!(spmat.parent, alpha, x, beta, y, transp='c')
+
+        @inline mul!(y :: Vector{$elty}, spmat :: qrm_spmat{$elty}, x :: Vector{$elty}, alpha :: $elty, beta :: $elty) = qrm_spmat_mv!(spmat, alpha, x, beta, y)
+        @inline mul!(y :: Matrix{$elty}, spmat :: qrm_spmat{$elty}, x :: Matrix{$elty}, alpha :: $elty, beta :: $elty) = qrm_spmat_mv!(spmat, alpha, x, beta, y)
+
+        @inline mul!(y :: Vector{$elty}, spmat :: Transpose{$elty,qrm_spmat{$elty}}, x :: Vector{$elty}, alpha :: $elty, beta :: $elty) = qrm_spmat_mv!(spmat, alpha, x, beta, y)
+        @inline mul!(y :: Matrix{$elty}, spmat :: Transpose{$elty,qrm_spmat{$elty}}, x :: Matrix{$elty}, alpha :: $elty, beta :: $elty) = qrm_spmat_mv!(spmat, alpha, x, beta, y)
+
+        @inline mul!(y :: Vector{$elty}, spmat :: Adjoint{$elty,qrm_spmat{$elty}}, x :: Vector{$elty}, alpha :: $elty, beta :: $elty) = qrm_spmat_mv!(spmat, alpha, x, beta, y)
+        @inline mul!(y :: Matrix{$elty}, spmat :: Adjoint{$elty,qrm_spmat{$elty}}, x :: Matrix{$elty}, alpha :: $elty, beta :: $elty) = qrm_spmat_mv!(spmat, alpha, x, beta, y)
     end
 end
 

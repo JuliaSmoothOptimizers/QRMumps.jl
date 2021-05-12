@@ -481,5 +481,37 @@ end
     nrm = qrm_residual_norm(spmat, B, X)
     qrm_residual_norm!(spmat, B, X, nrm)
     qrm_residual_norm(spmat, B, X, transp=transp)
+
+    y = rand(T, n)
+    y2 = rand(T, n)
+    x = rand(T, n)
+    Y = rand(T, n, 5)
+    Y2 = rand(T, n, 5)
+    X = rand(T, n, 5)
+    α = rand(T)
+    β = rand(T)
+
+    mul!(y, spmat, x, α, β)
+    mul!(y2, A, x, α, β)
+    @test y ≈ y2
+    mul!(Y, spmat, X, α, β)
+    mul!(Y2, A, X, α, β)
+    @test Y ≈ Y2
+
+    if (T <: Real)
+      mul!(y, Transpose(spmat), x, α, β)
+      mul!(y2, Transpose(A), x, α, β)
+      @test y ≈ y2
+      mul!(Y, Transpose(spmat), X, α, β)
+      mul!(Y2, Transpose(A), X, α, β)
+      @test Y ≈ Y2
+    else
+      mul!(y, Adjoint(spmat), x, α, β)
+      mul!(y2, Adjoint(A), x, α, β)
+      @test y ≈ y2
+      mul!(Y, Adjoint(spmat), X, α, β)
+      mul!(Y2, Adjoint(A), X, α, β)
+      @test Y ≈ Y2
+    end
   end
 end

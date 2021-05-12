@@ -3,6 +3,7 @@ module QRMumps
 using Libdl, SparseArrays, LinearAlgebra
 
 import Base: \
+import LinearAlgebra: mul!
 
 if haskey(ENV, "JULIA_QR_MUMPS_LIBRARY_PATH")
   println("Custom Installation")
@@ -29,7 +30,7 @@ export qrm_spmat, qrm_spfct,
     qrm_update!, qrm_factorize!,
     qrm_solve!, qrm_solve,
     qrm_apply!, qrm_apply,
-    qrm_spmat_mv!, qrm_spmat_nrm,
+    qrm_spmat_mv!, mul!, qrm_spmat_nrm,
     qrm_vecnrm!, qrm_vecnrm,
     qrm_spbackslash!, qrm_spbackslash, \,
     qrm_spposv!, qrm_spposv,
