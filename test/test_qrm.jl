@@ -1,4 +1,3 @@
-qrm_init()
 m = 200
 n = 100
 p = 5
@@ -484,5 +483,3 @@ end
     qrm_residual_norm(spmat, B, X, transp=transp)
   end
 end
-
-qrm_finalize()
