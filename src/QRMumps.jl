@@ -12,8 +12,10 @@ if haskey(ENV, "JULIA_QR_MUMPS_LIBRARY_PATH")
   const libzqrm = joinpath(ENV["JULIA_QR_MUMPS_LIBRARY_PATH"], "libzqrm.$dlext")
   const libqrm_common = joinpath(ENV["JULIA_QR_MUMPS_LIBRARY_PATH"], "libqrm_common.$dlext")
 else
-  println("Yggdrasil Installation")
   using qr_mumps_jll
+  function __init__()
+    qrm_init()
+  end
 end
 
 include("wrapper/qr_mumps_common.jl")
@@ -41,6 +43,7 @@ export qrm_spmat, qrm_spfct,
     qrm_init(ncpu, ngpu)
 
 This routine initializes qr\_mumps and should be called prior to any other qr\_mumps routine.
+This function is automatically called if you use qr\_mumps precompiled with Yggdrasil.
 
     qrm_init()
 
