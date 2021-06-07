@@ -1,10 +1,25 @@
 # A [Julia](http://julialang.org) Interface to [qr_mumps](http://buttari.perso.enseeiht.fr/qr_mumps/)
 
-[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.4716114-blue)](https://doi.org/10.5281/zenodo.4716114)
+| **Documentation** | **Linux/macOS/Windows/FreeBSD** | **Coverage** | **DOI** |
+|:-----------------:|:-------------------------------:|:------------:|:-------:|
+| [![docs-stable][docs-stable-img]][docs-stable-url] [![docs-dev][docs-dev-img]][docs-dev-url] | [![build-gh][build-gh-img]][build-gh-url] [![build-cirrus][build-cirrus-img]][build-cirrus-url] | [![codecov][codecov-img]][codecov-url] | [![doi][doi-img]][doi-url] |
 
-| **Documentation** | **Linux/macOS/Windows/FreeBSD** | **Coverage** |
-|:-----------------:|:-------------------------------:|:------------:|
-| [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://JuliaSmoothOptimizers.github.io/QRMumps.jl/dev) | ![CI](https://github.com/JuliaSmoothOptimizers/QRMumps.jl/workflows/CI/badge.svg?branch=master) [![Build Status](https://img.shields.io/cirrus/github/JuliaSmoothOptimizers/QRMumps.jl?logo=Cirrus%20CI)](https://cirrus-ci.com/github/JuliaSmoothOptimizers/QRMumps.jl) | [![codecov.io](https://codecov.io/github/JuliaSmoothOptimizers/QRMumps.jl/coverage.svg?branch=master)](https://codecov.io/github/JuliaSmoothOptimizers/QRMumps.jl?branch=master) |
+[docs-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg
+[docs-stable-url]: https://JuliaSmoothOptimizers.github.io/QRMumps.jl/stable
+[docs-dev-img]: https://img.shields.io/badge/docs-dev-purple.svg
+[docs-dev-url]: https://JuliaSmoothOptimizers.github.io/QRMumps.jl/dev
+[build-gh-img]: https://github.com/JuliaSmoothOptimizers/QRMumps.jl/workflows/CI/badge.svg?branch=master
+[build-gh-url]: https://github.com/JuliaSmoothOptimizers/QRMumps.jl/actions
+[build-cirrus-img]: https://img.shields.io/cirrus/github/JuliaSmoothOptimizers/QRMumps.jl?logo=Cirrus%20CI
+[build-cirrus-url]: https://cirrus-ci.com/github/JuliaSmoothOptimizers/QRMumps.jl
+[codecov-img]: https://codecov.io/gh/JuliaSmoothOptimizers/QRMumps.jl/branch/master/graph/badge.svg
+[codecov-url]: https://app.codecov.io/gh/JuliaSmoothOptimizers/QRMumps.jl
+[doi-img]: https://img.shields.io/badge/DOI-10.5281%2Fzenodo.4716114-blue.svg
+[doi-url]: https://doi.org/10.5281/zenodo.4716114
+
+## How to Cite
+
+If you use QRMumps.jl in your work, please cite using the format given in [`CITATION.bib`](https://github.com/JuliaSmoothOptimizers/QRMumps.jl/blob/master/CITATION.bib).
 
 ## How to install
 
@@ -39,7 +54,3 @@ using QRMumps
 ```
 
 Alternatively, you can set these permanently through your operating system.
-
-## How to Cite
-
-If you use QRMumps.jl in your work, please cite using the format given in [`CITATION.bib`](https://github.com/JuliaSmoothOptimizers/QRMumps.jl/blob/master/CITATION.bib).
