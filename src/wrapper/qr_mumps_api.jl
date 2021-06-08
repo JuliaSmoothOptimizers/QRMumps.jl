@@ -243,14 +243,14 @@ for (fname, lname, elty, subty) in (("sqrm_spmat_mv_c", libsqrm, Float32   , Flo
     @eval begin
         function qrm_spmat_mv!(spmat :: qrm_spmat{$elty}, alpha :: $elty, x :: Vector{$elty}, beta :: $elty, y :: Vector{$elty}; transp :: Char='n')
             nrhs = 1
-            err = ccall(($fname, $lname), Cvoid, (Ref{c_spmat{$elty}}, UInt8, $elty, Ptr{$elty}, $elty, Ptr{$elty}, Cint), spmat, transp, alpha, x, beta, y, nrhs)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, UInt8, $elty, Ptr{$elty}, $elty, Ptr{$elty}, Cint), spmat, transp, alpha, x, beta, y, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
 
         function qrm_spmat_mv!(spmat :: qrm_spmat{$elty}, alpha :: $elty, x :: Matrix{$elty}, beta :: $elty, y :: Matrix{$elty}; transp :: Char='n')
             nrhs = size(y, 2)
-            err = ccall(($fname, $lname), Cvoid, (Ref{c_spmat{$elty}}, UInt8, $elty, Ptr{$elty}, $elty, Ptr{$elty}, Cint), spmat, transp, alpha, x, beta, y, nrhs)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}}, UInt8, $elty, Ptr{$elty}, $elty, Ptr{$elty}, Cint), spmat, transp, alpha, x, beta, y, nrhs)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
             return nothing
         end
