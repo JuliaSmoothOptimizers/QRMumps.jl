@@ -483,10 +483,10 @@ end
     qrm_residual_norm(spmat, B, X, transp=transp)
 
     y = rand(T, n)
-    y2 = rand(T, n)
+    y2 = copy(y)
     x = rand(T, n)
     Y = rand(T, n, 5)
-    Y2 = rand(T, n, 5)
+    Y2 = copy(Y)
     X = rand(T, n, 5)
     α = rand(T)
     β = rand(T)
