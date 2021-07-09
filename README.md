@@ -8,18 +8,18 @@
 [docs-stable-url]: https://JuliaSmoothOptimizers.github.io/QRMumps.jl/stable
 [docs-dev-img]: https://img.shields.io/badge/docs-dev-purple.svg
 [docs-dev-url]: https://JuliaSmoothOptimizers.github.io/QRMumps.jl/dev
-[build-gh-img]: https://github.com/JuliaSmoothOptimizers/QRMumps.jl/workflows/CI/badge.svg?branch=master
+[build-gh-img]: https://github.com/JuliaSmoothOptimizers/QRMumps.jl/workflows/CI/badge.svg?branch=main
 [build-gh-url]: https://github.com/JuliaSmoothOptimizers/QRMumps.jl/actions
 [build-cirrus-img]: https://img.shields.io/cirrus/github/JuliaSmoothOptimizers/QRMumps.jl?logo=Cirrus%20CI
 [build-cirrus-url]: https://cirrus-ci.com/github/JuliaSmoothOptimizers/QRMumps.jl
-[codecov-img]: https://codecov.io/gh/JuliaSmoothOptimizers/QRMumps.jl/branch/master/graph/badge.svg
+[codecov-img]: https://codecov.io/gh/JuliaSmoothOptimizers/QRMumps.jl/branch/main/graph/badge.svg
 [codecov-url]: https://app.codecov.io/gh/JuliaSmoothOptimizers/QRMumps.jl
 [doi-img]: https://img.shields.io/badge/DOI-10.5281%2Fzenodo.4716114-blue.svg
 [doi-url]: https://doi.org/10.5281/zenodo.4716114
 
 ## How to Cite
 
-If you use QRMumps.jl in your work, please cite using the format given in [`CITATION.bib`](https://github.com/JuliaSmoothOptimizers/QRMumps.jl/blob/master/CITATION.bib).
+If you use QRMumps.jl in your work, please cite using the format given in [`CITATION.bib`](https://github.com/JuliaSmoothOptimizers/QRMumps.jl/blob/main/CITATION.bib).
 
 ## How to install
 
