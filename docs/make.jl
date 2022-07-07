@@ -22,4 +22,8 @@ makedocs(
           ]
 )
 
-deploydocs(repo = "github.com/JuliaSmoothOptimizers/QRMumps.jl.git", devbranch = "main")
+deploydocs(
+  repo = "github.com/JuliaSmoothOptimizers/QRMumps.jl.git",
+  push_preview = true,
+  devbranch = "main",
+)
