@@ -1,5 +1,5 @@
 using Test, QRMumps, LinearAlgebra, SparseArrays, Printf, Random
 
-@info("QMUMPS_INSTALLATION: $(QMumps.QMUMPS_INSTALLATION)")
+@info("QRMUMPS_INSTALLATION: $(QRMumps.QRMUMPS_INSTALLATION)")
 
 include("test_qrm.jl")
