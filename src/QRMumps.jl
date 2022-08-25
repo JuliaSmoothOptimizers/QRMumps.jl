@@ -6,14 +6,16 @@ import Base: \
 import LinearAlgebra: mul!
 
 if haskey(ENV, "JULIA_QR_MUMPS_LIBRARY_PATH")
-  println("Custom Installation")
+  @info("Custom Installation")
   const libsqrm = joinpath(ENV["JULIA_QR_MUMPS_LIBRARY_PATH"], "libsqrm.$dlext")
   const libdqrm = joinpath(ENV["JULIA_QR_MUMPS_LIBRARY_PATH"], "libdqrm.$dlext")
   const libcqrm = joinpath(ENV["JULIA_QR_MUMPS_LIBRARY_PATH"], "libcqrm.$dlext")
   const libzqrm = joinpath(ENV["JULIA_QR_MUMPS_LIBRARY_PATH"], "libzqrm.$dlext")
   const libqrm_common = joinpath(ENV["JULIA_QR_MUMPS_LIBRARY_PATH"], "libqrm_common.$dlext")
+  const QRMUMPS_INSTALLATION = "CUSTOM"
 else
   using qr_mumps_jll
+  const QRMUMPS_INSTALLATION = "YGGDRASIL"
   function __init__()
     qrm_init()
   end

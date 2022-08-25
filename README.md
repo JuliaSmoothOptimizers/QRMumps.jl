@@ -42,15 +42,12 @@ It supports real and complex, single or double precision arithmetic.
 **Note: qr_mumps is already precompiled with Yggdrasil for all platforms.**
 
 To use your custom qr_mumps, set the environmental variables `JULIA_QR_MUMPS_LIBRARY_PATH`
-to point the shared library. Note that **qr\_mumps** version 3.0.2 is needed.
-
-**Very important note: you must set these environment variables before
-calling `using QRMumps` in every Julia session.**
+to point the shared library. Note that **qr\_mumps** version 3.0.3 is needed.
 
 For example:
 ```julia
-ENV["JULIA_QR_MUMPS_LIBRARY_PATH"] = "~/Applications/qr_mumps-3.0.2/build/lib"
+ENV["JULIA_QR_MUMPS_LIBRARY_PATH"] = "~/Applications/qr_mumps-3.0.3/build/lib"
 using QRMumps
 ```
 
-Alternatively, you can set these permanently through your operating system.
+Alternatively, you can create an entry in `.julia/config/startup.jl` or set these permanently through your operating system.
