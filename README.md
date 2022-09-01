@@ -41,13 +41,18 @@ It supports real and complex, single or double precision arithmetic.
 
 **Note: qr_mumps is already precompiled with Yggdrasil for all platforms.**
 
-To use your custom qr_mumps, set the environmental variables `JULIA_QR_MUMPS_LIBRARY_PATH`
-to point the shared library. Note that **qr\_mumps** version 3.0.3 is needed.
+To use your custom qr_mumps, set the environmental variables `JULIA_QRMUMPS_LIBRARY_PATH`
+to point to the shared library before `using QRMumps`.
+Note that the same version of qr_mumps as used by the `qr_mumps_jll` artifact is needed.
+To initialize qr_mumps with a custom installation, the function [`qrm_init`](https://juliasmoothoptimizers.github.io/QRMumps.jl/stable/api/#QRMumps.qrm_init) must be called prior to any other functions of QRMumps.jl.
 
 For example:
-```julia
-ENV["JULIA_QR_MUMPS_LIBRARY_PATH"] = "~/Applications/qr_mumps-3.0.3/build/lib"
-using QRMumps
+```bash
+brew tap dpo/mumps-jl
+brew install qr_mumps
+export JULIA_QRMUMPS_LIBRARY_PATH=$(brew --prefix)/opt/qr_mumps/lib
 ```
 
-Alternatively, you can create an entry in `.julia/config/startup.jl` or set these permanently through your operating system.
+Apple Silicon users should remember to use `arch x86_64 brew` to refer to Intel binaries run through Rosetta, as we do not (yet) ship Silicon binaries of qr_mumps via Homebrew.
+
+The `JULIA_QRMUMPS_LIBRARY_PATH` environment variable may be set permanently in the shell's startup file, or in `$HOME/.julia/config/startup.jl`.
