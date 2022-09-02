@@ -41,8 +41,8 @@ It supports real and complex, single or double precision arithmetic.
 
 **Note: qr_mumps is already precompiled with Yggdrasil for all platforms.**
 
-To use your custom qr_mumps, set the environmental variables `JULIA_QRMUMPS_LIBRARY_PATH`
-to point to the shared library before `using QRMumps`.
+To use your custom qr_mumps, set the environment variable `JULIA_QRMUMPS_LIBRARY_PATH`
+to point to the folder holding the qr_mumps shared libraries before `using QRMumps`.
 Note that the same version of qr_mumps as used by the `qr_mumps_jll` artifact is needed.
 To initialize qr_mumps with a custom installation, the function [`qrm_init`](https://juliasmoothoptimizers.github.io/QRMumps.jl/stable/api/#QRMumps.qrm_init) must be called prior to any other functions of QRMumps.jl.
 
