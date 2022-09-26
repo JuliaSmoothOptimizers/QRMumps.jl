@@ -1,7 +1,7 @@
 # This file is machine-generated - editing it directly is not advised
 
 manifest_format = "2.0"
-project_hash = "2363b2923c62772a741e33c58798ad970efcb521"
+project_hash = "0703d00caca3988d9254f9f6e969bcec4f2e3c69"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -154,9 +154,10 @@ uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [[deps.StarPU_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Hwloc_jll", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "0ec896ec2abc07df832c2f1c59d012585c9ec6f5"
+git-tree-sha1 = "36bf18b62d0fc694812fe66c85e950b85768d321"
+pinned = true
 uuid = "e3ad0b27-b140-5312-a56e-059adfc55eb4"
-version = "1.3.9+0"
+version = "1.3.7+1"
 
 [[deps.SuiteSparse_jll]]
 deps = ["Artifacts", "Libdl", "Pkg", "libblastrampoline_jll"]
@@ -202,8 +203,9 @@ version = "17.4.0+0"
 
 [[deps.qr_mumps_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "METIS_jll", "OpenBLAS32_jll", "Pkg", "SCOTCH_jll", "StarPU_jll", "SuiteSparse_jll"]
-git-tree-sha1 = "9ef47593daa154ca6df321e63bba25749200cded"
-repo-rev = "8f93dda4e3ee05741b19400b17773f1be98846e2"
+git-tree-sha1 = "343e3f94150bc4233067b0b0163f9a56d6686ded"
+pinned = true
+repo-rev = "7dc0737a418778a665633c31b6ed8d5c0d2b9cef"
 repo-url = "https://github.com/JuliaBinaryWrappers/qr_mumps_jll.jl.git"
 uuid = "e37b5aa0-c611-5f0f-83fb-aee446c0b77e"
-version = "3.0.2+5"
+version = "3.0.2+4"
