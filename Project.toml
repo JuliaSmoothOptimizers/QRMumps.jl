@@ -8,11 +8,12 @@ Libdl = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+StarPU_jll = "e3ad0b27-b140-5312-a56e-059adfc55eb4"
 qr_mumps_jll = "e37b5aa0-c611-5f0f-83fb-aee446c0b77e"
 
 [compat]
 julia = "1.6"
-qr_mumps_jll = "= 3.0.3"
+qr_mumps_jll = "= 3.0.2"
 
 [extras]
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
