@@ -57,7 +57,7 @@ Apple Silicon users should remember to use `arch x86_64 brew` to refer to Intel 
 
 The `JULIA_QRMUMPS_LIBRARY_PATH` environment variable may be set permanently in the shell's startup file, or in `$HOME/.julia/config/startup.jl`.
 
-# Bug reports and discussions
+## Bug reports and discussions
 
 If you think you found a bug, feel free to open an [issue](https://github.com/JuliaSmoothOptimizers/QRMumps.jl/issues).
 Focused suggestions and requests can also be opened as issues. Before opening a pull request, start an issue or a discussion on the topic, please.
