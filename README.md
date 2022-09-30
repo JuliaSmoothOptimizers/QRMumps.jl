@@ -57,6 +57,18 @@ Apple Silicon users should remember to use `arch x86_64 brew` to refer to Intel 
 
 The `JULIA_QRMUMPS_LIBRARY_PATH` environment variable may be set permanently in the shell's startup file, or in `$HOME/.julia/config/startup.jl`.
 
+## References
+
+> Emmanuel Agullo, Alfredo Buttari, Abdou Guermouche, and Florent Lopez (2016).
+> Implementing multifrontal sparse solvers for multicore architectures with sequential task flow runtime systems.
+> ACM Trans. Math. Softw., 43(2):13:1–13:22.
+> [10.1145/2898348](http://dx.doi.org/10.1145/2898348)
+
+> Emmanuel Agullo, Alfredo Buttari, Abdou Guermouche, and Florent Lopez (2015).
+> Task-based multifrontal QR solver for GPU-accelerated multicore architectures.
+> In HiPC, pages 54–63. IEEE Computer Society.
+> [10.1109/HiPC.2015.27](http://dx.doi.org/10.1109/HiPC.2015.27)
+
 ## Bug reports and discussions
 
 If you think you found a bug, feel free to open an [issue](https://github.com/JuliaSmoothOptimizers/QRMumps.jl/issues).
