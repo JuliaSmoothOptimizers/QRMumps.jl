@@ -32,6 +32,7 @@ export qrm_spmat, qrm_spfct,
     qrm_update!, qrm_factorize!,
     qrm_solve!, qrm_solve,
     qrm_apply!, qrm_apply,
+    qrm_spfct_get_rp, qrm_spfct_get_cp, qrm_spfct_get_r,
     qrm_spmat_mv!, mul!, qrm_spmat_nrm,
     qrm_vecnrm!, qrm_vecnrm,
     qrm_spbackslash!, qrm_spbackslash, \,
@@ -50,7 +51,7 @@ This function is automatically called if you use qr\_mumps precompiled with Yggd
 
     qrm_init()
 
-`ncpu` and `ngpu` are optional arguments and their default value are, respectively, `1` and `0`.
+`ncpu` and `ngpu` are optional arguments and their default value are, respectively, `1` and `0`.
 
 #### Input Arguments :
 
@@ -178,7 +179,7 @@ This routine solves the triangular system `Rx = b` or `Rᵀx = b`. It can only b
 * `spfct`: the sparse factorization object resulting from the qrm_factorize! function.
 * `b`: the right-hand side(s).
 * `x`: the solution vector(s).
-* `transp`: whether to solve for R or Rᵀ. Can be either `'t'`, `'c'` or `'n'`.
+* `transp`: whether to solve for R, Rᵀ or Rᴴ. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_solve! end
 
@@ -190,13 +191,13 @@ function qrm_solve end
 @doc raw"""
     qrm_apply!(spfct, b; transp='n')
 
-This routine computes `z = Qb` or `z = Qᵀb` in place and overwrites b. It can only be executed once the factorization is done.
+This routine computes `z = Qb`, `z = Qᵀb` or `z = Qᴴb` in place and overwrites b. It can only be executed once the factorization is done.
 
 #### Input Arguments :
 
 * `spfct`: the sparse factorization object resulting from the qrm_factorize! function.
-* `b`: the vector(s) to which Q or Qᵀ is applied.
-* `transp`: whether to apply Q or Qᵀ. Can be either `'t'`, `'c'` or `'n'`.
+* `b`: the vector(s) to which Q, Qᵀ or Qᴴ is applied.
+* `transp`: whether to apply Q, Qᵀ or Qᴴ. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_apply! end
 
@@ -208,7 +209,7 @@ function qrm_apply end
 @doc raw"""
     qrm_spmat_mv!(spmat, alpha, x, beta, y; transp='n')
 
-This subroutine performs a matrix-vector product of the type y = αAx + βy or y = αAᵀx + βy.
+This subroutine performs a matrix-vector product of the type `y = αAx + βy`, `y = αAᵀx + βy` or `y = αAᴴx + βy`.
 
 #### Input Arguments :
 
@@ -216,7 +217,7 @@ This subroutine performs a matrix-vector product of the type y = αAx + βy or y
 * `alpha`, `beta` : the α and β scalars
 * `x`: the x vector(s).
 * `y`: the y vector(s).
-* `transp`: whether to multiply by A or Aᵀ. Can be either `'t'`, `'c'` or `'n'`.
+* `transp`: whether to multiply by A, Aᵀ or Aᴴ. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_spmat_mv! end
 
@@ -252,8 +253,6 @@ function qrm_vecnrm end
 
 @doc raw"""
     qrm_spbackslash!(spmat, b, x; transp='n')
-
-TO DO !
 """
 function qrm_spbackslash! end
 
@@ -309,7 +308,7 @@ It is a shortcut for the sequence
 * `spmat`: the input matrix.
 * `b`: the ight-hand side(s).
 * `x`: the solution vector(s).
-* `transp`: whether to use A or Aᵀ. Can be either `'t'`, `'c'` or `'n'`.
+* `transp`: whether to use A, Aᵀ or Aᴴ. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_least_squares! end
 
@@ -340,7 +339,7 @@ It is a shortcut for the sequence
 * `spmat`: the input matrix.
 * `b`: the right-hand side(s).
 * `x`: the solution vector(s).
-* `transp`: whether to use A or Aᵀ. Can be either `'t'`, `'c'` or `'n'`.
+* `transp`: whether to use A, Aᵀ or Aᴴ. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_min_norm! end
 
@@ -360,7 +359,7 @@ This function computes the scaled norm of the residual ``\frac{\|b - Ax\|_{\inft
 * `b`: the right-hand side(s).
 * `x`: the solution vector(s).
 * `nrm`: the computed norm(s).
-* `transp`: whether to use A or Aᵀ. Can be either `'t'`, `'c'` or `'n'`.
+* `transp`: whether to use A, Aᵀ or Aᴴ. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_residual_norm! end
 
@@ -379,7 +378,7 @@ Computes the quantity ``\frac{\|A^T r\|_2}{\|r\|_2}`` which can be used to evalu
 * `spmat`: the input matrix.
 * `r`: the residual(s).
 * `nrm`: the computed norm(s).
-* `transp`: whether to use A or Aᵀ. Can be either `'t'`, `'c'` or `'n'`.
+* `transp`: whether to use A, Aᵀ or Aᴴ. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_residual_orth! end
 
@@ -414,5 +413,38 @@ Returns the value of a control parameter or an information parameter.
 * `str`: a string describing the parameter to get.
 """
 function qrm_get end
+
+@doc raw"""
+    rp = qrm_spfct_get_rp(spfct)
+
+Returns the row permutation.
+
+#### Input Arguments :
+
+* `spfct`: a sparse factorization object of type `qrm_spfct`.
+"""
+function qrm_spfct_get_rp end
+
+@doc raw"""
+    cp = qrm_spfct_get_cp(spfct)
+
+Returns the column permutation.
+
+#### Input Arguments :
+
+* `spfct`: a sparse factorization object of type `qrm_spfct`.
+"""
+function qrm_spfct_get_cp end
+
+@doc raw"""
+    R = qrm_spfct_get_r(spfct)
+
+Returns the R factor as a **SparseMatrixCSC** matrix.
+
+#### Input Arguments :
+
+* `spfct`: a sparse factorization object of type `qrm_spfct`.
+"""
+function qrm_spfct_get_r end
 
 end # module
