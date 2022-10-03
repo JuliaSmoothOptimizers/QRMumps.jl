@@ -1,3 +1,49 @@
+for (fname, lname, elty) in (("sqrm_spfct_get_rp_c", libsqrm, Float32   ),
+                             ("dqrm_spfct_get_rp_c", libdqrm, Float64   ),
+                             ("cqrm_spfct_get_rp_c", libcqrm, ComplexF32),
+                             ("zqrm_spfct_get_rp_c", libzqrm, ComplexF64))
+    @eval begin
+        function qrm_spfct_get_rp(spfct :: qrm_spfct{$elty})
+            rp = zeros(Cint, spfct.fct.n)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, Ptr{Cint}), spfct, rp)
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            return rp
+        end
+    end
+end
+
+for (fname, lname, elty) in (("sqrm_spfct_get_cp_c", libsqrm, Float32   ),
+                             ("dqrm_spfct_get_cp_c", libdqrm, Float64   ),
+                             ("cqrm_spfct_get_cp_c", libcqrm, ComplexF32),
+                             ("zqrm_spfct_get_cp_c", libzqrm, ComplexF64))
+    @eval begin
+        function qrm_spfct_get_cp(spfct :: qrm_spfct{$elty})
+            cp = zeros(Cint, spfct.fct.m)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, Ptr{Cint}), spfct, cp)
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            return cp
+        end
+    end
+end
+
+for (fname, lname, elty) in (("sqrm_spfct_get_r_c", libsqrm, Float32   ),
+                             ("dqrm_spfct_get_r_c", libdqrm, Float64   ),
+                             ("cqrm_spfct_get_r_c", libcqrm, ComplexF32),
+                             ("zqrm_spfct_get_r_c", libzqrm, ComplexF64))
+    @eval begin
+        function qrm_spfct_get_r(spfct :: qrm_spfct{$elty})
+            spmat = qrm_spmat_init($elty)
+            err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, Ref{c_spmat{$elty}}), spfct, spmat)
+            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            I = unsafe_wrap(Array, spmat.mat.irn, spmat.mat.nz)
+            J = unsafe_wrap(Array, spmat.mat.jcn, spmat.mat.nz)
+            V = unsafe_wrap(Array, spmat.mat.val, spmat.mat.nz)
+            R = sparse(I, J, V, spmat.mat.n, spmat.mat.n)
+            return R
+        end
+    end
+end
+
 for (fname, lname, elty, subty) in (("sqrm_spmat_init_c", libsqrm, Float32   , Float32),
                                     ("dqrm_spmat_init_c", libdqrm, Float64   , Float64),
                                     ("cqrm_spmat_init_c", libcqrm, ComplexF32, Float32),
@@ -728,7 +774,7 @@ for (finame, frname, lname, elty, subty) in (("sqrm_spfct_set_i4_c", "sqrm_spfct
 end
 
 function qrm_get(str :: String)
-    if (str ∈ GICNTL) || (str ∈ PICNTL)
+    if (str ∈ GICNTL) || (str ∈ PICNTL)
         val = Ref{Clonglong}(0)
         err = ccall(("qrm_glob_get_i8_c", libqrm_common), Cint, (Cstring, Ref{Clonglong}), str, val)
     elseif str ∈ RCNTL
@@ -747,7 +793,7 @@ for (finame, frname, lname, elty, subty) in (("sqrm_spfct_get_i8_c", "sqrm_spfct
                                              ("zqrm_spfct_get_i8_c", "zqrm_spfct_get_r4_c", libzqrm, ComplexF64, Float64))
     @eval begin
         function qrm_get(spfct :: qrm_spfct{$elty}, str :: String)
-            if (str ∈ PICNTL) || (str ∈ STATS)
+            if (str ∈ PICNTL) || (str ∈ STATS)
                 val = Ref{Clonglong}(0)
                 err = ccall(($finame, $lname), Cint, (Ref{c_spfct{$elty}}, Cstring, Ref{Clonglong}), spfct, str, val)
             elseif str ∈ RCNTL
