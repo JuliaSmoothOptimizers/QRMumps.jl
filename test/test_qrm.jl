@@ -6,7 +6,7 @@ p = 5
 @testset "least-squares problems" begin
   for T in (Float32, Float64, ComplexF32, ComplexF64)
 
-    tol = (real(T) == Float32) ? 1e-4 : 1e-12
+    tol = (real(T) == Float32) ? 1e-3 : 1e-12
     transp = (T <: Real) ? 't' : 'c'
 
     for I in (Int32 , Int64)
@@ -46,6 +46,12 @@ p = 5
       spfct = qrm_spfct_init(spmat)
       qrm_analyse!(spmat, spfct)
       qrm_factorize!(spmat, spfct)
+
+      rp = qrm_spfct_get_rp(spfct)
+      cp = qrm_spfct_get_cp(spfct)
+      R = qrm_spfct_get_r(spfct)
+      @test norm(A[rp,cp]' * A[rp,cp] - R[rp,cp]' * R[rp,cp]) ≤ tol
+
       spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
 
       z = copy(b)
@@ -187,6 +193,12 @@ end
       spfct = qrm_spfct_init(spmat)
       qrm_analyse!(spmat, spfct, transp=transp)
       qrm_factorize!(spmat, spfct, transp=transp)
+
+      rp = qrm_spfct_get_rp(spfct)
+      cp = qrm_spfct_get_cp(spfct)
+      R = qrm_spfct_get_r(spfct)
+      # @test norm(A[rp,cp] * A[rp,cp]' - R[rp,cp] * R[rp,cp]') ≤ tol
+
       spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
 
       qrm_solve!(spfct, b, x, transp=transp)
@@ -330,6 +342,12 @@ end
       spfct = qrm_spfct_init(spmat)
       qrm_analyse!(spmat, spfct)
       qrm_factorize!(spmat, spfct)
+
+      rp = qrm_spfct_get_rp(spfct)
+      cp = qrm_spfct_get_cp(spfct)
+      R = qrm_spfct_get_r(spfct)
+      @test norm(A[rp,cp] - R[rp,cp]' * R[rp,cp]) ≤ tol
+
       spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
 
       qrm_solve!(spfct, copy(b), x, transp=transp)
