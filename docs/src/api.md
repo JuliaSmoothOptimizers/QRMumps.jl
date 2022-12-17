@@ -34,6 +34,12 @@ qrm_apply!
 ```
 
 ```@docs
+qrm_spfct_get_cp
+qrm_spfct_get_rp
+qrm_spfct_get_r
+```
+
+```@docs
 qrm_spbackslash
 qrm_spbackslash!
 qrm_spposv
