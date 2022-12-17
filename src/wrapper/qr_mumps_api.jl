@@ -6,7 +6,8 @@ for (fname, lname, elty) in (("sqrm_spfct_get_rp_c", libsqrm, Float32   ),
         function qrm_spfct_get_rp(spfct :: qrm_spfct{$elty})
             ptr_rp = Ref{Ptr{Cint}}()
             err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, Ptr{Ptr{Cint}}), spfct, ptr_rp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            # Fix it with the release 3.0.5
+            # (err ≠ 0) && throw(ErrorException(error_handling(err)))
             rp = unsafe_wrap(Array, ptr_rp[], spfct.fct.m)
             return rp
         end
@@ -21,7 +22,8 @@ for (fname, lname, elty) in (("sqrm_spfct_get_cp_c", libsqrm, Float32   ),
         function qrm_spfct_get_cp(spfct :: qrm_spfct{$elty})
             ptr_cp = Ref{Ptr{Cint}}()
             err = ccall(($fname, $lname), Cint, (Ref{c_spfct{$elty}}, Ptr{Ptr{Cint}}), spfct, ptr_cp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            # Fix it with the release 3.0.5
+            # (err ≠ 0) && throw(ErrorException(error_handling(err)))
             cp = unsafe_wrap(Array, ptr_cp[], spfct.fct.n)
             return cp
         end
