@@ -31,10 +31,10 @@ pkg> test QRMumps
 
 ## Content
 
-[qr_mumps](http://buttari.perso.enseeiht.fr/qr_mumps/) is a software package for the solution of sparse, linear systems on multicore computers.
+[qr_mumps](http://qr_mumps.gitlab.io/) is a software package for the solution of sparse, linear systems on multicore computers.
 It implements a direct solution method based on the QR or Cholesky factorization of the input matrix. 
 Therefore, it is suited to solving sparse least-squares problems, to computing the minimum-norm solution of sparse, underdetermined problems and to solving symmetric, positive-definite sparse linear systems.
-It can obviously be used for solving square unsymmetric problems in which case the stability provided by the use of orthogonal transformations comes at the cost of a higher operation count with respect to solvers based on, e.g., the LU factorization such as [MUMPS](http://mumps.enseeiht.fr/).
+It can obviously be used for solving square unsymmetric problems in which case the stability provided by the use of orthogonal transformations comes at the cost of a higher operation count with respect to solvers based on, e.g., the LU factorization such as [MUMPS](http://mumps-solver.org/).
 It supports real and complex, single or double precision arithmetic.
 
 ## Custom Installation
