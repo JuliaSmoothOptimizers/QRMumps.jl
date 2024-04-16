@@ -1,7 +1,7 @@
 name = "QRMumps"
 uuid = "422b30a1-cc69-4d85-abe7-cc07b540c444"
 authors = ["Alfredo Buttari (@abuttari), Alexis Montoison (@amontoison)"]
-version = "0.2.2"
+version = "0.2.3"
 
 [deps]
 Libdl = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
@@ -12,7 +12,7 @@ qr_mumps_jll = "e37b5aa0-c611-5f0f-83fb-aee446c0b77e"
 
 [compat]
 julia = "1.6"
-qr_mumps_jll = "= 3.0.4"
+qr_mumps_jll = "3.0.4"
 
 [extras]
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
