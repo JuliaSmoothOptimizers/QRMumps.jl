@@ -65,17 +65,33 @@ for (fname, lname, elty, subty) in (("sqrm_spmat_init_c", libsqrm, Float32   , F
             return spmat
         end
 
-        function qrm_spmat_init!(spmat :: qrm_spmat{$elty}, A :: SparseMatrixCSC{$elty,I}; sym :: Bool=false) where I <: Integer
+        function qrm_spmat_init!(spmat :: qrm_spmat{$elty}, m :: Integer, n :: Integer, irn :: AbstractVector{I}, jcn :: AbstractVector{I}, val :: AbstractVector{$elty}; sym :: Bool=false) where I <: Integer
+            nz = length(irn)
+            @assert nz == length(jcn)
+            @assert nz == length(val)
             err = ccall(($fname, $lname), Cint, (Ref{c_spmat{$elty}},), spmat)
             (err ≠ 0) && throw(ErrorException(error_handling(err)))
-            spmat.irn, spmat.jcn, spmat.val = findnz(A)
-            spmat.mat.m, spmat.mat.n = size(A)
-            spmat.mat.nz  = nnz(A)
+            spmat.irn = irn
+            spmat.jcn = jcn
+            spmat.val = val
+            spmat.mat.m = m
+            spmat.mat.n = n
+            spmat.mat.nz  = nz
             spmat.mat.sym = sym
             spmat.mat.irn = pointer(spmat.irn)
             spmat.mat.jcn = pointer(spmat.jcn)
             spmat.mat.val = pointer(spmat.val)
             return nothing
+        end
+
+        function qrm_spmat_init(m :: Integer, n :: Integer, irn :: AbstractVector{I}, jcn :: AbstractVector{I}, val :: AbstractVector{$elty}; sym :: Bool=false) where I <: Integer
+            spmat = qrm_spmat{$elty}()
+            qrm_spmat_init!(spmat, m, n, irn, jcn, val; sym = sym)
+            return spmat
+        end
+
+        function qrm_spmat_init!(spmat :: qrm_spmat{$elty}, A :: SparseMatrixCSC{$elty,I}; sym :: Bool=false) where I <: Integer
+            qrm_spmat_init!(spmat, size(A)..., findnz(A)...; sym = sym)
         end
 
         function qrm_spmat_init(A :: SparseMatrixCSC{$elty,I}; sym :: Bool=false) where I <: Integer
@@ -823,7 +839,11 @@ function qrm_finalize()
     return nothing
 end
 
-function qrm_update!(spmat :: qrm_spmat{T}, A :: SparseMatrixCSC{T,I}) where {T, I <: Integer}
-    spmat.val .= A.nzval
+function qrm_update!(spmat :: qrm_spmat{T}, val :: AbstractVector{T}) where T
+    spmat.val .= val
     return nothing
+end
+
+function qrm_update!(spmat :: qrm_spmat{T}, A :: SparseMatrixCSC{T,I}) where {T, I <: Integer}
+    qrm_update!(spmat, A.nzval)
 end
