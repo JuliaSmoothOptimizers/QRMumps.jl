@@ -134,3 +134,7 @@ function error_handling(err :: Cint)
   err == 37 && (status = "Matrix is indefinite.")
   return status
 end
+
+function qrm_check(err :: Cint)
+  (err ≠ 0) && throw(ErrorException(error_handling(err)))
+end
