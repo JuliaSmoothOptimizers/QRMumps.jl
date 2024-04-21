@@ -452,7 +452,7 @@ end
     qrm_set(str, 1)
   end
 
-  for T in (Float32, Float64, ComplexF32, ComplexF64)
+  @testset "precision = $T" for T in (Float32, Float64, ComplexF32, ComplexF64)
     transp = (T <: Real) ? 't' : 'c'
     A = sprand(T, n, n, 0.3)
     spmat = qrm_spmat_init(A)

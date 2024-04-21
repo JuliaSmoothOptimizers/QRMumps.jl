@@ -22,6 +22,7 @@ else
 end
 
 include("wrapper/qr_mumps_common.jl")
+include("wrapper/libqrmumps.jl")
 include("wrapper/qr_mumps_api.jl")
 
 export qrm_spmat, qrm_spfct,
