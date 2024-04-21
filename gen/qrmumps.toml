@@ -1,0 +1,12 @@
+[general]
+use_julia_native_enum_type = true
+print_using_CEnum = false
+library_names = {"sqrm_c.h" = "libsqrm", "dqrm_c.h" = "libdqrm", "cqrm_c.h" = "libcqrm", "zqrm_c.h" = "libzqrm", "qrm_common_c.h" = "libqrm_common"}
+
+[codegen]
+use_julia_bool = true
+always_NUL_terminated_string = true
+use_ccall_macro = true
+
+[codegen.macro]
+macro_mode = "disable"
