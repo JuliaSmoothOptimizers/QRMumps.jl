@@ -7,7 +7,7 @@ for (fname, elty) in ((:sqrm_spfct_get_rp_c, :Float32   ),
             ptr_rp = Ref{Ptr{Cint}}()
             err = $fname(spfct, ptr_rp)
             # Fix it with the release 3.0.5
-            # (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            # qrm_check(err)
             rp = unsafe_wrap(Array, ptr_rp[], spfct.fct.m)
             return rp
         end
@@ -23,7 +23,7 @@ for (fname, elty) in ((:sqrm_spfct_get_cp_c, :Float32   ),
             ptr_cp = Ref{Ptr{Cint}}()
             err = $fname(spfct, ptr_cp)
             # Fix it with the release 3.0.5
-            # (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            # qrm_check(err)
             cp = unsafe_wrap(Array, ptr_cp[], spfct.fct.n)
             return cp
         end
@@ -38,7 +38,7 @@ for (fname, elty) in ((:sqrm_spfct_get_r_c, :Float32   ),
         function qrm_spfct_get_r(spfct :: qrm_spfct{$elty})
             spmat = qrm_spmat_init($elty)
             err = $fname(spfct, spmat)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             I = unsafe_wrap(Array, spmat.mat.irn, spmat.mat.nz)
             J = unsafe_wrap(Array, spmat.mat.jcn, spmat.mat.nz)
             V = unsafe_wrap(Array, spmat.mat.val, spmat.mat.nz)
@@ -55,7 +55,7 @@ for (fname, elty) in ((:sqrm_spmat_init_c, :Float32   ),
     @eval begin
         function qrm_spmat_init!(spmat :: qrm_spmat{$elty})
             err = $fname(spmat)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
@@ -70,7 +70,7 @@ for (fname, elty) in ((:sqrm_spmat_init_c, :Float32   ),
             @assert nz == length(jcn)
             @assert nz == length(val)
             err = $fname(spmat)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             spmat.irn = irn
             spmat.jcn = jcn
             spmat.val = val
@@ -115,7 +115,7 @@ for (fname, elty) in ((:sqrm_spmat_destroy_c, :Float32   ),
     @eval begin
         function qrm_spmat_destroy!(spmat :: qrm_spmat{$elty})
             err = $fname(spmat)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
     end
@@ -128,7 +128,7 @@ for (fname, elty) in ((:sqrm_spfct_init_c, :Float32   ),
     @eval begin
         function qrm_spfct_init!(spfct :: qrm_spfct{$elty}, spmat :: qrm_spmat{$elty})
             err = $fname(spfct, spmat)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
@@ -147,7 +147,7 @@ for (fname, elty) in ((:sqrm_spfct_destroy_c, :Float32   ),
     @eval begin
         function qrm_spfct_destroy!(spfct :: qrm_spfct{$elty})
             err = $fname(spfct)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
     end
@@ -160,14 +160,14 @@ for (fname, elty) in ((:sqrm_analyse_c, :Float32   ),
     @eval begin
         function qrm_analyse!(spmat :: qrm_spmat{$elty}, spfct :: qrm_spfct{$elty}; transp :: Char='n')
             err = $fname(spmat, spfct, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
         function qrm_analyse(spmat :: qrm_spmat{$elty}; transp :: Char='n')
             spfct = qrm_spfct_init(spmat)
             err = $fname(spmat, spfct, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return spfct
         end
 
@@ -186,7 +186,7 @@ for (fname, elty) in ((:sqrm_factorize_c, :Float32   ),
     @eval begin
         function qrm_factorize!(spmat :: qrm_spmat{$elty}, spfct :: qrm_spfct{$elty}; transp :: Char='n')
             err = $fname(spmat, spfct, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
@@ -208,7 +208,7 @@ for (fname, elty) in ((:sqrm_solve_c, :Float32   ),
                 @assert length(x) == spfct.fct.m
             end
             err = $fname(spfct, transp, b, x, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
@@ -220,7 +220,7 @@ for (fname, elty) in ((:sqrm_solve_c, :Float32   ),
                 @assert size(x) == (spfct.fct.m, nrhs)
             end
             err = $fname(spfct, transp, b, x, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
@@ -232,7 +232,7 @@ for (fname, elty) in ((:sqrm_solve_c, :Float32   ),
                 x = zeros($elty, spfct.fct.m)
             end
             err = $fname(spfct, transp, b, x, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return x
         end
 
@@ -244,7 +244,7 @@ for (fname, elty) in ((:sqrm_solve_c, :Float32   ),
                 x = zeros($elty, spfct.fct.m, nrhs)
             end
             err = $fname(spfct, transp, b, x, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return x
         end
 
@@ -270,14 +270,14 @@ for (fname, elty) in ((:sqrm_apply_c, :Float32   ),
         function qrm_apply!(spfct :: qrm_spfct{$elty}, b :: Vector{$elty}; transp :: Char='n')
             nrhs = 1
             err = $fname(spfct, transp, b, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
         function qrm_apply!(spfct :: qrm_spfct{$elty}, b :: Matrix{$elty}; transp :: Char='n')
             nrhs = size(b, 2)
             err = $fname(spfct, transp, b, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
@@ -285,7 +285,7 @@ for (fname, elty) in ((:sqrm_apply_c, :Float32   ),
             nrhs = 1
             z = copy(b)
             err = $fname(spfct, transp, z, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return z
         end
 
@@ -293,7 +293,7 @@ for (fname, elty) in ((:sqrm_apply_c, :Float32   ),
             nrhs = size(b, 2)
             z = copy(b)
             err = $fname(spfct, transp, z, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return z
         end
 
@@ -319,14 +319,14 @@ for (fname, elty) in ((:sqrm_spmat_mv_c, :Float32   ),
         function qrm_spmat_mv!(spmat :: qrm_spmat{$elty}, alpha :: $elty, x :: Vector{$elty}, beta :: $elty, y :: Vector{$elty}; transp :: Char='n')
             nrhs = 1
             err = $fname(spmat, transp, alpha, x, beta, y, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
         function qrm_spmat_mv!(spmat :: qrm_spmat{$elty}, alpha :: $elty, x :: Matrix{$elty}, beta :: $elty, y :: Matrix{$elty}; transp :: Char='n')
             nrhs = size(y, 2)
             err = $fname(spmat, transp, alpha, x, beta, y, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
@@ -355,7 +355,7 @@ for (fname, elty, subty) in ((:sqrm_spmat_nrm_c, :Float32   , :Float32),
         function qrm_spmat_nrm(spmat :: qrm_spmat{$elty}; ntype :: Char='f')
             nrm = Ref{$subty}(0)
             err = $fname(spmat, ntype, nrm)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nrm[]
         end
     end
@@ -371,7 +371,7 @@ for (fname, elty, subty) in ((:sqrm_vecnrm_c, :Float32   , :Float32),
             nrhs = 1
             nrm = Ref{$subty}(0)
             err = $fname(x, n, nrhs, ntype, nrm)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nrm[]
         end
 
@@ -379,14 +379,14 @@ for (fname, elty, subty) in ((:sqrm_vecnrm_c, :Float32   , :Float32),
             n, nrhs = size(x)
             nrm = zeros($subty, nrhs)
             err = $fname(x, n, nrhs, ntype, nrm)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nrm
         end
 
         function qrm_vecnrm!(x :: Matrix{$elty}, nrm :: Vector{$subty}; ntype :: Char='2')
             n, nrhs = size(x)
             err = $fname(x, n, nrhs, ntype, nrm)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
     end
@@ -405,7 +405,7 @@ for (fname, elty) in ((:sqrm_spbackslash_c, :Float32   ),
                 @assert length(x) == spmat.mat.m
             end
             err = $fname(spmat, b, x, nrhs, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
@@ -417,7 +417,7 @@ for (fname, elty) in ((:sqrm_spbackslash_c, :Float32   ),
                 @assert size(x) == (spmat.mat.m, nrhs)
             end
             err = $fname(spmat, b, x, nrhs, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
@@ -431,7 +431,7 @@ for (fname, elty) in ((:sqrm_spbackslash_c, :Float32   ),
             end
             bcopy = (spmat.mat.m ≥ spmat.mat.n) ? copy(b) : b
             err = $fname(spmat, bcopy, x, nrhs, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return x
         end
 
@@ -444,7 +444,7 @@ for (fname, elty) in ((:sqrm_spbackslash_c, :Float32   ),
             end
             bcopy = (spmat.mat.m ≥ spmat.mat.n) ? copy(b) : b
             err = $fname(spmat, bcopy, x, nrhs, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return x
         end
 
@@ -487,7 +487,7 @@ for (fname, elty) in ((:sqrm_spfct_backslash_c, :Float32   ),
                 @assert length(x) == spfct.fct.m
             end
             err = $fname(spfct, b, x, nrhs, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
@@ -499,7 +499,7 @@ for (fname, elty) in ((:sqrm_spfct_backslash_c, :Float32   ),
                 @assert size(x) == (spfct.fct.m, nrhs)
             end
             err = $fname(spfct, b, x, nrhs, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
@@ -513,7 +513,7 @@ for (fname, elty) in ((:sqrm_spfct_backslash_c, :Float32   ),
             end
             bcopy = (spfct.fct.m ≥ spfct.fct.n) ? copy(b) : b
             err = $fname(spfct, bcopy, x, nrhs, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return x
         end
 
@@ -526,7 +526,7 @@ for (fname, elty) in ((:sqrm_spfct_backslash_c, :Float32   ),
             end
             bcopy = (spfct.fct.m ≥ spfct.fct.n) ? copy(b) : b
             err = $fname(spfct, bcopy, x, nrhs, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return x
         end
 
@@ -562,14 +562,14 @@ for (fname, elty) in ((:sqrm_spposv_c, :Float32   ),
         function qrm_spposv!(spmat :: qrm_spmat{$elty}, b :: Vector{$elty}, x :: Vector{$elty})
             nrhs = 1
             err = $fname(spmat, b, x, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
         
         function qrm_spposv!(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty}, x :: Matrix{$elty})
             nrhs = size(b, 2)
             err = $fname(spmat, b, x, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
@@ -578,7 +578,7 @@ for (fname, elty) in ((:sqrm_spposv_c, :Float32   ),
             x = zeros($elty, spmat.mat.n)
             bcopy = copy(b)
             err = $fname(spmat, bcopy, x, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return x
         end
 
@@ -587,7 +587,7 @@ for (fname, elty) in ((:sqrm_spposv_c, :Float32   ),
             x = zeros($elty, spmat.mat.n, nrhs)
             bcopy = copy(b)
             err = $fname(spmat, bcopy, x, nrhs)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return x
         end
     end
@@ -606,7 +606,7 @@ for (fname, elty) in ((:sqrm_least_squares_c, :Float32   ),
                 @assert length(x) == spmat.mat.m
             end
             err = $fname(spmat, b, x, nrhs, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
@@ -618,7 +618,7 @@ for (fname, elty) in ((:sqrm_least_squares_c, :Float32   ),
                 @assert size(x) == (spmat.mat.m, nrhs)
             end
             err = $fname(spmat, b, x, nrhs, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
@@ -631,7 +631,7 @@ for (fname, elty) in ((:sqrm_least_squares_c, :Float32   ),
             end
             bcopy = copy(b)
             err = $fname(spmat, bcopy, x, nrhs, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return x
         end
 
@@ -644,7 +644,7 @@ for (fname, elty) in ((:sqrm_least_squares_c, :Float32   ),
             end
             bcopy = copy(b)
             err = $fname(spmat, bcopy, x, nrhs, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return x
         end
 
@@ -676,7 +676,7 @@ for (fname, elty) in ((:sqrm_min_norm_c, :Float32   ),
                 @assert length(x) == spmat.mat.m
             end
             err = $fname(spmat, b, x, nrhs, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
@@ -688,7 +688,7 @@ for (fname, elty) in ((:sqrm_min_norm_c, :Float32   ),
                 @assert size(x) == (spmat.mat.m, nrhs)
             end
             err = $fname(spmat, b, x, nrhs, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
@@ -700,7 +700,7 @@ for (fname, elty) in ((:sqrm_min_norm_c, :Float32   ),
                 x = zeros($elty, spmat.mat.m)
             end
             err = $fname(spmat, b, x, nrhs, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return x
         end
 
@@ -712,7 +712,7 @@ for (fname, elty) in ((:sqrm_min_norm_c, :Float32   ),
                 x = zeros($elty, spmat.mat.n, nrhs)
             end
             err = $fname(spmat, b, x, nrhs, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return x
         end
 
@@ -740,7 +740,7 @@ for (fname, elty, subty) in ((:sqrm_residual_norm_c, :Float32   , :Float32),
             nrhs = 1
             nrm = Ref{$subty}(0)
             err = $fname(spmat, b, x, nrhs, nrm, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nrm[]
         end
 
@@ -748,14 +748,14 @@ for (fname, elty, subty) in ((:sqrm_residual_norm_c, :Float32   , :Float32),
             nrhs = size(x, 2)
             nrm = zeros($subty, nrhs)
             err = $fname(spmat, b, x, nrhs, nrm, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nrm
         end
 
         function qrm_residual_norm!(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty}, x :: Matrix{$elty}, nrm :: Vector{$subty}; transp :: Char='n')
             nrhs = size(x, 2)
             err = $fname(spmat, b, x, nrhs, nrm, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
@@ -781,7 +781,7 @@ for (fname, elty, subty) in ((:sqrm_residual_orth_c, :Float32   , :Float32),
             nrhs = 1
             nrm = Ref{$subty}(0)
             err = $fname(spmat, r, nrhs, nrm, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nrm[]
         end
 
@@ -789,14 +789,14 @@ for (fname, elty, subty) in ((:sqrm_residual_orth_c, :Float32   , :Float32),
             nrhs = size(r, 2)
             nrm = zeros($subty, nrhs)
             err = $fname(spmat, r, nrhs, nrm, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nrm
         end
 
         function qrm_residual_orth!(spmat :: qrm_spmat{$elty}, r :: Matrix{$elty}, nrm :: Vector{$subty}; transp :: Char='n')
             nrhs = size(r, 2)
             err = $fname(spmat, r, nrhs, nrm, transp)
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
 
@@ -819,7 +819,7 @@ function qrm_set(str :: String, val :: Number)
     else
         err = Int32(23)
     end
-    (err ≠ 0) && throw(ErrorException(error_handling(err)))
+    qrm_check(err)
     return nothing
 end
 
@@ -836,7 +836,7 @@ for (finame, frname, elty) in ((:sqrm_spfct_set_i4_c, :sqrm_spfct_set_r4_c, :Flo
             else
                 err = Int32(23)
             end
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return nothing
         end
     end
@@ -852,7 +852,7 @@ function qrm_get(str :: String)
     else
         err = Int32(23)
     end
-    (err ≠ 0) && throw(ErrorException(error_handling(err)))
+    qrm_check(err)
     return val[]
 end
 
@@ -871,7 +871,7 @@ for (finame, frname, elty) in ((:sqrm_spfct_get_i8_c, :sqrm_spfct_get_r4_c, :Flo
             else
                 err = Int32(23)
             end
-            (err ≠ 0) && throw(ErrorException(error_handling(err)))
+            qrm_check(err)
             return val[]
         end
     end
@@ -879,7 +879,7 @@ end
 
 function qrm_init(ncpu :: Integer = 1, ngpu :: Integer = 0)
     err = qrm_init_c(ncpu, ngpu)
-    (err ≠ 0) && throw(ErrorException(error_handling(err)))
+    qrm_check(err)
     return nothing
 end
 
