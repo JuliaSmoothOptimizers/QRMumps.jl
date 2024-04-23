@@ -6,7 +6,6 @@ import Base: \
 import LinearAlgebra: mul!
 
 if haskey(ENV, "JULIA_QRMUMPS_LIBRARY_PATH")
-  @info("Custom Installation")
   const libsqrm = joinpath(ENV["JULIA_QRMUMPS_LIBRARY_PATH"], "libsqrm.$dlext")
   const libdqrm = joinpath(ENV["JULIA_QRMUMPS_LIBRARY_PATH"], "libdqrm.$dlext")
   const libcqrm = joinpath(ENV["JULIA_QRMUMPS_LIBRARY_PATH"], "libcqrm.$dlext")
@@ -14,10 +13,20 @@ if haskey(ENV, "JULIA_QRMUMPS_LIBRARY_PATH")
   const libqrm_common = joinpath(ENV["JULIA_QRMUMPS_LIBRARY_PATH"], "libqrm_common.$dlext")
   const QRMUMPS_INSTALLATION = "CUSTOM"
 else
+  using OpenBLAS32_jll
   using qr_mumps_jll
   const QRMUMPS_INSTALLATION = "YGGDRASIL"
-  function __init__()
+end
+
+function __init__()
+  if QRMUMPS_INSTALLATION == "YGGDRASIL"
     qrm_init()
+    if VERSION ≥ v"1.10"
+      config = LinearAlgebra.BLAS.lbt_get_config()
+      if !any(lib -> lib.interface == :lp64, config.loaded_libs)
+        LinearAlgebra.BLAS.lbt_forward(OpenBLAS32_jll.libopenblas_path)
+      end
+    end
   end
 end
 

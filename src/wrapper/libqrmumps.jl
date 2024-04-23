@@ -20,9 +20,25 @@ function sqrm_analyse_c(spmat, spfct, transp)
                                   spfct::Ref{c_spfct{Float32}}, transp::Cchar)::Cint
 end
 
+struct qrm_dscr_type_c
+    h::Ptr{Cvoid}
+end
+
+function sqrm_analyse_async_c(qrm_dscr_c, spmat, spfct, transp)
+    @ccall libsqrm.sqrm_analyse_async_c(qrm_dscr_c::Ptr{qrm_dscr_type_c},
+                                        spmat::Ref{c_spmat{Float32}},
+                                        spfct::Ref{c_spfct{Float32}}, transp::Cchar)::Cint
+end
+
 function sqrm_factorize_c(spmat, spfct, transp)
     @ccall libsqrm.sqrm_factorize_c(spmat::Ref{c_spmat{Float32}},
                                     spfct::Ref{c_spfct{Float32}}, transp::Cchar)::Cint
+end
+
+function sqrm_factorize_async_c(qrm_dscr_c, spmat, spfct, transp)
+    @ccall libsqrm.sqrm_factorize_async_c(qrm_dscr_c::Ptr{qrm_dscr_type_c},
+                                          spmat::Ref{c_spmat{Float32}},
+                                          spfct::Ref{c_spfct{Float32}}, transp::Cchar)::Cint
 end
 
 function sqrm_solve_c(spfct, transp, b, x, nrhs)
@@ -33,6 +49,11 @@ end
 function sqrm_apply_c(spfct, transp, b, nrhs)
     @ccall libsqrm.sqrm_apply_c(spfct::Ref{c_spfct{Float32}}, transp::Cchar, b::Ptr{Cfloat},
                                 nrhs::Cint)::Cint
+end
+
+function sqrm_spfct_unmqr_c(spfct, transp, b, nrhs)
+    @ccall libsqrm.sqrm_spfct_unmqr_c(spfct::Ref{c_spfct{Float32}}, transp::Cchar,
+                                      b::Ptr{Cfloat}, nrhs::Cint)::Cint
 end
 
 function sqrm_spmat_mv_c(spmat, transp, alpha, x, beta, y, nrhs)
@@ -127,6 +148,11 @@ function sqrm_spfct_get_schur_c(spfct, s, i, j, m, n)
                                           i::Cint, j::Cint, m::Cint, n::Cint)::Cint
 end
 
+function sqrm_spfct_get_schur_async_c(spfct, hdls)
+    @ccall libsqrm.sqrm_spfct_get_schur_async_c(spfct::Ref{c_spfct{Float32}},
+                                                hdls::Ptr{Ptr{Cvoid}})::Cint
+end
+
 function sqrm_spfct_get_r_c(spfct, spmat)
     @ccall libsqrm.sqrm_spfct_get_r_c(spfct::Ref{c_spfct{Float32}},
                                       spmat::Ref{c_spmat{Float32}})::Cint
@@ -164,9 +190,21 @@ function dqrm_analyse_c(spmat, spfct, transp)
                                   spfct::Ref{c_spfct{Float64}}, transp::Cchar)::Cint
 end
 
+function dqrm_analyse_async_c(qrm_dscr_c, spmat, spfct, transp)
+    @ccall libdqrm.dqrm_analyse_async_c(qrm_dscr_c::Ptr{qrm_dscr_type_c},
+                                        spmat::Ref{c_spmat{Float64}},
+                                        spfct::Ref{c_spfct{Float64}}, transp::Cchar)::Cint
+end
+
 function dqrm_factorize_c(spmat, spfct, transp)
     @ccall libdqrm.dqrm_factorize_c(spmat::Ref{c_spmat{Float64}},
                                     spfct::Ref{c_spfct{Float64}}, transp::Cchar)::Cint
+end
+
+function dqrm_factorize_async_c(qrm_dscr_c, spmat, spfct, transp)
+    @ccall libdqrm.dqrm_factorize_async_c(qrm_dscr_c::Ptr{qrm_dscr_type_c},
+                                          spmat::Ref{c_spmat{Float64}},
+                                          spfct::Ref{c_spfct{Float64}}, transp::Cchar)::Cint
 end
 
 function dqrm_solve_c(spfct, transp, b, x, nrhs)
@@ -177,6 +215,11 @@ end
 function dqrm_apply_c(spfct, transp, b, nrhs)
     @ccall libdqrm.dqrm_apply_c(spfct::Ref{c_spfct{Float64}}, transp::Cchar,
                                 b::Ptr{Cdouble}, nrhs::Cint)::Cint
+end
+
+function dqrm_spfct_unmqr_c(spfct, transp, b, nrhs)
+    @ccall libdqrm.dqrm_spfct_unmqr_c(spfct::Ref{c_spfct{Float64}}, transp::Cchar,
+                                      b::Ptr{Cdouble}, nrhs::Cint)::Cint
 end
 
 function dqrm_spmat_mv_c(spmat, transp, alpha, x, beta, y, nrhs)
@@ -271,6 +314,11 @@ function dqrm_spfct_get_schur_c(spfct, s, i, j, m, n)
                                           i::Cint, j::Cint, m::Cint, n::Cint)::Cint
 end
 
+function dqrm_spfct_get_schur_async_c(spfct, hdls)
+    @ccall libdqrm.dqrm_spfct_get_schur_async_c(spfct::Ref{c_spfct{Float64}},
+                                                hdls::Ptr{Ptr{Cvoid}})::Cint
+end
+
 function dqrm_spfct_get_r_c(spfct, spmat)
     @ccall libdqrm.dqrm_spfct_get_r_c(spfct::Ref{c_spfct{Float64}},
                                       spmat::Ref{c_spmat{Float64}})::Cint
@@ -308,9 +356,23 @@ function cqrm_analyse_c(spmat, spfct, transp)
                                   spfct::Ref{c_spfct{ComplexF32}}, transp::Cchar)::Cint
 end
 
+function cqrm_analyse_async_c(qrm_dscr_c, spmat, spfct, transp)
+    @ccall libcqrm.cqrm_analyse_async_c(qrm_dscr_c::Ptr{qrm_dscr_type_c},
+                                        spmat::Ref{c_spmat{ComplexF32}},
+                                        spfct::Ref{c_spfct{ComplexF32}},
+                                        transp::Cchar)::Cint
+end
+
 function cqrm_factorize_c(spmat, spfct, transp)
     @ccall libcqrm.cqrm_factorize_c(spmat::Ref{c_spmat{ComplexF32}},
                                     spfct::Ref{c_spfct{ComplexF32}}, transp::Cchar)::Cint
+end
+
+function cqrm_factorize_async_c(qrm_dscr_c, spmat, spfct, transp)
+    @ccall libcqrm.cqrm_factorize_async_c(qrm_dscr_c::Ptr{qrm_dscr_type_c},
+                                          spmat::Ref{c_spmat{ComplexF32}},
+                                          spfct::Ref{c_spfct{ComplexF32}},
+                                          transp::Cchar)::Cint
 end
 
 function cqrm_solve_c(spfct, transp, b, x, nrhs)
@@ -321,6 +383,11 @@ end
 function cqrm_apply_c(spfct, transp, b, nrhs)
     @ccall libcqrm.cqrm_apply_c(spfct::Ref{c_spfct{ComplexF32}}, transp::Cchar,
                                 b::Ptr{ComplexF32}, nrhs::Cint)::Cint
+end
+
+function cqrm_spfct_unmqr_c(spfct, transp, b, nrhs)
+    @ccall libcqrm.cqrm_spfct_unmqr_c(spfct::Ref{c_spfct{ComplexF32}}, transp::Cchar,
+                                      b::Ptr{ComplexF32}, nrhs::Cint)::Cint
 end
 
 function cqrm_spmat_mv_c(spmat, transp, alpha, x, beta, y, nrhs)
@@ -418,6 +485,11 @@ function cqrm_spfct_get_schur_c(spfct, s, i, j, m, n)
                                           n::Cint)::Cint
 end
 
+function cqrm_spfct_get_schur_async_c(spfct, hdls)
+    @ccall libcqrm.cqrm_spfct_get_schur_async_c(spfct::Ref{c_spfct{ComplexF32}},
+                                                hdls::Ptr{Ptr{Cvoid}})::Cint
+end
+
 function cqrm_spfct_get_r_c(spfct, spmat)
     @ccall libcqrm.cqrm_spfct_get_r_c(spfct::Ref{c_spfct{ComplexF32}},
                                       spmat::Ref{c_spmat{ComplexF32}})::Cint
@@ -455,9 +527,23 @@ function zqrm_analyse_c(spmat, spfct, transp)
                                   spfct::Ref{c_spfct{ComplexF64}}, transp::Cchar)::Cint
 end
 
+function zqrm_analyse_async_c(qrm_dscr_c, spmat, spfct, transp)
+    @ccall libzqrm.zqrm_analyse_async_c(qrm_dscr_c::Ptr{qrm_dscr_type_c},
+                                        spmat::Ref{c_spmat{ComplexF64}},
+                                        spfct::Ref{c_spfct{ComplexF64}},
+                                        transp::Cchar)::Cint
+end
+
 function zqrm_factorize_c(spmat, spfct, transp)
     @ccall libzqrm.zqrm_factorize_c(spmat::Ref{c_spmat{ComplexF64}},
                                     spfct::Ref{c_spfct{ComplexF64}}, transp::Cchar)::Cint
+end
+
+function zqrm_factorize_async_c(qrm_dscr_c, spmat, spfct, transp)
+    @ccall libzqrm.zqrm_factorize_async_c(qrm_dscr_c::Ptr{qrm_dscr_type_c},
+                                          spmat::Ref{c_spmat{ComplexF64}},
+                                          spfct::Ref{c_spfct{ComplexF64}},
+                                          transp::Cchar)::Cint
 end
 
 function zqrm_solve_c(spfct, transp, b, x, nrhs)
@@ -468,6 +554,11 @@ end
 function zqrm_apply_c(spfct, transp, b, nrhs)
     @ccall libzqrm.zqrm_apply_c(spfct::Ref{c_spfct{ComplexF64}}, transp::Cchar,
                                 b::Ptr{ComplexF64}, nrhs::Cint)::Cint
+end
+
+function zqrm_spfct_unmqr_c(spfct, transp, b, nrhs)
+    @ccall libzqrm.zqrm_spfct_unmqr_c(spfct::Ref{c_spfct{ComplexF64}}, transp::Cchar,
+                                      b::Ptr{ComplexF64}, nrhs::Cint)::Cint
 end
 
 function zqrm_spmat_mv_c(spmat, transp, alpha, x, beta, y, nrhs)
@@ -565,6 +656,11 @@ function zqrm_spfct_get_schur_c(spfct, s, i, j, m, n)
                                           n::Cint)::Cint
 end
 
+function zqrm_spfct_get_schur_async_c(spfct, hdls)
+    @ccall libzqrm.zqrm_spfct_get_schur_async_c(spfct::Ref{c_spfct{ComplexF64}},
+                                                hdls::Ptr{Ptr{Cvoid}})::Cint
+end
+
 function zqrm_spfct_get_r_c(spfct, spmat)
     @ccall libzqrm.zqrm_spfct_get_r_c(spfct::Ref{c_spfct{ComplexF64}},
                                       spmat::Ref{c_spmat{ComplexF64}})::Cint
@@ -610,4 +706,20 @@ end
 
 function qrm_finalize_c()
     @ccall libqrm_common.qrm_finalize_c()::Cvoid
+end
+
+function qrm_dscr_init_c(qrm_dscr_c)
+    @ccall libqrm_common.qrm_dscr_init_c(qrm_dscr_c::Ptr{qrm_dscr_type_c})::Cint
+end
+
+function qrm_dscr_destroy_c(qrm_dscr_c)
+    @ccall libqrm_common.qrm_dscr_destroy_c(qrm_dscr_c::Ptr{qrm_dscr_type_c})::Cint
+end
+
+function qrm_barrier_c()
+    @ccall libqrm_common.qrm_barrier_c()::Cint
+end
+
+function qrm_barrier_dscr_c(qrm_dscr_c)
+    @ccall libqrm_common.qrm_barrier_dscr_c(qrm_dscr_c::Ptr{qrm_dscr_type_c})::Cint
 end
