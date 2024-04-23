@@ -14,6 +14,7 @@ qr_mumps_jll = "e37b5aa0-c611-5f0f-83fb-aee446c0b77e"
 [compat]
 Libdl = "1.6"
 LinearAlgebra = "1.6"
+OpenBLAS32_jll = "0.3.10"
 Printf = "1.6"
 Random = "1.6"
 SparseArrays = "1.6"
