@@ -28,7 +28,7 @@ function main()
     spmat = "spmat" * pattern
     code = replace(code, qrm_spmat_c => spmat)
 
-    qrm_spfct_c = "qrm_sptct_c" * pattern
+    qrm_spfct_c = "qrm_spfct_c" * pattern
     spfct = "spfct" * pattern
     code = replace(code, qrm_spfct_c => spfct)
   end
