@@ -136,5 +136,5 @@ function error_handling(err :: Cint)
 end
 
 function qrm_check(err :: Cint)
-  (err ≠ 0) && throw(ErrorException(error_handling(err)))
+  (err ≠ 0) && error(error_handling(err))
 end
