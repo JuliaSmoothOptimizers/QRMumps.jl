@@ -1,6 +1,6 @@
 module QRMumps
 
-using Libdl, SparseArrays, LinearAlgebra
+using Libdl, SparseArrays, LinearAlgebra, SparseMatricesCOO
 
 import Base: \
 import LinearAlgebra: mul!
@@ -88,7 +88,7 @@ This routine initializes a **qrm_spmat** type data structure from a **sparseMatr
 In the first form,
 
 * `spmat`: the **qrm_spmat** sparse matrix to be initialized.
-* `A` : a Julia sparse matrix stored in **SparseMatrixCSC** format.
+* `A` : a Julia sparse matrix stored in either **SparseMatrixCSC** or **SparseMatrixCOO** format (see SparseMatricesCOO.jl for the second case).
 * `sym` : a boolean to specify if the matrix is symmetric / hermitian (true) or unsymmetric (false).
 
 In the second form, the matrix `A` is specified using
