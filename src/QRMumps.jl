@@ -1,6 +1,6 @@
 module QRMumps
 
-using Libdl, SparseArrays, LinearAlgebra, SparseMatricesCOO
+using Libdl, SparseArrays, LinearAlgebra
 
 import Base: \
 import LinearAlgebra: mul!

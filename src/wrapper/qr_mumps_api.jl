@@ -89,16 +89,6 @@ for (fname, elty) in ((:sqrm_spmat_init_c, :Float32   ),
             qrm_spmat_init!(spmat, m, n, irn, jcn, val; sym = sym)
             return spmat
         end
-
-        function qrm_spmat_init(A :: SparseMatrixCOO{$elty,I}; sym :: Bool=false) where I <: Integer
-            spmat = qrm_spmat{$elty}()
-            qrm_spmat_init!(spmat, A; sym = sym)
-            return spmat
-        end
-
-        function qrm_spmat_init!(spmat :: qrm_spmat{$elty}, A :: SparseMatrixCOO{$elty,I}; sym :: Bool=false) where I <: Integer
-            qrm_spmat_init!(spmat, A.m, A.n, A.rows, A.cols, A.vals; sym = sym)
-        end
         
         function qrm_spmat_init!(spmat :: qrm_spmat{$elty}, A :: SparseMatrixCSC{$elty,I}; sym :: Bool=false) where I <: Integer
             qrm_spmat_init!(spmat, size(A)..., findnz(A)...; sym = sym)
