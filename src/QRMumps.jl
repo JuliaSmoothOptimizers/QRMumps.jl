@@ -81,7 +81,7 @@ function qrm_finalize end
     qrm_spmat_init!(spmat, A; sym=false)
     spmat = qrm_spmat_init!(spmat, m, n, rows, cols, vals; sym=false)
 
-This routine initializes a **qrm_spmat** type data structure from a **sparseMatrixCSC**.
+This routine initializes a **qrm_spmat** type data structure from a **SparseMatrixCSC**.
 
 #### Input Arguments :
 
@@ -151,7 +151,7 @@ function qrm_spfct_destroy! end
     qrm_update!(spmat, A)
     qrm_update!(spmat, vals)
 
-This routine updates a **qrm_spmat** type data structure from a **sparseMatrixCSC**.
+This routine updates a **qrm_spmat** type data structure from a **SparseMatrixCSC**.
 `spmat` and `A` must have the same sparsity pattern.
 
 #### Input Arguments :
@@ -166,6 +166,20 @@ In the second form,
 * `vals`: the array of values of nonzero elements of `A`.
 """
 function qrm_update! end
+
+@doc raw"""
+    qrm_spfct_unmqr(spfct :: qrm_spfct, transp, b)
+
+#### Input Arguments :
+
+This routine computes `Qb`, `Qᵀb` or `Qᴴb` in place and overwrites b.
+It can only be executed once the factorization is done.
+
+* `spfct`: the sparse factorization object of type `qrm_spfct`.
+* `transp`: whether the input matrix should be transposed or not. Can be either `'t'`, `'c'` or `'n'`.
+* `b`: the vector or matrix on which we apply the orthogonal matrix.
+"""
+function qrm_spfct_unmqr end
 
 @doc raw"""
     qrm_analyse!(spmat, spfct; transp='n')
