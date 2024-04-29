@@ -1,7 +1,7 @@
 name = "QRMumps"
 uuid = "422b30a1-cc69-4d85-abe7-cc07b540c444"
 authors = ["Alfredo Buttari (@abuttari), Alexis Montoison (@amontoison)"]
-version = "0.2.5"
+version = "0.2.4"
 
 [deps]
 Libdl = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
@@ -24,7 +24,7 @@ OpenBLAS32_jll = "0.3.10"
 Printf = "1.10"
 Random = "1.10"
 SparseArrays = "1.10"
-SparseMatricesCOO = "1.10"
+SparseMatricesCOO = "0.2.2"
 Test = "1.10"
 julia = "1.10"
 qr_mumps_jll = "3.1.0"
