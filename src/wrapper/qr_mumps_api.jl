@@ -115,7 +115,7 @@ for (fname, elty) in ((:sqrm_spmat_destroy_c, :Float32   ),
     @eval begin
         function qrm_spmat_destroy!(spmat :: qrm_spmat{$elty})
             err = $fname(spmat)
-            qrm_check(err)
+            # qrm_check(err)
             return nothing
         end
     end
