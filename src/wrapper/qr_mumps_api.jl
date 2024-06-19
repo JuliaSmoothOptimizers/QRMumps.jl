@@ -1,3 +1,17 @@
+for (fname, elty) in ((:sqrm_spfct_unmqr_c, :Float32   ),
+                      (:dqrm_spfct_unmqr_c, :Float64   ),
+                      (:cqrm_spfct_unmqr_c, :ComplexF32),
+                      (:zqrm_spfct_unmqr_c, :ComplexF64))
+    @eval begin
+        function qrm_spfct_unmqr(spfct :: qrm_spfct{$elty}, trans::Char, b::VecOrMat{$elty})
+            nrhs = size(b, 2)
+            err = $fname(spfct, trans, b, nrhs)
+            qrm_check(err)
+            return b
+        end
+    end
+end
+
 for (fname, elty) in ((:sqrm_spfct_get_rp_c, :Float32   ),
                       (:dqrm_spfct_get_rp_c, :Float64   ),
                       (:cqrm_spfct_get_rp_c, :ComplexF32),
