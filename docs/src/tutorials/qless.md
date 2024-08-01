@@ -34,9 +34,16 @@ qrm_solve!(spfct, b, y₁; transp='t')
 qrm_solve!(spfct, y₁, y₂; transp='n')
 
 # Overall, RᵀRy₂ = b. Equivalently, RᵀQᵀQRy₂ = b or AAᵀy₂ = b
+
+# Compute least norm solution of min ‖b - Ax‖
+x = A'*y₂
+
+# Compute error norm and residual norm
 error_norm = norm(y₂ - y_star)
+residual_norm = norm(b - A*x)
 
 @printf("Error norm ‖y* - y‖ = %10.5e\n", error_norm)
+@printf("Residual norm ‖b - Ax‖ = %10.5e\n", residual_norm)
 ```
 
 ```@example qless2
