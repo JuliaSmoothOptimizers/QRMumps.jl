@@ -1,7 +1,7 @@
 Random.seed!(1234)
 m = 200
 n = 100
-p = 5
+p = 2
 
 @testset "least-squares problems" begin
   for T in (Float32, Float64, ComplexF32, ComplexF64)
@@ -9,9 +9,9 @@ p = 5
     tol = (real(T) == Float32) ? 1e-3 : 1e-12
     transp = (T <: Real) ? 't' : 'c'
 
-    for I in (Int32 , Int64)
+    for INT in (Int32 , Int64)
       A = sprand(T, m, n, 0.3)
-      A = convert(SparseMatrixCSC{T,I}, A)
+      A = convert(SparseMatrixCSC{T,INT}, A)
       b = rand(T, m)
       B = rand(T, m, p)
 
@@ -39,6 +39,15 @@ p = 5
       X = qrm_solve(spfct, Z, transp='n')
       R = B - A * X
       @test norm(A' * R) ≤ tol
+
+      if VERSION ≥ v"1.10"
+        Q = Matrix{T}(I, m, m)
+        qrm_spfct_unmqr(spfct, 'n', Q)
+        @test Q * Q' ≈ I
+        Qᴴ = Matrix{T}(I, m, m)
+        qrm_spfct_unmqr(spfct, transp, Qᴴ)
+        @test Qᴴ * Qᴴ' ≈ I
+      end
 
       spmat = qrm_spmat_init(T)
       qrm_spmat_init!(spmat, A)
@@ -158,9 +167,9 @@ end
     tol = (real(T) == Float32) ? 1e-3 : 1e-12
     transp = (T <: Real) ? 't' : 'c'
 
-    for I in (Int32 , Int64)
+    for INT in (Int32 , Int64)
       A = sprand(T, n, m, 0.3)
-      A = convert(SparseMatrixCSC{T,I}, A)
+      A = convert(SparseMatrixCSC{T,INT}, A)
       b = rand(T, n)
       B = rand(T, n, p)
       spmat = qrm_spmat_init(A)
@@ -187,6 +196,15 @@ end
       X = qrm_apply(spfct, Z, transp='n')
       R = B - A * X
       @test norm(R) ≤ tol
+
+      if VERSION ≥ v"1.10"
+        Q = Matrix{T}(I, m, m)
+        qrm_spfct_unmqr(spfct, 'n', Q)
+        @test Q * Q' ≈ I
+        Qᴴ = Matrix{T}(I, m, m)
+        qrm_spfct_unmqr(spfct, transp, Qᴴ)
+        @test Qᴴ * Qᴴ' ≈ I
+      end
 
       spmat = qrm_spmat_init(T)
       qrm_spmat_init!(spmat, A)
@@ -297,9 +315,9 @@ end
     transp = (T <: Real) ? 't' : 'c'
     Id = Diagonal(ones(T, n))
 
-    for I in (Int32 , Int64)
+    for INT in (Int32 , Int64)
       A = sprand(T, n, n, 0.01)
-      A = convert(SparseMatrixCSC{T,I}, A)
+      A = convert(SparseMatrixCSC{T,INT}, A)
       A = A * A' + Id
       A = (T <: Real) ? Symmetric(tril(A), :L) : Hermitian(tril(A), :L)
       b = rand(T, n)
@@ -331,7 +349,7 @@ end
       @test norm(R) ≤ tol
 
       A = sprand(T, n, n, 0.01)
-      A = convert(SparseMatrixCSC{T,I}, A)
+      A = convert(SparseMatrixCSC{T,INT}, A)
       A = A * A' + Id
       A = (T <: Real) ? Symmetric(triu(A), :U) : Hermitian(triu(A), :U)
       x = zeros(T, n)
