@@ -9,9 +9,10 @@ val = [1.0, 2.0, 3.0, 1.0, 1.0, 2.0, 4.0, 1.0, 5.0, 1.0, 3.0, 6.0, 1.0]
 
 A = sparse(irn, jcn, val, m, n)
 b = [40.0, 10.0, 44.0, 98.0, 87.0]
-y_star = [0.0, 1.0, 2.0, 3.0, 4.0]
+y_star = [16.0, 1.0, 10.0, 3.0, 19.0, 3.0, 2.0]
 y₁ = zeros(n)
 y₂ = zeros(m)
+y₃ = zeros(n)
 
 # Initialize QRMumps
 qrm_init()
@@ -36,11 +37,11 @@ qrm_solve!(spfct, y₁, y₂; transp='n')
 # Overall, RᵀRy₂ = b. Equivalently, RᵀQᵀQRy₂ = b or AAᵀy₂ = b
 
 # Compute least norm solution of min ‖b - Ax‖
-x = A'*y₂
+y₃ .= A'*y₂
 
 # Compute error norm and residual norm
-error_norm = norm(y₂ - y_star)
-residual_norm = norm(b - A*x)
+error_norm = norm(y₃ - y_star)
+residual_norm = norm(b - A*y₃)
 
 @printf("Error norm ‖y* - y‖ = %10.5e\n", error_norm)
 @printf("Residual norm ‖b - Ax‖ = %10.5e\n", residual_norm)
