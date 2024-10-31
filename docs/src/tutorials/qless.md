@@ -14,6 +14,11 @@ y₁ = zeros(n)
 y₂ = zeros(m)
 y₃ = zeros(n)
 
+Δy₁ = zeros(n)
+Δy₂ = zeros(m)
+Δy₃ = zeros(n)
+r = zeros(m)
+
 # Initialize QRMumps
 qrm_init()
 
@@ -36,7 +41,7 @@ qrm_solve!(spfct, y₁, y₂; transp='n')
 
 # Overall, RᵀRy₂ = b. Equivalently, RᵀQᵀQRy₂ = b or AAᵀy₂ = b
 
-# Compute least norm solution of min ‖b - Ax‖
+# Compute least norm solution of min ‖b - Ay‖
 y₃ .= A'*y₂
 
 # Compute error norm and residual norm
@@ -44,7 +49,33 @@ error_norm = norm(y₃ - y_star)
 residual_norm = norm(b - A*y₃)
 
 @printf("Error norm ‖y* - y‖ = %10.5e\n", error_norm)
-@printf("Residual norm ‖b - Ax‖ = %10.5e\n", residual_norm)
+@printf("Residual norm ‖b - Ay‖ = %10.5e\n", residual_norm)
+
+# We can improve this solution with iterative refinement: see Björck 1967 - Iterative refinement of linear least squares solutions I
+#                                                             in BIT Numerical Mathematics.
+# For this, we compute the least norm solution Δy₃ of min ‖r - AΔy‖, where r is the residual r = b - A*y₃.
+# We then update y₃ := y₃ + Δy₃
+r .= b - A*y₃
+
+# Solve RᵀΔy₁ =  r 
+qrm_solve!(spfct, r, Δy₁; transp='t')
+
+# Solve RΔy₂ = Δy₁
+qrm_solve!(spfct, Δy₁, Δy₂; transp='n')
+
+# Overall, RᵀRΔy₂ = r. Equivalently, RᵀQᵀQRΔy₂ = r or AAᵀΔy₂ = r
+
+# Compute least norm solution of min ‖r - Ay‖
+Δy₃ .= A'*Δy₂
+
+# Update the least norm solution
+y₃ .= y₃ .+ Δy₃
+
+error_norm = norm(y₃ - y_star)
+residual_norm = norm(b - A*y₃)
+
+@printf("Error norm - iterative refinement ‖y* - y‖ = %10.5e\n", error_norm)
+@printf("Residual norm - iterative refinement ‖b - Ay‖ = %10.5e\n", residual_norm)
 ```
 
 ```@example qless2
