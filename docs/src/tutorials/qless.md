@@ -115,6 +115,31 @@ x₂ = qrm_solve(spfct, x₁; transp = 'n')
 
 # Overall, RᵀRx₂ = Aᵀb. Equivalently, RᵀQᵀQRx₂ = Aᵀb or AᵀAx₂ = Aᵀb
 error_norm = norm(x₂ - x_star)
+residual_norm = norm(A*x₂ - b)
 
 @printf("Error norm ‖x* - x‖ = %10.5e\n", error_norm)
+@printf("Residual norm ‖Ax - b‖= %10.5e\n", residual_norm)
+
+# We can improve this solution with iterative refinement: see Björck 1967 - Iterative refinement of linear least squares solutions I
+#                                                             in BIT Numerical Mathematics.
+# For this, we compute the least norm solution Δx₂ of min ‖r - AΔx‖, where r is the residual r = Aᵀb - AᵀA*x₂.
+# We then update x₂ := x₂ + Δx₂
+r = A'*(b - A*x₂)
+
+# Solve RᵀΔx₁ =  r 
+Δx₁ = qrm_solve(spfct, r; transp='t')
+
+# Solve Rxy₂ = Δx₁
+Δx₂ = qrm_solve(spfct, Δx₁; transp='n')
+
+# Overall, RᵀRΔx₂ = r. Equivalently, RᵀQᵀQRx₂ = r or AᵀAx₂ = r
+
+# Update the least squares solution
+x₂ .= x₂ .+ Δx₂
+
+error_norm = norm(x₂ - x_star)
+residual_norm = norm(A*x₂ - b)
+
+@printf("Error norm ‖x* - x‖ = %10.5e\n", error_norm)
+@printf("Residual norm ‖Ax - b‖= %10.5e\n", residual_norm)
 ```
