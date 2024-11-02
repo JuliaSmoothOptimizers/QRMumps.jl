@@ -1,0 +1,8 @@
+PackageName: "QRMumps"
+PackageOwner: "JuliaSmoothOptimizers"
+PackageUUID: "422b30a1-cc69-4d85-abe7-cc07b540c444"
+_src_path: "https://github.com/JuliaSmoothOptimizers/JSOBestieTemplate.jl"
+_commit: "v0.13.0"
+AddBreakage: true
+AddBenchmark: false
+AddBenchmarkCI: true
