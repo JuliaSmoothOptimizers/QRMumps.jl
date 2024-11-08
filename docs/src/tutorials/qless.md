@@ -1,5 +1,6 @@
 ```@example qless1
-using QRMumps, LinearAlgebra, SparseArrays, Printf
+using LinearAlgebra, Printf, SparseArrays
+using QRMumps
 
 # Initialize data
 m, n = 5, 7
@@ -26,20 +27,20 @@ qrm_init()
 spmat = qrm_spmat_init(A)
 spfct = qrm_spfct_init(spmat)
 
-# Specify not storing Q for the QR factorization
+# Specify that we want the Q-less QR factorization
 qrm_set(spfct, "qrm_keeph", 0)
 
 # Perform symbolic analysis of Aᵀ and factorize Aᵀ = QR
 qrm_analyse!(spmat, spfct; transp='t')
 qrm_factorize!(spmat, spfct, transp='t')
 
-# Solve Rᵀy₁ =  b  
+# Solve RᵀR y = b in two steps:
+# 1. Solve Rᵀy₁ =  b  
 qrm_solve!(spfct, b, y₁; transp='t')
 
-# Solve Ry₂ = y₁
-qrm_solve!(spfct, y₁, y₂; transp='n')
+# 2. Solve Ry = y₁
+qrm_solve!(spfct, y₁, y; transp='n')
 
-# Overall, RᵀRy₂ = b. Equivalently, RᵀQᵀQRy₂ = b or AAᵀy₂ = b
 
 # Compute least norm solution of min ‖b - Ay‖
 y₃ .= A'*y₂
