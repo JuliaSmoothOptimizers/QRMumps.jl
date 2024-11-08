@@ -1,4 +1,18 @@
 ```@example qless1
+# The Q-less QR factorization may be used to solve the least-norm problem
+#
+#   minimize ‖x‖  subject to  Ax=b
+#
+# while saving storage because Q is not formed.
+# Thus it is appropriate for large problems where storage is at a premium.
+# The normal equations of the second kind AAᵀy = b are the optimality conditions of the least-norm problems, where x = Aᵀy.
+# If Aᵀ = QR, they can be equivalently written RᵀRy = b.
+#
+# This procedure is backward stable if we perform one step of iterative refinement---see
+#
+# Å. Björck, Stability analysis of the method of seminormal equations for linear least squares problems,
+# Linear Algebra and its Applications, 88–89, pp. 31-48, 1987, DOI 10.1016/0024-3795(87)90101-7.
+
 using LinearAlgebra, Printf, SparseArrays
 using QRMumps
 
