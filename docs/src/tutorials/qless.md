@@ -44,14 +44,14 @@ qrm_analyse!(spmat, spfct; transp='t')
 qrm_factorize!(spmat, spfct, transp='t')
 
 # Solve RᵀR y = b in two steps:
-# 1. Solve Rᵀy₁ =  b  
+# 1. Solve Rᵀy₁ = b  
 qrm_solve!(spfct, b, y₁; transp='t')
 
 # 2. Solve Ry = y₁
 qrm_solve!(spfct, y₁, y; transp='n')
 
 
-# Compute least norm solution of Ax = b
+# Compute the least norm solution of Ax = b
 x .= A'*y
 
 # Compute error norm and residual norm
@@ -63,7 +63,22 @@ residual_norm = norm(b - A*x)
 ```
 
 ```@example qless2
-using QRMumps, LinearAlgebra, SparseArrays, Printf
+# The Q-less QR factorization may be used to solve the least-square problem
+#
+#   minimize ‖Ax - b‖
+#
+# while saving storage because Q is not formed.
+# Thus it is appropriate for large problems where storage is at a premium.
+# The normal equations AᵀAx = Aᵀb are the optimality conditions of the least-square problems.
+# If A = QR, they can be equivalently written RᵀRx = Aᵀb.
+#
+# This procedure is backward stable if we perform one step of iterative refinement---see
+#
+# Å. Björck, Stability analysis of the method of seminormal equations for linear least squares problems,
+# Linear Algebra and its Applications, 88–89, pp. 31-48, 1987, DOI 10.1016/0024-3795(87)90101-7.
+
+using LinearAlgebra, Printf, SparseArrays 
+using QRMumps
 
 # Initialize data
 m, n = 7, 5
@@ -82,48 +97,47 @@ qrm_init()
 spmat = qrm_spmat_init(A)
 spfct = qrm_spfct_init(spmat)
 
-# Specify not storing Q for the QR factorization
+# Specify that we want the Q-less QR factorization
 qrm_set(spfct, "qrm_keeph", 0)
 
 # Perform symbolic analysis of A and factorize A = QR
 qrm_analyse!(spmat, spfct)
 qrm_factorize!(spmat, spfct)
 
+# Compute the RHS of the semi-normal equations
 z = A'*b
 
-# Solve Rᵀx₁ = z = Aᵀb
+# Solve RᵀR x = z = Aᵀb in two steps:
+# 1. Solve Rᵀx₁ = z  
 x₁ = qrm_solve(spfct, z; transp = 't')
 
-# Solve Rx₂ = x₁ 
-x₂ = qrm_solve(spfct, x₁; transp = 'n')
+# 2. Solve Rx = x₁
+x = qrm_solve(spfct, x₁; transp = 'n')
 
-# Overall, RᵀRx₂ = Aᵀb. Equivalently, RᵀQᵀQRx₂ = Aᵀb or AᵀAx₂ = Aᵀb
-error_norm = norm(x₂ - x_star)
-residual_norm = norm(A*x₂ - b)
+
+error_norm = norm(x - x_star)
+residual_norm = norm(A*x - b)
 
 @printf("Error norm ‖x* - x‖ = %10.5e\n", error_norm)
 @printf("Residual norm ‖Ax - b‖= %10.5e\n", residual_norm)
 
-# We can improve this solution with iterative refinement: see Björck 1967 - Iterative refinement of linear least squares solutions I
-#                                                             in BIT Numerical Mathematics.
-# For this, we compute the least norm solution Δx₂ of min ‖r - AΔx‖, where r is the residual r = Aᵀb - AᵀA*x₂.
-# We then update x₂ := x₂ + Δx₂
-r = A'*(b - A*x₂)
+# As such, this method is not backward stable and we need to add an iterative refinement step:                                                          
+# For this, we compute the least-square solution Δx of min ‖r - AΔx‖, where r is the residual r = Aᵀb - AᵀA*x.
+# We then update x := x + Δx
 
-# Solve RᵀΔx₁ =  r 
+# Compute the residual
+r = A'*(b - A*x)
+
+# Solve the semi-normal equations as before
 Δx₁ = qrm_solve(spfct, r; transp='t')
-
-# Solve Rxy₂ = Δx₁
-Δx₂ = qrm_solve(spfct, Δx₁; transp='n')
-
-# Overall, RᵀRΔx₂ = r. Equivalently, RᵀQᵀQRx₂ = r or AᵀAx₂ = r
+Δx = qrm_solve(spfct, Δx₁; transp='n')
 
 # Update the least squares solution
-x₂ .= x₂ .+ Δx₂
+x .= x .+ Δx
 
-error_norm = norm(x₂ - x_star)
-residual_norm = norm(A*x₂ - b)
+error_norm = norm(x - x_star)
+residual_norm = norm(A*x - b)
 
-@printf("Error norm ‖x* - x‖ = %10.5e\n", error_norm)
-@printf("Residual norm ‖Ax - b‖= %10.5e\n", residual_norm)
+@printf("Error norm (iterative refinement step) ‖x* - x‖ = %10.5e\n", error_norm)
+@printf("Residual norm (iterative refinement step) ‖Ax - b‖= %10.5e\n", residual_norm)
 ```
