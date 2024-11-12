@@ -69,7 +69,7 @@ residual_norm = norm(b - A*x)
 #
 # while saving storage because Q is not formed.
 # Thus it is appropriate for large problems where storage is at a premium.
-# The normal equations AᵀAx = Aᵀb are the optimality conditions of the least-square problems.
+# The normal equations AᵀAx = Aᵀb are the optimality conditions of the least squares problems.
 # If A = QR, they can be equivalently written RᵀRx = Aᵀb.
 #
 # This procedure is backward stable if we perform one step of iterative refinement---see
@@ -90,6 +90,15 @@ A = sparse(irn, jcn, val, m, n)
 b = [22.0, 2.0, 13.0, 8.0, 17.0, 6.0, 5.0]
 x_star = [1.0, 2.0, 3.0, 4.0, 5.0]
 
+z = zeros(n)
+x₁ = zeros(m)
+x = zeros(n)
+
+y = zeros(m)
+r = zeros(n)
+Δx₁ = zeros(m)
+Δx = zeros(n)
+
 # Initialize QRMumps
 qrm_init()
 
@@ -105,14 +114,14 @@ qrm_analyse!(spmat, spfct)
 qrm_factorize!(spmat, spfct)
 
 # Compute the RHS of the semi-normal equations
-z = A'*b
+mul!(z, A', b)
 
 # Solve RᵀR x = z = Aᵀb in two steps:
 # 1. Solve Rᵀx₁ = z  
-x₁ = qrm_solve(spfct, z; transp = 't')
+qrm_solve!(spfct, z, x₁; transp = 't')
 
 # 2. Solve Rx = x₁
-x = qrm_solve(spfct, x₁; transp = 'n')
+qrm_solve!(spfct, x₁, x; transp = 'n')
 
 error_norm = norm(x - x_star)
 residual_norm = norm(A*x - b)
@@ -124,15 +133,20 @@ residual_norm = norm(A*x - b)
 # For this, we compute the least-squares solution Δx of min ‖r - AΔx‖, where r is the residual r = Aᵀb - AᵀA*x.
 # We then update x := x + Δx
 
-# Compute the residual
-r = A'*(b - A*x)
+# Compute the residual in two steps to prevent allocating memory:
+# 1. Compute y = b - Ax
+mul!(y, A, x)
+@. y = b - y
+
+# 2. Compute r = Aᵀy = Aᵀ(b - A*x)
+mul!(r, A', y)
 
 # Solve the semi-normal equations as before
-Δx₁ = qrm_solve(spfct, r; transp='t')
-Δx = qrm_solve(spfct, Δx₁; transp='n')
+qrm_solve!(spfct, r, Δx₁; transp='t')
+qrm_solve!(spfct, Δx₁, Δx; transp='n')
 
 # Update the least squares solution
-x .= x .+ Δx
+@. x = x + Δx
 
 error_norm = norm(x - x_star)
 residual_norm = norm(A*x - b)
