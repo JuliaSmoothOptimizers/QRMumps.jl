@@ -124,10 +124,10 @@ qrm_solve!(spfct, z, x₁; transp = 't')
 qrm_solve!(spfct, x₁, x; transp = 'n')
 
 error_norm = norm(x - x_star)
-normal_residual_norm = norm(A'*(A*x - b))
+Aresidual_norm = norm(A'*(A*x - b))
 
 @printf("Error norm ‖x* - x‖ = %10.5e\n", error_norm)
-@printf("Normal equations residual norm ‖Aᵀ(Ax - b)‖= %10.5e\n", normal_residual_norm)
+@printf("Normal equations residual norm ‖Aᵀ(Ax - b)‖= %10.5e\n", Aresidual_norm)
 
 # As such, this method is not backward stable and we need to add an iterative refinement step:                                                          
 # For this, we compute the least-squares solution Δx of min ‖r - AΔx‖, where r is the residual r = Aᵀb - AᵀA*x.
@@ -149,8 +149,8 @@ qrm_solve!(spfct, Δx₁, Δx; transp='n')
 @. x = x + Δx
 
 error_norm = norm(x - x_star)
-normal_residual_norm = norm(A'*(A*x - b))
+Aresidual_norm = norm(A'*(A*x - b))
 
 @printf("Error norm (iterative refinement step) ‖x* - x‖ = %10.5e\n", error_norm)
-@printf("Normal equations residual norm (iterative refinement step) ‖Aᵀ(Ax - b)‖= %10.5e\n", normal_residual_norm)
+@printf("Normal equations residual norm (iterative refinement step) ‖Aᵀ(Ax - b)‖= %10.5e\n", Aresidual_norm)
 ```
