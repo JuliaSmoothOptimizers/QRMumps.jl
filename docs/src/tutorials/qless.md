@@ -114,7 +114,6 @@ x₁ = qrm_solve(spfct, z; transp = 't')
 # 2. Solve Rx = x₁
 x = qrm_solve(spfct, x₁; transp = 'n')
 
-
 error_norm = norm(x - x_star)
 residual_norm = norm(A*x - b)
 
@@ -122,7 +121,7 @@ residual_norm = norm(A*x - b)
 @printf("Residual norm ‖Ax - b‖= %10.5e\n", residual_norm)
 
 # As such, this method is not backward stable and we need to add an iterative refinement step:                                                          
-# For this, we compute the least-square solution Δx of min ‖r - AΔx‖, where r is the residual r = Aᵀb - AᵀA*x.
+# For this, we compute the least-squares solution Δx of min ‖r - AΔx‖, where r is the residual r = Aᵀb - AᵀA*x.
 # We then update x := x + Δx
 
 # Compute the residual
