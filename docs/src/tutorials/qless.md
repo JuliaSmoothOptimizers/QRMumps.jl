@@ -94,8 +94,8 @@ z = zeros(n)
 x₁ = zeros(m)
 x = zeros(n)
 
-y = zeros(m)
-r = zeros(n)
+r = zeros(m)
+Ar = zeros(n)
 Δx₁ = zeros(m)
 Δx = zeros(n)
 
@@ -133,16 +133,16 @@ Aresidual_norm = norm(A'*(A*x - b))
 # For this, we compute the least-squares solution Δx of min ‖r - AΔx‖, where r is the residual r = Aᵀb - AᵀA*x.
 # We then update x := x + Δx
 
-# Compute the residual in two steps to prevent allocating memory:
-# 1. Compute y = b - Ax
-mul!(y, A, x)
-@. y = b - y
+# Compute the normal equations residual in two steps to prevent allocating memory:
+# 1. Compute r = b - Ax
+mul!(r, A, x)
+@. r = b - r
 
-# 2. Compute r = Aᵀy = Aᵀ(b - A*x)
-mul!(r, A', y)
+# 2. Compute Aᵀr = Aᵀ(b - A*x)
+mul!(Ar, A', r)
 
 # Solve the semi-normal equations as before
-qrm_solve!(spfct, r, Δx₁; transp='t')
+qrm_solve!(spfct, Ar, Δx₁; transp='t')
 qrm_solve!(spfct, Δx₁, Δx; transp='n')
 
 # Update the least squares solution
