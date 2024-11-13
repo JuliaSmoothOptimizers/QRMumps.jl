@@ -69,7 +69,7 @@ residual_norm = norm(b - A*x)
 #
 # while saving storage because Q is not formed.
 # Thus it is appropriate for large problems where storage is at a premium.
-# The normal equations AᵀAx = Aᵀb are the optimality conditions of the least squares problems.
+# The normal equations AᵀAx = Aᵀb are the optimality conditions of the least-squares problem.
 # If A = QR, they can be equivalently written RᵀRx = Aᵀb.
 #
 # This procedure is backward stable if we perform one step of iterative refinement---see
