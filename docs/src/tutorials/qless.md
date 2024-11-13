@@ -29,6 +29,9 @@ y₁ = zeros(n)
 y = zeros(m)
 x = zeros(n)
 
+e = zeros(n)
+r = zeros(m)
+
 # Initialize QRMumps
 qrm_init()
 
@@ -55,8 +58,12 @@ qrm_solve!(spfct, y₁, y; transp='n')
 x .= A'*y
 
 # Compute error norm and residual norm
-error_norm = norm(x - x_star)
-residual_norm = norm(b - A*x)
+@. e = x - x_star
+error_norm = norm(e)
+
+mul!(r, A, x)
+@. r = b - r
+residual_norm = norm(r)
 
 @printf("Error norm ‖x* - x‖ = %10.5e\n", error_norm)
 @printf("Residual norm ‖b - Ax‖ = %10.5e\n", residual_norm)
@@ -96,6 +103,7 @@ x = zeros(n)
 
 r = zeros(m)
 Ar = zeros(n)
+e = zeros(n) 
 Δx₁ = zeros(m)
 Δx = zeros(n)
 
@@ -123,15 +131,9 @@ qrm_solve!(spfct, z, x₁; transp = 't')
 # 2. Solve Rx = x₁
 qrm_solve!(spfct, x₁, x; transp = 'n')
 
-error_norm = norm(x - x_star)
-Aresidual_norm = norm(A'*(A*x - b))
-
-@printf("Error norm ‖x* - x‖ = %10.5e\n", error_norm)
-@printf("Normal equations residual norm ‖Aᵀ(Ax - b)‖= %10.5e\n", Aresidual_norm)
-
-# As such, this method is not backward stable and we need to add an iterative refinement step:                                                          
-# For this, we compute the least-squares solution Δx of min ‖r - AΔx‖, where r is the residual r = Aᵀb - AᵀA*x.
-# We then update x := x + Δx
+# Compute errors
+@. e = x - x_star
+error_norm = norm(e)
 
 # Compute the normal equations residual in two steps to prevent allocating memory:
 # 1. Compute r = b - Ax
@@ -140,6 +142,14 @@ mul!(r, A, x)
 
 # 2. Compute Aᵀr = Aᵀ(b - A*x)
 mul!(Ar, A', r)
+Aresidual_norm = norm(Ar)
+
+@printf("Error norm ‖x* - x‖ = %10.5e\n", error_norm)
+@printf("Normal equations residual norm ‖Aᵀ(Ax - b)‖= %10.5e\n", Aresidual_norm)
+
+# As such, this method is not backward stable and we need to add an iterative refinement step:                                                          
+# For this, we compute the least-squares solution Δx of min ‖Aᵀr - AΔx‖, where r is the residual r = b - A*x.
+# We then update x := x + Δx
 
 # Solve the semi-normal equations as before
 qrm_solve!(spfct, Ar, Δx₁; transp='t')
@@ -148,8 +158,14 @@ qrm_solve!(spfct, Δx₁, Δx; transp='n')
 # Update the least squares solution
 @. x = x + Δx
 
-error_norm = norm(x - x_star)
-Aresidual_norm = norm(A'*(A*x - b))
+# Compute errors as before
+@. e = x - x_star
+error_norm = norm(e)
+
+mul!(r, A, x)
+@. r = b - r
+mul!(Ar, A', r)
+Aresidual_norm = norm(Ar)
 
 @printf("Error norm (iterative refinement step) ‖x* - x‖ = %10.5e\n", error_norm)
 @printf("Normal equations residual norm (iterative refinement step) ‖Aᵀ(Ax - b)‖= %10.5e\n", Aresidual_norm)
