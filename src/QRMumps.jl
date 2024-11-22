@@ -34,6 +34,8 @@ include("wrapper/qr_mumps_common.jl")
 include("wrapper/libqrmumps.jl")
 include("wrapper/qr_mumps_api.jl")
 
+include("utils.jl")
+
 export qrm_spmat, qrm_spfct,
     qrm_init, qrm_finalize,
     qrm_spmat_init!, qrm_spmat_init, qrm_spmat_destroy!,
@@ -51,7 +53,7 @@ export qrm_spmat, qrm_spfct,
     qrm_min_norm!, qrm_min_norm,
     qrm_residual_norm!, qrm_residual_norm,
     qrm_residual_orth!, qrm_residual_orth,
-    qrm_set, qrm_get
+    qrm_refine!, qrm_refine, qrm_set, qrm_get
 
 @doc raw"""
     qrm_init(ncpu, ngpu)
@@ -415,6 +417,27 @@ function qrm_residual_orth! end
     nrm = qrm_residual_orth(spmat, r; transp='n')
 """
 function qrm_residual_orth end
+
+@doc raw"""
+    qrm_refine!(spmat, spfct, x, z, Δx, y)
+
+Given an approximate solution x of the linear system RᵀRx ≈ z where R is the R-factor of some QR factorization, compute a refined solution.
+
+### Input Arguments :
+
+* `spmat`: the input matrix.
+* `spfct`: a sparse factorization object of type `qrm_spfct`.
+* `x`: the approximate solution vector.
+* `z`: the RHS vector of the linear system.
+* `Δx`: an auxiliary vector with the same size as `x` used to compute the refinement. 
+* `y`: an auxiliary vector with the same size as the number `Rx` used to compute the refinement.
+"""
+function qrm_refine! end
+
+@doc raw"""
+    x_refined = qrm_refine(spmat, spfct, x, z)
+"""
+function qrm_refine end
 
 @doc raw"""
     qrm_set(str, val)
