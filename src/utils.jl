@@ -1,4 +1,3 @@
-# Given an approximate solution x of the system RᵀRx ≈ z, refine the solution
 function qrm_refine(spmat :: qrm_spmat{T}, spfct :: qrm_spfct{T}, x :: AbstractVector{T}, z :: AbstractVector{T}) where T
   Δx = similar(x)
   y = similar(x, spfct.fct.m)

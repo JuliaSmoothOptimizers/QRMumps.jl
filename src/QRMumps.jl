@@ -421,16 +421,16 @@ function qrm_residual_orth end
 @doc raw"""
     qrm_refine!(spmat, spfct, x, z, Δx, y)
 
-Given an approximate solution x of the linear system RᵀRx ≈ z where R is the R-factor of some QR factorization, compute a refined solution.
+Given an approximate solution x of the linear system RᵀRx ≈ z where R is the R-factor of some QR factorization of size (m, n), compute a refined solution.
 
 ### Input Arguments :
 
 * `spmat`: the input matrix.
 * `spfct`: a sparse factorization object of type `qrm_spfct`.
-* `x`: the approximate solution vector.
-* `z`: the RHS vector of the linear system.
-* `Δx`: an auxiliary vector with the same size as `x` used to compute the refinement. 
-* `y`: an auxiliary vector with the same size as the number `Rx` used to compute the refinement.
+* `x`: the approximate solution vector, the size of this vector is n.
+* `z`: the RHS vector of the linear system, the size of this vector is n.
+* `Δx`: an auxiliary vector used to compute the refinement, the size of this vector is n.
+* `y`: an auxiliary vector used to compute the refinement, the size of this vector is m.
 """
 function qrm_refine! end
 
