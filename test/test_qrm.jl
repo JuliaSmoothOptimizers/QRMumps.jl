@@ -533,5 +533,16 @@ end
     mul!(Y, Adjoint(spmat), X, α, β)
     mul!(Y2, Adjoint(A), X, α, β)
     @test Y ≈ Y2
+    
+    A = sprand(T, m, n, 0.3)
+    b = rand(T, n)
+    spmat = qrm_spmat_init(A)
+    spfct = qrm_analyse(spmat)
+    qrm_set(spfct, "qrm_keeph", 0)
+    qrm_factorize!(spmat, spfct)
+    x₁ = qrm_solve(spfct,b, transp = transp)
+    x = qrm_solve(spfct, x₁, transp = 'n')
+    x_refined = qrm_refine(spmat, spfct, x, b)
+    @test norm(b - A'*(A*x)) ≥ norm(b - A'*(A*x_refined))
   end
 end
