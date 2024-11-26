@@ -352,7 +352,7 @@ function qrm_least_squares! end
 function qrm_least_squares end
 
 @doc raw"""
-qrm_least_squares!(spmat, b, x, z, Δx, y; transp='n')
+qrm_least_squares_semi_normal!(spmat, b, x, z, Δx, y; transp='n')
 
 This function can be used to solve a linear least squares problem
 
@@ -379,11 +379,11 @@ Remark that the Q-factor is not used in this sequence but rather A and R.
 
 * `spmat`: the input matrix.
 * `spfct`: a sparse factorization object of type `qrm_spfct`.
-* `b`: the right-hand side.
-* `x`: the solution vector.
-* `Δx`: an auxiliary vector used to compute the solution, the size of this vector is the same as x.
-* `z`: an auxiliary vector used to store the value z = Aᵀb, the size of this vector is the same as x and can be unitialized when the function is called.
-* `y`: an auxiliary vector used to compute the solution, the size of this vector is the same as b.
+* `b`: the right-hand side(s).
+* `x`: the solution vector(s).
+* `Δx`: an auxiliary vector (or matrix if b and x are matrices) used to compute the solution, the size of this vector (resp. matrix) is the same as x.
+* `z`: an auxiliary vector (or matrix if b and x are matrices) used to store the value z = Aᵀb, the size of this vector (resp. matrix) is the same as x and can be unitialized when the function is called.
+* `y`: an auxiliary vector (or matrix if b and x are matrices) used to compute the solution, the size of this vector (resp. matrix) is the same as b.
 """
 function qrm_least_squares_semi_normal! end
 
@@ -447,10 +447,10 @@ Remark that the Q-factor is not used in this sequence but rather A and R.
 
 * `spmat`: the input matrix.
 * `spfct`: a sparse factorization object of type `qrm_spfct`.
-* `b`: the right-hand side.
-* `x`: the solution vector.
-* `Δx`: an auxiliary vector used to compute the solution, the size of this vector is the same as x.
-* `y`: an auxiliary vector used to compute the solution, the size of this vector is the same as b.
+* `b`: the right-hand side(s).
+* `x`: the solution vector(s).
+* `Δx`: an auxiliary vector (or matrix if x and b are matrices) used to compute the solution, the size of this vector (resp. matrix) is the same as x.
+* `y`: an auxiliary vector (or matrix if x and b are matrices) used to compute the solution, the size of this vector (resp. matrix) is the same as b.
 """
 function qrm_min_norm_semi_normal! end
 
@@ -507,10 +507,10 @@ Given an approximate solution x of the linear system RᵀRx ≈ z where R is the
 
 * `spmat`: the input matrix.
 * `spfct`: a sparse factorization object of type `qrm_spfct`.
-* `x`: the approximate solution vector, the size of this vector is n.
-* `z`: the RHS vector of the linear system, the size of this vector is n.
-* `Δx`: an auxiliary vector used to compute the refinement, the size of this vector is n.
-* `y`: an auxiliary vector used to compute the refinement, the size of this vector is m.
+* `x`: the approximate solution vector(s), the size of this vector is n (or n×k if there are multiple solutions).
+* `z`: the RHS vector(s) of the linear system, the size of this vector is n (or n×k if there are multiple RHS).
+* `Δx`: an auxiliary vector (or matrix if x and z are matrices) used to compute the refinement, the size of this vector (resp. matrix) is n (resp. n×k).
+* `y`: an auxiliary vector (or matrix if x and z are matrices) used to compute the refinement, the size of this vector (resp. matrix) is m (resp. m×k).
 """
 function qrm_refine! end
 
