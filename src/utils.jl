@@ -32,10 +32,10 @@ function qrm_min_norm_semi_normal(spmat :: qrm_spmat{T}, b :: AbstractVector{T})
   Δx = similar(x)
   y = similar(b)
 
-  qrm_min_norm_semi_normal!(spmat, spfct, x, b, Δx, y)
+  qrm_min_norm_semi_normal!(spmat, spfct, b, x, Δx, y)
   return x
 end
-function qrm_min_norm_semi_normal!(spmat :: qrm_spmat{T}, spfct :: qrm_spfct{T}, x :: AbstractVector{T}, b :: AbstractVector{T}, Δx :: AbstractVector{T}, y :: AbstractVector{T}) where T
+function qrm_min_norm_semi_normal!(spmat :: qrm_spmat{T}, spfct :: qrm_spfct{T}, b :: AbstractVector{T}, x :: AbstractVector{T}, Δx :: AbstractVector{T}, y :: AbstractVector{T}) where T
   @assert length(x) == spmat.mat.n
   @assert length(b) == spmat.mat.m
   @assert length(Δx) == spmat.mat.n
@@ -61,11 +61,11 @@ function qrm_least_squares_semi_normal(spmat :: qrm_spmat{T}, b :: AbstractVecto
   Δx = similar(x)
   y = similar(b)
 
-  qrm_least_squares_semi_normal!(spmat, spfct, x, b, z, Δx, y)
+  qrm_least_squares_semi_normal!(spmat, spfct, b, x, z, Δx, y)
   return x
 end
 
-function qrm_least_squares_semi_normal!(spmat :: qrm_spmat{T}, spfct :: qrm_spfct{T}, x :: AbstractVector{T}, b :: AbstractVector{T}, z :: AbstractVector{T}, Δx :: AbstractVector{T}, y :: AbstractVector{T}) where T
+function qrm_least_squares_semi_normal!(spmat :: qrm_spmat{T}, spfct :: qrm_spfct{T}, b :: AbstractVector{T}, x :: AbstractVector{T}, z :: AbstractVector{T}, Δx :: AbstractVector{T}, y :: AbstractVector{T}) where T
   @assert length(x) == spmat.mat.n
   @assert length(b) == spmat.mat.m
   @assert length(z) == spmat.mat.n

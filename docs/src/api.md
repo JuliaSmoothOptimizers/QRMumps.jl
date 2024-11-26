@@ -46,8 +46,12 @@ qrm_spposv
 qrm_spposv!
 qrm_least_squares
 qrm_least_squares!
+qrm_least_squares_semi_normal
+qrm_least_squares_semi_normal!
 qrm_min_norm
 qrm_min_norm!
+qrm_min_norm_semi_normal
+qrm_min_norm_semi_normal!
 qrm_refine
 qrm_refine!
 ```

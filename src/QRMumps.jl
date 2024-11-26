@@ -352,10 +352,43 @@ function qrm_least_squares! end
 function qrm_least_squares end
 
 @doc raw"""
+qrm_least_squares!(spmat, b, x, z, Δx, y; transp='n')
+
+This function can be used to solve a linear least squares problem
+
+```math
+\min \|Ax − b\|_2
+```
+
+in the case where the input matrix is square or overdetermined.
+Contrary to `qrm_least_squares!`, this function allows to solve the problem without storing the Q-factor in the QR factorization of A.
+
+It is a shortcut for the sequence
+
+    qrm_analyse!(spmat, spfct, transp  = 'n')
+    qrm_factorize!(spmat, spfct, transp = 'n')
+    qrm_spmat_mv!(spmat, T(1),  b, T(0), z, transp = 't')
+    qrm_solve!(spfct, z, y, transp = 't')
+    qrm_solve!(spfct, y, x, transp = 'n')
+
+    qrm_refine!(spmat, spfct, x, z, Δx, y)
+
+Remark that the Q-factor is not used in this sequence but rather A and R. 
+
+#### Input Arguments :
+
+* `spmat`: the input matrix.
+* `spfct`: a sparse factorization object of type `qrm_spfct`.
+* `b`: the right-hand side.
+* `x`: the solution vector.
+* `Δx`: an auxiliary vector used to compute the solution, the size of this vector is the same as x.
+* `z`: an auxiliary vector used to store the value z = Aᵀb, the size of this vector is the same as x and can be unitialized when the function is called.
+* `y`: an auxiliary vector used to compute the solution, the size of this vector is the same as b.
 """
 function qrm_least_squares_semi_normal! end
 
 @doc raw"""
+    x = qrm_least_squares_semi_normal(spmat, b)
 """
 function qrm_least_squares_semi_normal end
 
@@ -391,10 +424,38 @@ function qrm_min_norm! end
 function qrm_min_norm end
 
 @doc raw"""
+    qrm_min_norm_semi_normal!(spmat, spfct, b, x, Δx, y; transp='n')
+
+This function can be used to solve a linear minimum norm problem
+
+```math
+\min \|x\|_2 \quad s.t. \quad Ax = b
+```
+in the case where the input matrix is square or underdetermined.
+Contrary to `qrm_min_norm!`, this function allows to solve the problem without storing the Q-factor in the QR factorization of Aᵀ.
+It is a shortcut for the sequence
+
+    qrm_analyse!(spmat, spfct, transp = 't')
+    qrm_factorize!(spmat, spfct, transp = 't')
+    qrm_solve!(spfct, b, Δx, transp = 't')
+    qrm_solve!(spfct, Δx, y, transp = 'n')
+    qrm_spmat_mv!(spmat, T(1),  y, T(0), x, transp = 't')
+
+Remark that the Q-factor is not used in this sequence but rather A and R. 
+
+#### Input Arguments :
+
+* `spmat`: the input matrix.
+* `spfct`: a sparse factorization object of type `qrm_spfct`.
+* `b`: the right-hand side.
+* `x`: the solution vector.
+* `Δx`: an auxiliary vector used to compute the solution, the size of this vector is the same as x.
+* `y`: an auxiliary vector used to compute the solution, the size of this vector is the same as b.
 """
 function qrm_min_norm_semi_normal! end
 
 @doc raw"""
+    x = qrm_min_norm_semi_normal(spmat, b)
 """
 function qrm_min_norm_semi_normal end
 
