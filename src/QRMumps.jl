@@ -50,8 +50,9 @@ export qrm_spmat, qrm_spfct,
     qrm_spbackslash!, qrm_spbackslash, \,
     qrm_spposv!, qrm_spposv,
     qrm_least_squares!, qrm_least_squares,
+    qrm_least_squares_semi_normal!, qrm_least_squares_semi_normal,
     qrm_min_norm!, qrm_min_norm,
-    qrm_min_norm_semi_normal!, qrm_least_squares_semi_normal!,
+    qrm_min_norm_semi_normal!, qrm_min_norm_semi_normal,
     qrm_residual_norm!, qrm_residual_norm,
     qrm_residual_orth!, qrm_residual_orth,
     qrm_refine!, qrm_refine, qrm_set, qrm_get,
@@ -351,6 +352,14 @@ function qrm_least_squares! end
 function qrm_least_squares end
 
 @doc raw"""
+"""
+function qrm_least_squares_semi_normal! end
+
+@doc raw"""
+"""
+function qrm_least_squares_semi_normal end
+
+@doc raw"""
     qrm_min_norm!(spmat, b, x; transp='n')
 
 This function can be used to solve a linear minimum norm problem
@@ -380,6 +389,14 @@ function qrm_min_norm! end
     x = qrm_min_norm(spmat, b; transp='n')
 """
 function qrm_min_norm end
+
+@doc raw"""
+"""
+function qrm_min_norm_semi_normal! end
+
+@doc raw"""
+"""
+function qrm_min_norm_semi_normal end
 
 @doc raw"""
     qrm_residual_norm!(spmat, b, x, nrm; transp='n')

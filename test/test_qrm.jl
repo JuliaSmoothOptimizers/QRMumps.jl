@@ -580,30 +580,21 @@ end
     b = rand(T, n)
 
     spmat = qrm_spmat_init(A)
-    spfct = qrm_spfct_init(spmat)
-    qrm_set(spfct, "qrm_keeph", 0)
-    x = zeros(T, m)
-    Δx = similar(x)
-    y = zeros(T, n)
-    qrm_min_norm_semi_normal!(spmat, spfct, x, b, Δx, y)
 
+    x = qrm_min_norm_semi_normal(spmat, b)
     x2 = qrm_min_norm(spmat, b)
 
     @test norm(A*x - b) ≤ tol
     @test abs(norm(x) - norm(x2)) ≤ tol
 
     A = sprand(T, m, n, 0.3)
-    spmat = qrm_spmat_init(A)
-    spfct = qrm_spfct_init(spmat)
-    qrm_set(spfct, "qrm_keeph", 0)
     b = rand(T, m)
-    x = zeros(T, n)
-    Δx = similar(x)
-    z = similar(x)
-    y = zeros(T, m)
-    qrm_least_squares_semi_normal!(spmat, spfct, x, b, z, Δx, y)
 
+    spmat = qrm_spmat_init(A)
+
+    x = qrm_least_squares_semi_normal(spmat, b)
     x2 = qrm_least_squares(spmat, b)
+
     @test abs(norm(x) - norm(x2)) ≤ tol
   end
 end
