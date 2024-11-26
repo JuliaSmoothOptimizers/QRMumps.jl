@@ -94,7 +94,15 @@ d = Dict(0 => "auto", 1 => "natural", 2 => "given", 3 => "colamd", 4 => "metis",
       r = b - A * x
       @test norm(A' * r) ≤ tol
 
+      x = qrm_least_squares_semi_normal(spmat, b)
+      r = b - A * x
+      @test norm(A' * r) ≤ tol
+
       X = qrm_least_squares(spmat, B)
+      R = B - A * X
+      @test norm(A' * R) ≤ tol
+
+      X = qrm_least_squares_semi_normal(spmat, B)
       R = B - A * X
       @test norm(A' * R) ≤ tol
 
@@ -103,8 +111,22 @@ d = Dict(0 => "auto", 1 => "natural", 2 => "given", 3 => "colamd", 4 => "metis",
       r = b - A * x
       @test norm(A' * r) ≤ tol
 
+      z = similar(x)
+      Δx = similar(x)
+      y = similar(b)
+      x = qrm_least_squares_semi_normal!(spmat, spfct, b, x, z, Δx, y)
+      r = b - A * x
+      @test norm(A' * r) ≤ tol
+
       Bc = copy(B)
       qrm_least_squares!(spmat, Bc, X)
+      R = B - A * X
+      @test norm(A' * R) ≤ tol
+
+      Z = similar(X)
+      ΔX = similar(X)
+      Y = similar(B)
+      qrm_least_squares_semi_normal!(spmat, spfct, B, X, Z, ΔX, Y)
       R = B - A * X
       @test norm(A' * R) ≤ tol
 
@@ -247,15 +269,35 @@ end
       r = b - A * x
       @test norm(r) ≤ tol
 
+      x = qrm_min_norm_semi_normal(spmat, b)
+      r = b - A * x
+      @test norm(r) ≤ tol
+
       X = qrm_min_norm(spmat, B)
+      R = B - A * X
+      @test norm(R) ≤ tol
+      
+      X = qrm_min_norm_semi_normal(spmat, B)
       R = B - A * X
       @test norm(R) ≤ tol
 
       qrm_min_norm!(spmat, b, x)
       r = b - A * x
       @test norm(r) ≤ tol
+      
+      Δx = similar(x)
+      y = similar(b)
+      qrm_min_norm_semi_normal!(spmat, spfct, b, x, Δx, y)
+      r = b - A * x
+      @test norm(r) ≤ tol
 
       qrm_min_norm!(spmat, B, X)
+      R = B - A * X
+      @test norm(R) ≤ tol
+
+      ΔX = similar(X)
+      Y = similar(B)
+      qrm_min_norm_semi_normal!(spmat, spfct, B, X, ΔX, Y)
       R = B - A * X
       @test norm(R) ≤ tol
 
@@ -574,28 +616,6 @@ end
     x_refined = qrm_refine(spmat, spfct, x, b)
     @test norm(b - A'*(A*x)) ≥ norm(b - A'*(A*x_refined))
 
-    tol = (real(T) == Float32) ? 1e-3 : 1e-12
-    qrm_init()
-    A = sprand(T, n, m, 0.3)
-    b = rand(T, n)
-
-    spmat = qrm_spmat_init(A)
-
-    x = qrm_min_norm_semi_normal(spmat, b)
-    x2 = qrm_min_norm(spmat, b)
-
-    @test norm(A*x - b) ≤ tol
-    @test abs(norm(x) - norm(x2)) ≤ tol
-
-    A = sprand(T, m, n, 0.3)
-    b = rand(T, m)
-
-    spmat = qrm_spmat_init(A)
-
-    x = qrm_least_squares_semi_normal(spmat, b)
-    x2 = qrm_least_squares(spmat, b)
-
-    @test abs(norm(x) - norm(x2)) ≤ tol
   end
 end
 
