@@ -384,6 +384,7 @@ Remark that the Q-factor is not used in this sequence but rather A and R.
 * `Δx`: an auxiliary vector (or matrix if b and x are matrices) used to compute the solution, the size of this vector (resp. matrix) is the same as x.
 * `z`: an auxiliary vector (or matrix if b and x are matrices) used to store the value z = Aᵀb, the size of this vector (resp. matrix) is the same as x and can be unitialized when the function is called.
 * `y`: an auxiliary vector (or matrix if b and x are matrices) used to compute the solution, the size of this vector (resp. matrix) is the same as b.
+* `transp`: whether to use A, Aᵀ or Aᴴ. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_least_squares_semi_normal! end
 

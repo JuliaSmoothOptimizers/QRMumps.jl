@@ -12,7 +12,11 @@ d = Dict(0 => "auto", 1 => "natural", 2 => "given", 3 => "colamd", 4 => "metis",
 
     @testset "$INT" for INT in (Int32, Int64)
       A = sprand(T, m, n, 0.3)
-      A = convert(SparseMatrixCSC{T,INT}, A)
+      A = convert(SparseMatrixCSC{T,I}, A)
+
+      A_transp = sprand(T, n, m, 0.3)
+      A_transp = convert(SparseMatrixCSC{T,I}, A_transp)
+
       b = rand(T, m)
       B = rand(T, m, p)
 
@@ -47,12 +51,13 @@ d = Dict(0 => "auto", 1 => "natural", 2 => "given", 3 => "colamd", 4 => "metis",
         spmat = qrm_spmat_init(T)
         qrm_spmat_init!(spmat, A)
 
-        spfct = qrm_spfct_init(spmat)
-        qrm_set(spfct, "qrm_ordering", ordering)
-        if ordering == 2
-          permutation = Cint[i for i = n:-1:1]
-          qrm_user_permutation!(spfct, permutation)
-        end
+      spmat_transp = qrm_spmat_init(T)
+      qrm_spmat_init!(spmat_transp, A_transp)
+
+      spfct = qrm_spfct_init(spmat)
+      qrm_analyse!(spmat, spfct)
+      qrm_factorize!(spmat, spfct)
+      spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
 
         qrm_analyse!(spmat, spfct)
         qrm_factorize!(spmat, spfct)
@@ -98,6 +103,10 @@ d = Dict(0 => "auto", 1 => "natural", 2 => "given", 3 => "colamd", 4 => "metis",
       r = b - A * x
       @test norm(A' * r) ≤ tol
 
+      x = qrm_least_squares_semi_normal(spmat_transp, b, transp = transp)
+      r = b - A_transp' * x
+      @test norm(A_transp * r) ≤ tol
+
       X = qrm_least_squares(spmat, B)
       R = B - A * X
       @test norm(A' * R) ≤ tol
@@ -105,6 +114,10 @@ d = Dict(0 => "auto", 1 => "natural", 2 => "given", 3 => "colamd", 4 => "metis",
       X = qrm_least_squares_semi_normal(spmat, B)
       R = B - A * X
       @test norm(A' * R) ≤ tol
+
+      X = qrm_least_squares_semi_normal(spmat_transp, B, transp = transp)
+      R = B - A_transp' * X
+      @test norm(A_transp * r) ≤ tol
 
       bc = copy(b)
       qrm_least_squares!(spmat, bc, x)
