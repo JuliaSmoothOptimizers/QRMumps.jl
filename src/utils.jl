@@ -58,54 +58,65 @@ function qrm_refine!(spmat :: qrm_spmat{T}, spfct :: qrm_spfct{T}, x :: Abstract
 end
 
 function qrm_min_norm_semi_normal(spmat :: qrm_spmat{T}, b :: AbstractVecOrMat{T}; transp :: Char = 'n') where T
+
+  n = transp == 'n' ? spmat.mat.n : spmat.mat.m
+
   spfct = qrm_spfct_init(spmat)
   qrm_set(spfct, "qrm_keeph", 0)
 
   if typeof(b) <: AbstractVector{T}
-    x = similar(b, spmat.mat.n)
+    x = similar(b, n)
   else 
-    x = similar(b, (spmat.mat.n, size(b, 2)))
+    x = similar(b, (n, size(b, 2)))
   end
   Δx = similar(x)
   y = similar(b)
 
-  qrm_min_norm_semi_normal!(spmat, spfct, b, x, Δx, y)
+  qrm_min_norm_semi_normal!(spmat, spfct, b, x, Δx, y, transp = transp)
   return x
 end
 
 function qrm_min_norm_semi_normal!(spmat :: qrm_spmat{T}, spfct :: qrm_spfct{T}, b :: AbstractVector{T}, x :: AbstractVector{T}, Δx :: AbstractVector{T}, y :: AbstractVector{T}; transp :: Char = 'n') where T
-  @assert length(x) == spmat.mat.n
-  @assert length(b) == spmat.mat.m
-  @assert length(Δx) == spmat.mat.n
-  @assert length(y) == spmat.mat.m
+  
+  n = transp == 'n' ? spmat.mat.n : spmat.mat.m
+  m = transp == 'n' ? spmat.mat.m : spmat.mat.n
+  t = T <: Real ? 't' : 'c'
+  ntransp = transp == 't' || transp == 'c' ? 'n' : t
+  
+  @assert length(x) == n
+  @assert length(b) == m
+  @assert length(Δx) == n
+  @assert length(y) == m
 
-  transp = T <: Real ? 't' : 'c'
-
-  qrm_analyse!(spmat, spfct, transp = transp)
-  qrm_factorize!(spmat, spfct, transp = transp)
-  qrm_solve!(spfct, b, Δx, transp = transp)
+  qrm_analyse!(spmat, spfct, transp = ntransp)
+  qrm_factorize!(spmat, spfct, transp = ntransp)
+  qrm_solve!(spfct, b, Δx, transp = t)
   qrm_solve!(spfct, Δx, y, transp = 'n')
   #x = A^T y
-  qrm_spmat_mv!(spmat, T(1),  y, T(0), x, transp = transp)
+  qrm_spmat_mv!(spmat, T(1),  y, T(0), x, transp = ntransp)
 end
 
 function qrm_min_norm_semi_normal!(spmat :: qrm_spmat{T}, spfct :: qrm_spfct{T}, b :: AbstractMatrix{T}, x :: AbstractMatrix{T}, Δx :: AbstractMatrix{T}, y :: AbstractMatrix{T}; transp :: Char = 'n') where T
-  @assert size(x, 1) == spmat.mat.n
-  @assert size(b, 1) == spmat.mat.m
-  @assert size(Δx, 1) == spmat.mat.n
-  @assert size(y, 1) == spmat.mat.m
+  
+  n = transp == 'n' ? spmat.mat.n : spmat.mat.m
+  m = transp == 'n' ? spmat.mat.m : spmat.mat.n
+  t = T <: Real ? 't' : 'c'
+  ntransp = transp == 't' || transp == 'c' ? 'n' : t
+  
+  @assert size(x, 1) == n
+  @assert size(b, 1) == m
+  @assert size(Δx, 1) == n
+  @assert size(y, 1) == m
   @assert size(x, 2) == size(b, 2)
   @assert size(Δx, 2) == size(b, 2)
   @assert size(y, 2) == size(b, 2)
 
-  transp = T <: Real ? 't' : 'c'
-
-  qrm_analyse!(spmat, spfct, transp = transp)
-  qrm_factorize!(spmat, spfct, transp = transp)
-  qrm_solve!(spfct, b, Δx, transp = transp)
+  qrm_analyse!(spmat, spfct, transp = ntransp)
+  qrm_factorize!(spmat, spfct, transp = ntransp)
+  qrm_solve!(spfct, b, Δx, transp = t)
   qrm_solve!(spfct, Δx, y, transp = 'n')
   #x = A^T y
-  qrm_spmat_mv!(spmat, T(1),  y, T(0), x, transp = transp)
+  qrm_spmat_mv!(spmat, T(1),  y, T(0), x, transp = ntransp)
 end
 
 function qrm_least_squares_semi_normal(spmat :: qrm_spmat{T}, b :: AbstractVecOrMat{T}; transp :: Char = 'n') where T
@@ -148,7 +159,7 @@ function qrm_least_squares_semi_normal!(spmat :: qrm_spmat{T}, spfct :: qrm_spfc
   qrm_solve!(spfct, z, y, transp = t)
   qrm_solve!(spfct, y, x, transp = 'n')
 
-  qrm_refine!(spmat, spfct, x, z, Δx, y, transp = transp)
+  qrm_refine!(spmat, spfct, x, z, Δx, y)
 end
 
 function qrm_least_squares_semi_normal!(spmat :: qrm_spmat{T}, spfct :: qrm_spfct{T}, b :: AbstractMatrix{T}, x :: AbstractMatrix{T}, z :: AbstractMatrix{T}, Δx :: AbstractMatrix{T}, y :: AbstractMatrix{T}; transp :: Char = 'n') where T
@@ -176,5 +187,5 @@ function qrm_least_squares_semi_normal!(spmat :: qrm_spmat{T}, spfct :: qrm_spfc
   qrm_solve!(spfct, z, y, transp = t)
   qrm_solve!(spfct, y, x, transp = 'n')
 
-  qrm_refine!(spmat, spfct, x, z, Δx, y, transp = transp)
+  qrm_refine!(spmat, spfct, x, z, Δx, y)
 end
