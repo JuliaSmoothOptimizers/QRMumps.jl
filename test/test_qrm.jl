@@ -12,6 +12,10 @@ p = 5
     for I in (Int32 , Int64)
       A = sprand(T, m, n, 0.3)
       A = convert(SparseMatrixCSC{T,I}, A)
+
+      A_transp = sprand(T, n, m, 0.3)
+      A_transp = convert(SparseMatrixCSC{T,I}, A_transp)
+
       b = rand(T, m)
       B = rand(T, m, p)
 
@@ -42,6 +46,9 @@ p = 5
 
       spmat = qrm_spmat_init(T)
       qrm_spmat_init!(spmat, A)
+
+      spmat_transp = qrm_spmat_init(T)
+      qrm_spmat_init!(spmat_transp, A_transp)
 
       spfct = qrm_spfct_init(spmat)
       qrm_analyse!(spmat, spfct)
@@ -87,6 +94,10 @@ p = 5
       r = b - A * x
       @test norm(A' * r) ≤ tol
 
+      x = qrm_least_squares_semi_normal(spmat_transp, b, transp = transp)
+      r = b - A_transp' * x
+      @test norm(A_transp * r) ≤ tol
+
       X = qrm_least_squares(spmat, B)
       R = B - A * X
       @test norm(A' * R) ≤ tol
@@ -94,6 +105,10 @@ p = 5
       X = qrm_least_squares_semi_normal(spmat, B)
       R = B - A * X
       @test norm(A' * R) ≤ tol
+
+      X = qrm_least_squares_semi_normal(spmat_transp, B, transp = transp)
+      R = B - A_transp' * X
+      @test norm(A_transp * r) ≤ tol
 
       bc = copy(b)
       qrm_least_squares!(spmat, bc, x)
