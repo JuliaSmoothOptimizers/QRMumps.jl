@@ -452,6 +452,7 @@ Remark that the Q-factor is not used in this sequence but rather A and R.
 * `x`: the solution vector(s).
 * `Δx`: an auxiliary vector (or matrix if x and b are matrices) used to compute the solution, the size of this vector (resp. matrix) is the same as x.
 * `y`: an auxiliary vector (or matrix if x and b are matrices) used to compute the solution, the size of this vector (resp. matrix) is the same as b.
+* `transp`: whether to use A, Aᵀ or Aᴴ. Can be either `'t'`, `'c'` or `'n'`.
 """
 function qrm_min_norm_semi_normal! end
 

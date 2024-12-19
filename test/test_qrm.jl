@@ -206,11 +206,20 @@ end
 
     @testset "$INT" for INT in (Int32, Int64)
       A = sprand(T, n, m, 0.3)
-      A = convert(SparseMatrixCSC{T,INT}, A)
+      A = convert(SparseMatrixCSC{T,I}, A)
+
+      A_transp = sprand(T, m, n, 0.3)
+      A_transp = convert(SparseMatrixCSC{T,I}, A_transp)
+
       b = rand(T, n)
       B = rand(T, n, p)
+
       spmat = qrm_spmat_init(A)
       spfct = qrm_analyse(spmat, transp=transp)
+
+      spmat_transp = qrm_spmat_init(T)
+      qrm_spmat_init!(spmat_transp, A_transp)
+
       qrm_factorize!(spmat, spfct, transp=transp)
       spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
 
@@ -286,12 +295,20 @@ end
       r = b - A * x
       @test norm(r) ≤ tol
 
+      x = qrm_min_norm_semi_normal(spmat_transp, b, transp = transp)
+      r = b - A_transp' * x
+      @test norm(r) ≤ tol
+
       X = qrm_min_norm(spmat, B)
       R = B - A * X
       @test norm(R) ≤ tol
       
       X = qrm_min_norm_semi_normal(spmat, B)
       R = B - A * X
+      @test norm(R) ≤ tol
+
+      X = qrm_min_norm_semi_normal(spmat_transp, B, transp = transp)
+      R = B - A_transp' * X
       @test norm(R) ≤ tol
 
       qrm_min_norm!(spmat, b, x)
