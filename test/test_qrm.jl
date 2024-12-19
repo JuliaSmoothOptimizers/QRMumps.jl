@@ -99,6 +99,10 @@ d = Dict(0 => "auto", 1 => "natural", 2 => "given", 3 => "colamd", 4 => "metis",
       r = b - A * x
       @test norm(A' * r) ≤ tol
 
+      x = qrm_least_squares(spmat, b, seminormal = true)
+      r = b - A * x
+      @test norm(A' * r) ≤ tol
+
       x = qrm_least_squares_semi_normal(spmat, b)
       r = b - A * x
       @test norm(A' * r) ≤ tol
@@ -108,6 +112,10 @@ d = Dict(0 => "auto", 1 => "natural", 2 => "given", 3 => "colamd", 4 => "metis",
       @test norm(A_transp * r) ≤ tol
 
       X = qrm_least_squares(spmat, B)
+      R = B - A * X
+      @test norm(A' * R) ≤ tol
+
+      X = qrm_least_squares(spmat, B, seminormal = true)
       R = B - A * X
       @test norm(A' * R) ≤ tol
 
@@ -291,6 +299,10 @@ end
       r = b - A * x
       @test norm(r) ≤ tol
 
+      x = qrm_min_norm(spmat, b, seminormal = true)
+      r = b - A * x
+      @test norm(r) ≤ tol
+
       x = qrm_min_norm_semi_normal(spmat, b)
       r = b - A * x
       @test norm(r) ≤ tol
@@ -300,6 +312,10 @@ end
       @test norm(r) ≤ tol
 
       X = qrm_min_norm(spmat, B)
+      R = B - A * X
+      @test norm(R) ≤ tol
+
+      X = qrm_min_norm(spmat, B, seminormal = true)
       R = B - A * X
       @test norm(R) ≤ tol
       

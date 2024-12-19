@@ -618,7 +618,9 @@ for (fname, elty) in ((:sqrm_least_squares_c, :Float32   ),
             return nothing
         end
 
-        function qrm_least_squares(spmat :: qrm_spmat{$elty}, b :: Vector{$elty}; transp :: Char='n')
+        function qrm_least_squares(spmat :: qrm_spmat{$elty}, b :: Vector{$elty}; transp :: Char='n', seminormal :: Bool = false)
+            seminormal && return qrm_least_squares_semi_normal(spmat, b, transp = transp)
+
             nrhs = 1
             if transp == 'n'
                 x = zeros($elty, spmat.mat.n)
@@ -631,7 +633,9 @@ for (fname, elty) in ((:sqrm_least_squares_c, :Float32   ),
             return x
         end
 
-        function qrm_least_squares(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty}; transp :: Char='n')
+        function qrm_least_squares(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty}; transp :: Char='n', seminormal :: Bool = false)
+            seminormal && return qrm_least_squares_semi_normal(spmat, b, transp = transp)
+
             nrhs = size(b, 2)
             if transp == 'n'
                 x = zeros($elty, spmat.mat.n, nrhs)
@@ -647,14 +651,14 @@ for (fname, elty) in ((:sqrm_least_squares_c, :Float32   ),
         @inline qrm_least_squares!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, b :: Vector{$elty}, x :: Vector{$elty}) = qrm_least_squares!(spmat.parent, b, x, transp='t')
         @inline qrm_least_squares!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}, x :: Matrix{$elty}) = qrm_least_squares!(spmat.parent, b, x, transp='t')
 
-        @inline qrm_least_squares(spmat  :: Transpose{$elty,qrm_spmat{$elty}}, b :: Vector{$elty}) = qrm_least_squares(spmat.parent, b, transp='t')
-        @inline qrm_least_squares(spmat  :: Transpose{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}) = qrm_least_squares(spmat.parent, b, transp='t')
+        @inline qrm_least_squares(spmat  :: Transpose{$elty,qrm_spmat{$elty}}, b :: Vector{$elty}; seminormal :: Bool = false) = qrm_least_squares(spmat.parent, b, transp='t', seminormal = false)
+        @inline qrm_least_squares(spmat  :: Transpose{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}; seminormal :: Bool = false) = qrm_least_squares(spmat.parent, b, transp='t', seminormal = false)
 
         @inline qrm_least_squares!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}, b :: Vector{$elty}, x :: Vector{$elty}) = qrm_least_squares!(spmat.parent, b, x, transp='c')
         @inline qrm_least_squares!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}, x :: Matrix{$elty}) = qrm_least_squares!(spmat.parent, b, x, transp='c')
 
-        @inline qrm_least_squares(spmat  :: Adjoint{$elty,qrm_spmat{$elty}}, b :: Vector{$elty}) = qrm_least_squares(spmat.parent, b, transp='c')
-        @inline qrm_least_squares(spmat  :: Adjoint{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}) = qrm_least_squares(spmat.parent, b, transp='c')
+        @inline qrm_least_squares(spmat  :: Adjoint{$elty,qrm_spmat{$elty}}, b :: Vector{$elty}; seminormal :: Bool = false) = qrm_least_squares(spmat.parent, b, transp='c', seminormal = false)
+        @inline qrm_least_squares(spmat  :: Adjoint{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}; seminormal :: Bool = false) = qrm_least_squares(spmat.parent, b, transp='c', seminormal = false)
 
     end
 end
@@ -688,7 +692,9 @@ for (fname, elty) in ((:sqrm_min_norm_c, :Float32   ),
             return nothing
         end
 
-        function qrm_min_norm(spmat :: qrm_spmat{$elty}, b :: Vector{$elty}; transp :: Char='n')
+        function qrm_min_norm(spmat :: qrm_spmat{$elty}, b :: Vector{$elty}; transp :: Char='n', seminormal :: Bool = false)
+            seminormal && return qrm_min_norm_semi_normal(spmat, b, transp = transp)
+
             nrhs = 1
             if transp == 'n'
                 x = zeros($elty, spmat.mat.n)
@@ -700,7 +706,9 @@ for (fname, elty) in ((:sqrm_min_norm_c, :Float32   ),
             return x
         end
 
-        function qrm_min_norm(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty}; transp :: Char='n')
+        function qrm_min_norm(spmat :: qrm_spmat{$elty}, b :: Matrix{$elty}; transp :: Char='n', seminormal :: Bool = false)
+            seminormal && return qrm_min_norm_semi_normal(spmat, b, transp = transp)
+
             nrhs = size(b, 2)
             if transp == 'n'
                 x = zeros($elty, spmat.mat.n, nrhs)
@@ -715,14 +723,14 @@ for (fname, elty) in ((:sqrm_min_norm_c, :Float32   ),
         @inline qrm_min_norm!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, b :: Vector{$elty}, x :: Vector{$elty}) = qrm_min_norm!(spmat.parent, b, x, transp='t')
         @inline qrm_min_norm!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}, x :: Matrix{$elty}) = qrm_min_norm!(spmat.parent, b, x, transp='t')
 
-        @inline qrm_min_norm(spmat  :: Transpose{$elty,qrm_spmat{$elty}}, b :: Vector{$elty}) = qrm_min_norm(spmat.parent, b, transp='t')
-        @inline qrm_min_norm(spmat  :: Transpose{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}) = qrm_min_norm(spmat.parent, b, transp='t')
+        @inline qrm_min_norm(spmat  :: Transpose{$elty,qrm_spmat{$elty}}, b :: Vector{$elty}; seminormal :: Bool = false) = qrm_min_norm(spmat.parent, b, transp='t', seminormal = seminormal)
+        @inline qrm_min_norm(spmat  :: Transpose{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}; seminormal :: Bool = false) = qrm_min_norm(spmat.parent, b, transp='t', seminormal = seminormal)
 
         @inline qrm_min_norm!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}, b :: Vector{$elty}, x :: Vector{$elty}) = qrm_min_norm!(spmat.parent, b, x, transp='c')
         @inline qrm_min_norm!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}, x :: Matrix{$elty}) = qrm_min_norm!(spmat.parent, b, x, transp='c')
 
-        @inline qrm_min_norm(spmat  :: Adjoint{$elty,qrm_spmat{$elty}}, b :: Vector{$elty}) = qrm_min_norm(spmat.parent, b, transp='c')
-        @inline qrm_min_norm(spmat  :: Adjoint{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}) = qrm_min_norm(spmat.parent, b, transp='c')
+        @inline qrm_min_norm(spmat  :: Adjoint{$elty,qrm_spmat{$elty}}, b :: Vector{$elty}; seminormal :: Bool = false) = qrm_min_norm(spmat.parent, b, transp='c', seminormal = seminormal)
+        @inline qrm_min_norm(spmat  :: Adjoint{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}; seminormal :: Bool = false) = qrm_min_norm(spmat.parent, b, transp='c', seminormal = seminormal)
 
     end
 end
