@@ -76,10 +76,12 @@ solve phase.
 """
 mutable struct qrm_spfct{T} <: Factorization{T}
   cperm_in :: Vector{Cint}
+  ptr_rp   :: Ref{Ptr{Cint}}
+  ptr_cp   :: Ref{Ptr{Cint}}
   fct      :: c_spfct{T}
 
   function qrm_spfct{T}() where T
-    spfct = new(Cint[], c_spfct{T}())
+    spfct = new(Cint[], Ref{Ptr{Cint}}(), Ref{Ptr{Cint}}(), c_spfct{T}())
     finalizer(qrm_spfct_destroy!, spfct)
     return spfct
   end
