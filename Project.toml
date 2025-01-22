@@ -1,7 +1,7 @@
 name = "QRMumps"
 uuid = "422b30a1-cc69-4d85-abe7-cc07b540c444"
 authors = ["Alfredo Buttari (@abuttari), Alexis Montoison (@amontoison)"]
-version = "0.2.6"
+version = "0.2.7"
 
 [deps]
 Libdl = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
