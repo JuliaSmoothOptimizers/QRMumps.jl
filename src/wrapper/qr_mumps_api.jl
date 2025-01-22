@@ -861,16 +861,15 @@ for (finame, frname, elty) in ((:sqrm_spfct_get_i8_c, :sqrm_spfct_get_r4_c, :Flo
     @eval begin
         function qrm_get(spfct :: qrm_spfct{$elty}, str :: String)
             if (str ∈ PICNTL) || (str ∈ STATS)
-                val = Ref{Clonglong}(0)
-                err = $finame(spfct, str, val)
+                err = $finame(spfct, str, spfct.get_val_long)
             elseif str ∈ RCNTL
-                val = Ref{Float32}(0)
-                err = $frname(spfct, str, val)
+                err = $frname(spfct, str, spfct.get_val_float)
             else
                 err = Int32(23)
             end
             qrm_check(err)
-            return val[]
+            (str ∈ RCNTL) && return spfct.get_val_float[]
+            return spfct.get_val_long[]
         end
     end
 end
