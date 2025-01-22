@@ -5,8 +5,7 @@ for (fname, elty) in ((:sqrm_spfct_get_rp_c, :Float32   ),
     @eval begin
         function qrm_spfct_get_rp(spfct :: qrm_spfct{$elty})
             err = $fname(spfct, spfct.ptr_rp)
-            # Fix it with the release 3.0.5
-            # qrm_check(err)
+            qrm_check(err)
             rp = unsafe_wrap(Array, spfct.ptr_rp[], spfct.fct.m)
             return rp
         end
@@ -20,8 +19,7 @@ for (fname, elty) in ((:sqrm_spfct_get_cp_c, :Float32   ),
     @eval begin
         function qrm_spfct_get_cp(spfct :: qrm_spfct{$elty})
             err = $fname(spfct, spfct.ptr_cp)
-            # Fix it with the release 3.0.5
-            # qrm_check(err)
+            qrm_check(err)
             cp = unsafe_wrap(Array, spfct.ptr_cp[], spfct.fct.n)
             return cp
         end
@@ -113,7 +111,7 @@ for (fname, elty) in ((:sqrm_spmat_destroy_c, :Float32   ),
     @eval begin
         function qrm_spmat_destroy!(spmat :: qrm_spmat{$elty})
             err = $fname(spmat)
-            # qrm_check(err)
+            qrm_check(err)
             return nothing
         end
     end
@@ -886,7 +884,7 @@ function qrm_finalize()
 end
 
 function qrm_update!(spmat :: qrm_spmat{T}, val :: AbstractVector{T}) where T
-    spmat.val .= val
+    copyto!(spmat.val, val)
     return nothing
 end
 

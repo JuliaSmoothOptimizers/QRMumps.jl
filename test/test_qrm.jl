@@ -564,8 +564,8 @@ end
       qrm_set(spfct, "qrm_rd_eps", tol)
       qrm_analyse!(spmat, spfct)
       qrm_factorize!(spmat, spfct)
-      @test (@allocated qrm_get(spfct, "qrm_rd_num")) == 0
-      
+      nbits = @allocated qrm_get(spfct, "qrm_rd_num")
+      @test nbits == 0
     end
   end
 

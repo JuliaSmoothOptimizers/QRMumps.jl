@@ -27,7 +27,7 @@ SparseArrays = "1.10"
 SparseMatricesCOO = "0.2.2"
 Test = "1.10"
 julia = "1.10"
-qr_mumps_jll = "3.1.0"
+qr_mumps_jll = "3.1.1"
 
 [extras]
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
