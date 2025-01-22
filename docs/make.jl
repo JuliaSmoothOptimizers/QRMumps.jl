@@ -16,7 +16,8 @@ makedocs(
            "Performance tuning" => "performance.md",
            "Tutorials" => ["Symmetric and positive definite linear systems" => "tutorials/spd.md",
                            "Least-squares problems" => "tutorials/ls.md",
-                           "Least-norm problems" => "tutorials/ln.md"],
+                           "Least-norm problems" => "tutorials/ln.md",
+                           "Detect rank deficiency" => "tutorials/rank_deficiency.md"],
            "Reference" => "reference.md",
           ]
 )
