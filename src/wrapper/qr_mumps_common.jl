@@ -75,12 +75,12 @@ the factorization, namely, the factors with all the symbolic information needed 
 solve phase.
 """
 mutable struct qrm_spfct{T} <: Factorization{T}
-  cperm_in      :: Vector{Cint}
-  ptr_rp        :: Ref{Ptr{Cint}}
-  ptr_cp        :: Ref{Ptr{Cint}}
-  get_val_long  :: Ref{Clonglong}
-  get_val_float :: Ref{Float32}
-  fct           :: c_spfct{T}
+  cperm_in :: Vector{Cint}
+  ptr_rp   :: Ref{Ptr{Cint}}
+  ptr_cp   :: Ref{Ptr{Cint}}
+  ref_int  :: Ref{Clonglong}
+  ref_float:: Ref{Float32}
+  fct      :: c_spfct{T}
 
   function qrm_spfct{T}() where T
     spfct = new(Cint[], Ref{Ptr{Cint}}(), Ref{Ptr{Cint}}(), Ref{Clonglong}(0), Ref{Float32}(0), c_spfct{T}())

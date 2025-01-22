@@ -546,3 +546,27 @@ end
     @test norm(b - A'*(A*x)) ≥ norm(b - A'*(A*x_refined))
   end
 end
+
+@testset "allocations" begin
+  for T in (Float32, Float64, ComplexF32, ComplexF64)
+    tol = (real(T) == Float32) ? 1e-3 : 1e-12
+    transp = (T <: Real) ? 't' : 'c'
+
+    for I in (Int32 , Int64)
+      A = sprand(T, m, n, 0.3)
+      A = convert(SparseMatrixCSC{T,I}, A)
+
+      spmat = qrm_spmat_init(T)
+      qrm_spmat_init!(spmat, A)
+
+      spfct = qrm_spfct_init(spmat)
+
+      qrm_set(spfct, "qrm_rd_eps", tol)
+      qrm_analyse!(spmat, spfct)
+      qrm_factorize!(spmat, spfct)
+      @test (@allocated qrm_get(spfct, "qrm_rd_num")) == 0
+      
+    end
+  end
+
+end
