@@ -1,6 +1,6 @@
 # Introduction
 
-This package provides a Julia interface to [qr_mumps](http://qr_mumps.gitlab.io/), a software for solving sparse linear systems on multicore computers.
+This package provides a Julia interface to [qr_mumps](https://qr_mumps.gitlab.io/), a software for solving sparse linear systems on multicore computers.
 qr\_mumps implements a direct solution method based on the QR or Cholesky factorization of the input matrix. 
 Therefore, it is suited to solving sparse least-squares problems, to computing the minimum-norm solution of sparse, underdetermined problems and to solving symmetric, positive-definite sparse linear systems. It can obviously be used for solving square unsymmetric problems in which case the stability provided by the use of orthogonal transformations comes at the cost of a higher operation count with respect to solvers based on, e.g., the LU factorization such as [MUMPS](https://mumps-solver.org/index.php). It supports real and complex, single or double precision arithmetic.
 
