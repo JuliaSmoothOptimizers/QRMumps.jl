@@ -48,6 +48,8 @@ qrm_least_squares
 qrm_least_squares!
 qrm_min_norm
 qrm_min_norm!
+qrm_refine
+qrm_refine!
 ```
 
 ```@docs

@@ -4,11 +4,10 @@ for (fname, elty) in ((:sqrm_spfct_get_rp_c, :Float32   ),
                       (:zqrm_spfct_get_rp_c, :ComplexF64))
     @eval begin
         function qrm_spfct_get_rp(spfct :: qrm_spfct{$elty})
-            ptr_rp = Ref{Ptr{Cint}}()
-            err = $fname(spfct, ptr_rp)
+            err = $fname(spfct, spfct.ptr_rp)
             # Fix it with the release 3.0.5
             # qrm_check(err)
-            rp = unsafe_wrap(Array, ptr_rp[], spfct.fct.m)
+            rp = unsafe_wrap(Array, spfct.ptr_rp[], spfct.fct.m)
             return rp
         end
     end
@@ -20,11 +19,10 @@ for (fname, elty) in ((:sqrm_spfct_get_cp_c, :Float32   ),
                       (:zqrm_spfct_get_cp_c, :ComplexF64))
     @eval begin
         function qrm_spfct_get_cp(spfct :: qrm_spfct{$elty})
-            ptr_cp = Ref{Ptr{Cint}}()
-            err = $fname(spfct, ptr_cp)
+            err = $fname(spfct, spfct.ptr_cp)
             # Fix it with the release 3.0.5
             # qrm_check(err)
-            cp = unsafe_wrap(Array, ptr_cp[], spfct.fct.n)
+            cp = unsafe_wrap(Array, spfct.ptr_cp[], spfct.fct.n)
             return cp
         end
     end
