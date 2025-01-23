@@ -360,22 +360,21 @@ This function can be used to solve a linear least squares problem
 \min \|Ax − b\|_2
 ```
 
-in the case where the input matrix is square or overdetermined.
-Contrary to `qrm_least_squares!`, this function allows to solve the problem without storing the Q-factor in the QR factorization of A.
+in the case where A is square or overdetermined.
+Contrary to `qrm_least_squares!`, this function allows to solve the problem without storing the Q-factor of the QR factorization of A.
 
 It is a shortcut for the sequence
 
     qrm_analyse!(spmat, spfct, transp  = 'n')
     qrm_factorize!(spmat, spfct, transp = 'n')
-    qrm_spmat_mv!(spmat, T(1),  b, T(0), z, transp = 't')
+    qrm_spmat_mv!(spmat, T(1), b, T(0), z, transp = 't')
     qrm_solve!(spfct, z, y, transp = 't')
     qrm_solve!(spfct, y, x, transp = 'n')
-
     qrm_refine!(spmat, spfct, x, z, Δx, y)
 
-Remark that the Q-factor is not used in this sequence but rather A and R. 
+Note that the Q-factor is not used in this sequence; only A and R. 
 
-#### Input Arguments :
+#### Input Arguments
 
 * `spmat`: the input matrix.
 * `spfct`: a sparse factorization object of type `qrm_spfct`.
@@ -427,12 +426,12 @@ function qrm_min_norm end
 @doc raw"""
     qrm_min_norm_semi_normal!(spmat, spfct, b, x, Δx, y; transp='n')
 
-This function can be used to solve a linear minimum norm problem
+This function can be used to solve a linear minimum-norm problem
 
 ```math
 \min \|x\|_2 \quad s.t. \quad Ax = b
 ```
-in the case where the input matrix is square or underdetermined.
+in the case where A is square or underdetermined.
 Contrary to `qrm_min_norm!`, this function allows to solve the problem without storing the Q-factor in the QR factorization of Aᵀ.
 It is a shortcut for the sequence
 
