@@ -39,7 +39,7 @@ jobs:
           echo "::set-output name=prefix::$(brew --prefix)"
           echo "JULIA_QRMUMPS_LIBRARY_PATH=$(brew --prefix)/opt/qr_mumps/lib" >> $GITHUB_ENV
       - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@v1
+      - uses: julia-actions/setup-julia@v2
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
