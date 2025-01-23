@@ -651,14 +651,14 @@ for (fname, elty) in ((:sqrm_least_squares_c, :Float32   ),
         @inline qrm_least_squares!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, b :: Vector{$elty}, x :: Vector{$elty}) = qrm_least_squares!(spmat.parent, b, x, transp='t')
         @inline qrm_least_squares!(spmat :: Transpose{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}, x :: Matrix{$elty}) = qrm_least_squares!(spmat.parent, b, x, transp='t')
 
-        @inline qrm_least_squares(spmat  :: Transpose{$elty,qrm_spmat{$elty}}, b :: Vector{$elty}; seminormal :: Bool = false) = qrm_least_squares(spmat.parent, b, transp='t', seminormal = false)
-        @inline qrm_least_squares(spmat  :: Transpose{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}; seminormal :: Bool = false) = qrm_least_squares(spmat.parent, b, transp='t', seminormal = false)
+        @inline qrm_least_squares(spmat  :: Transpose{$elty,qrm_spmat{$elty}}, b :: Vector{$elty}; seminormal :: Bool = false) = qrm_least_squares(spmat.parent, b, transp='t', seminormal = seminormal)
+        @inline qrm_least_squares(spmat  :: Transpose{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}; seminormal :: Bool = false) = qrm_least_squares(spmat.parent, b, transp='t', seminormal = seminormal)
 
         @inline qrm_least_squares!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}, b :: Vector{$elty}, x :: Vector{$elty}) = qrm_least_squares!(spmat.parent, b, x, transp='c')
         @inline qrm_least_squares!(spmat :: Adjoint{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}, x :: Matrix{$elty}) = qrm_least_squares!(spmat.parent, b, x, transp='c')
 
-        @inline qrm_least_squares(spmat  :: Adjoint{$elty,qrm_spmat{$elty}}, b :: Vector{$elty}; seminormal :: Bool = false) = qrm_least_squares(spmat.parent, b, transp='c', seminormal = false)
-        @inline qrm_least_squares(spmat  :: Adjoint{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}; seminormal :: Bool = false) = qrm_least_squares(spmat.parent, b, transp='c', seminormal = false)
+        @inline qrm_least_squares(spmat  :: Adjoint{$elty,qrm_spmat{$elty}}, b :: Vector{$elty}; seminormal :: Bool = false) = qrm_least_squares(spmat.parent, b, transp='c', seminormal = seminormal)
+        @inline qrm_least_squares(spmat  :: Adjoint{$elty,qrm_spmat{$elty}}, b :: Matrix{$elty}; seminormal :: Bool = false) = qrm_least_squares(spmat.parent, b, transp='c', seminormal = seminormal)
 
     end
 end

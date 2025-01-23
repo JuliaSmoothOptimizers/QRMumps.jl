@@ -62,7 +62,6 @@ function qrm_min_norm_semi_normal(spmat :: qrm_spmat{T}, b :: AbstractVecOrMat{T
   n = transp == 'n' ? spmat.mat.n : spmat.mat.m
 
   spfct = qrm_spfct_init(spmat)
-  qrm_set(spfct, "qrm_keeph", 0)
 
   if typeof(b) <: AbstractVector{T}
     x = similar(b, n)
@@ -88,6 +87,7 @@ function qrm_min_norm_semi_normal!(spmat :: qrm_spmat{T}, spfct :: qrm_spfct{T},
   @assert length(Δx) == n
   @assert length(y) == m
 
+  qrm_set(spfct, "qrm_keeph", 0)
   qrm_analyse!(spmat, spfct, transp = ntransp)
   qrm_factorize!(spmat, spfct, transp = ntransp)
   qrm_solve!(spfct, b, Δx, transp = t)
@@ -111,6 +111,7 @@ function qrm_min_norm_semi_normal!(spmat :: qrm_spmat{T}, spfct :: qrm_spfct{T},
   @assert size(Δx, 2) == size(b, 2)
   @assert size(y, 2) == size(b, 2)
 
+  qrm_set(spfct, "qrm_keeph", 0)
   qrm_analyse!(spmat, spfct, transp = ntransp)
   qrm_factorize!(spmat, spfct, transp = ntransp)
   qrm_solve!(spfct, b, Δx, transp = t)
@@ -124,7 +125,6 @@ function qrm_least_squares_semi_normal(spmat :: qrm_spmat{T}, b :: AbstractVecOr
   n = transp == 'n' ? spmat.mat.n : spmat.mat.m
 
   spfct = qrm_spfct_init(spmat)
-  qrm_set(spfct, "qrm_keeph", 0)
   if typeof(b) <: AbstractVector{T}
     x = similar(b, n)
   else 
@@ -151,6 +151,7 @@ function qrm_least_squares_semi_normal!(spmat :: qrm_spmat{T}, spfct :: qrm_spfc
   @assert length(Δx) == n
   @assert length(y) == m
 
+  qrm_set(spfct, "qrm_keeph", 0)
   qrm_analyse!(spmat, spfct, transp  = transp)
   qrm_factorize!(spmat, spfct, transp = transp)
   # z = A^T b
@@ -180,6 +181,7 @@ function qrm_least_squares_semi_normal!(spmat :: qrm_spmat{T}, spfct :: qrm_spfc
   @assert size(Δx, 2) == size(b, 2)
   @assert size(y, 2) == size(b, 2)
 
+  qrm_set(spfct, "qrm_keeph", 0)
   qrm_analyse!(spmat, spfct, transp  = transp)
   qrm_factorize!(spmat, spfct, transp = transp)
   # z = A^T b
