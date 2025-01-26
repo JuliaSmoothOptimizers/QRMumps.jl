@@ -46,15 +46,15 @@ b = [1.0+im, 2.0+im, 3.0+im, 4.0+im, 5.0+im, 6.0+im, 7.0+im]
 z = copy(b)
 x = zeros(ComplexF64, 5)
 
-# Provide your own column permutation
-permutation = Cint[i for i = 5:-1:1]
-qrm_user_permutation!(spfct, permutation)
-qrm_set(spfct, "qrm_ordering", 2)
-
 qrm_init()
 
 spmat = qrm_spmat_init(A)
 spfct = qrm_spfct_init(spmat)
+
+# Provide your own column permutation
+permutation = Cint[i for i = 5:-1:1]
+qrm_user_permutation!(spfct, permutation)
+qrm_set(spfct, "qrm_ordering", 2)
 
 qrm_analyse!(spmat, spfct)
 qrm_factorize!(spmat, spfct)
@@ -84,7 +84,7 @@ qrm_init()
 spmat = qrm_spmat_init(A_U, sym=true)
 spfct = qrm_spfct_init(spmat)
 
-# Compute a permutation with COLAMD
+# Compute a column permutation with COLAMD
 qrm_set(spfct, "qrm_ordering", 3)
 
 qrm_analyse!(spmat, spfct)
@@ -116,7 +116,7 @@ qrm_init()
 spmat = qrm_spmat_init(A)
 spfct = qrm_spfct_init(spmat)
 
-# Compute a permutation with METIS
+# Compute a column permutation with METIS
 qrm_set(spfct, "qrm_ordering", 4)
 
 qrm_analyse!(spmat, spfct)
