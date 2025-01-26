@@ -891,3 +891,9 @@ end
 function qrm_update!(spmat :: qrm_spmat{T}, A :: SparseMatrixCSC{T,I}) where {T, I <: Integer}
     qrm_update!(spmat, A.nzval)
 end
+
+function qrm_user_permutation!(spfct :: qrm_spfct, permutation::Vector{Cint})
+    spfct.cperm_in = permutation
+    spfct.fct.cperm_in = pointer(spfct.cperm_in)
+    return spfct
+end
