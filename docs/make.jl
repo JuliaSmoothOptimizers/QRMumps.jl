@@ -18,6 +18,7 @@ makedocs(
                            "Least-squares problems" => "tutorials/ls.md",
                            "Least-norm problems" => "tutorials/ln.md",
                            "Detect rank deficiency" => "tutorials/rank_deficiency.md"],
+                           "Ordering" => "tutorials/ordering.md"],
            "Reference" => "reference.md",
           ]
 )
