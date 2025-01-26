@@ -2,20 +2,22 @@ Random.seed!(1234)
 m = 200
 n = 100
 p = 5
+d = Dict(0 => "auto", 1 => "natural", 2 => "given", 3 => "colamd", 4 => "metis", 5 => "scotch")
 
 @testset "least-squares problems" begin
-  for T in (Float32, Float64, ComplexF32, ComplexF64)
+  @testset "$T" for T in (Float32, Float64, ComplexF32, ComplexF64)
 
     tol = (real(T) == Float32) ? 1e-3 : 1e-12
     transp = (T <: Real) ? 't' : 'c'
 
-    for I in (Int32 , Int64)
+    @testset "$INT" for INT in (Int32, Int64)
       A = sprand(T, m, n, 0.3)
-      A = convert(SparseMatrixCSC{T,I}, A)
+      A = convert(SparseMatrixCSC{T,INT}, A)
       b = rand(T, m)
       B = rand(T, m, p)
 
       spmat = qrm_spmat_init(A)
+
       spfct = qrm_analyse(spmat)
       qrm_factorize!(spmat, spfct)
       spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
@@ -40,44 +42,53 @@ p = 5
       R = B - A * X
       @test norm(A' * R) ≤ tol
 
-      spmat = qrm_spmat_init(T)
-      qrm_spmat_init!(spmat, A)
+      @testset "$(d[ordering])" for ordering in (0, 1, 2, 3, 4, 5)
+        (ordering == 5) && continue  # SCOTCH v7.0.6 is not working with qr_mumps
+        spmat = qrm_spmat_init(T)
+        qrm_spmat_init!(spmat, A)
 
-      spfct = qrm_spfct_init(spmat)
-      qrm_analyse!(spmat, spfct)
-      qrm_factorize!(spmat, spfct)
-      spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
+        spfct = qrm_spfct_init(spmat)
+        qrm_set(spfct, "qrm_ordering", ordering)
+        if ordering == 2
+          permutation = Cint[i for i = n:-1:1]
+          qrm_user_permutation!(spfct, permutation)
+        end
 
-      if QRMumps.QRMUMPS_INSTALLATION == "YGGDRASIL"
-        rp = qrm_spfct_get_rp(spfct)
-        cp = qrm_spfct_get_cp(spfct)
-        R = qrm_spfct_get_r(spfct)
-        @test norm(A[rp,cp]' * A[rp,cp] - R[rp,cp]' * R[rp,cp]) ≤ tol
+        qrm_analyse!(spmat, spfct)
+        qrm_factorize!(spmat, spfct)
+        spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
+
+        if QRMumps.QRMUMPS_INSTALLATION == "YGGDRASIL"
+          rp = qrm_spfct_get_rp(spfct)
+          cp = qrm_spfct_get_cp(spfct)
+          R = qrm_spfct_get_r(spfct)
+          @test norm(A[rp,cp]' * A[rp,cp] - R[rp,cp]' * R[rp,cp]) ≤ tol
+        end
+
+        z = copy(b)
+        qrm_apply!(spfct, z, transp=transp)
+        qrm_solve!(spfct, z, x, transp='n')
+        r = b - A * x
+        @test norm(A' * r) ≤ tol
+
+        Z = copy(B)
+        qrm_apply!(spfct, Z, transp=transp)
+        qrm_solve!(spfct, Z, X, transp='n')
+        R = B - A * X
+        @test norm(A' * R) ≤ tol
+
+        z = copy(b)
+        qrm_apply!(spfct2, z)
+        qrm_solve!(spfct, z, x, transp='n')
+        r = b - A * x
+        @test norm(A' * r) ≤ tol
+
+        Z = copy(B)
+        qrm_apply!(spfct2, Z)
+        qrm_solve!(spfct, Z, X, transp='n')
+        R = B - A * X
+        @test norm(A' * R) ≤ tol
       end
-
-      z = copy(b)
-      qrm_apply!(spfct, z, transp=transp)
-      qrm_solve!(spfct, z, x, transp='n')
-      r = b - A * x
-      @test norm(A' * r) ≤ tol
-
-      Z = copy(B)
-      qrm_apply!(spfct, Z, transp=transp)
-      qrm_solve!(spfct, Z, X, transp='n')
-      R = B - A * X
-      @test norm(A' * R) ≤ tol
-
-      z = copy(b)
-      qrm_apply!(spfct2, z)
-      qrm_solve!(spfct, z, x, transp='n')
-      r = b - A * x
-      @test norm(A' * r) ≤ tol
-
-      Z = copy(B)
-      qrm_apply!(spfct2, Z)
-      qrm_solve!(spfct, Z, X, transp='n')
-      R = B - A * X
-      @test norm(A' * R) ≤ tol
 
       x = qrm_least_squares(spmat, b)
       r = b - A * x
@@ -153,14 +164,14 @@ p = 5
 end
 
 @testset "least-norm problems" begin
-  for T in (Float32, Float64, ComplexF32, ComplexF64)
+  @testset "$T" for T in (Float32, Float64, ComplexF32, ComplexF64)
 
     tol = (real(T) == Float32) ? 1e-3 : 1e-12
     transp = (T <: Real) ? 't' : 'c'
 
-    for I in (Int32 , Int64)
+    @testset "$INT" for INT in (Int32, Int64)
       A = sprand(T, n, m, 0.3)
-      A = convert(SparseMatrixCSC{T,I}, A)
+      A = convert(SparseMatrixCSC{T,INT}, A)
       b = rand(T, n)
       B = rand(T, n, p)
       spmat = qrm_spmat_init(A)
@@ -188,40 +199,49 @@ end
       R = B - A * X
       @test norm(R) ≤ tol
 
-      spmat = qrm_spmat_init(T)
-      qrm_spmat_init!(spmat, A)
+      @testset "$(d[ordering])" for ordering in (0, 1, 2, 3, 4, 5)
+        (ordering == 5) && continue  # SCOTCH v7.0.6 is not working with qr_mumps
+        spmat = qrm_spmat_init(T)
+        qrm_spmat_init!(spmat, A)
 
-      spfct = qrm_spfct_init(spmat)
-      qrm_analyse!(spmat, spfct, transp=transp)
-      qrm_factorize!(spmat, spfct, transp=transp)
-      spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
+        spfct = qrm_spfct_init(spmat)
+        qrm_set(spfct, "qrm_ordering", ordering)
+        if ordering == 2
+          permutation = Cint[i for i = n:-1:1]
+          qrm_user_permutation!(spfct, permutation)
+        end
 
-      if QRMumps.QRMUMPS_INSTALLATION == "YGGDRASIL"
-        rp = qrm_spfct_get_rp(spfct)
-        cp = qrm_spfct_get_cp(spfct)
-        R = qrm_spfct_get_r(spfct)
-        @test norm(A[cp,rp] * A[cp,rp]' - R[rp,cp]' * R[rp,cp]) ≤ tol
+        qrm_analyse!(spmat, spfct, transp=transp)
+        qrm_factorize!(spmat, spfct, transp=transp)
+        spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
+
+        if QRMumps.QRMUMPS_INSTALLATION == "YGGDRASIL"
+          rp = qrm_spfct_get_rp(spfct)
+          cp = qrm_spfct_get_cp(spfct)
+          R = qrm_spfct_get_r(spfct)
+          @test norm(A[cp,rp] * A[cp,rp]' - R[rp,cp]' * R[rp,cp]) ≤ tol
+        end
+
+        qrm_solve!(spfct, b, x, transp=transp)
+        qrm_apply!(spfct, x, transp='n')
+        r = b - A * x
+        @test norm(r) ≤ tol
+
+        qrm_solve!(spfct, B, X, transp=transp)
+        qrm_apply!(spfct, X, transp='n')
+        R = B - A * X
+        @test norm(R) ≤ tol
+
+        qrm_solve!(spfct2, b, x)
+        qrm_apply!(spfct, x, transp='n')
+        r = b - A * x
+        @test norm(r) ≤ tol
+
+        qrm_solve!(spfct2, B, X)
+        qrm_apply!(spfct, X, transp='n')
+        R = B - A * X
+        @test norm(R) ≤ tol
       end
-
-      qrm_solve!(spfct, b, x, transp=transp)
-      qrm_apply!(spfct, x, transp='n')
-      r = b - A * x
-      @test norm(r) ≤ tol
-
-      qrm_solve!(spfct, B, X, transp=transp)
-      qrm_apply!(spfct, X, transp='n')
-      R = B - A * X
-      @test norm(R) ≤ tol
-
-      qrm_solve!(spfct2, b, x)
-      qrm_apply!(spfct, x, transp='n')
-      r = b - A * x
-      @test norm(r) ≤ tol
-
-      qrm_solve!(spfct2, B, X)
-      qrm_apply!(spfct, X, transp='n')
-      R = B - A * X
-      @test norm(R) ≤ tol
 
       x = qrm_min_norm(spmat, b)
       r = b - A * x
@@ -291,16 +311,15 @@ end
 end
 
 @testset "Symmetric and positive definite linear systems" begin
-  for T in (Float32, Float64, ComplexF32, ComplexF64)
+  @testset "$T" for T in (Float32, Float64, ComplexF32, ComplexF64)
 
     tol = (real(T) == Float32) ? 1e-3 : 1e-12
     transp = (T <: Real) ? 't' : 'c'
-    Id = Diagonal(ones(T, n))
 
-    for I in (Int32 , Int64)
+    @testset "$INT" for INT in (Int32, Int64)
       A = sprand(T, n, n, 0.01)
-      A = convert(SparseMatrixCSC{T,I}, A)
-      A = A * A' + Id
+      A = convert(SparseMatrixCSC{T,INT}, A)
+      A = A * A' + I
       A = (T <: Real) ? Symmetric(tril(A), :L) : Hermitian(tril(A), :L)
       b = rand(T, n)
       B = rand(T, n, p)
@@ -331,47 +350,57 @@ end
       @test norm(R) ≤ tol
 
       A = sprand(T, n, n, 0.01)
-      A = convert(SparseMatrixCSC{T,I}, A)
-      A = A * A' + Id
+      A = convert(SparseMatrixCSC{T,INT}, A)
+      A = A * A' + I
       A = (T <: Real) ? Symmetric(triu(A), :U) : Hermitian(triu(A), :U)
       x = zeros(T, n)
       X = zeros(T, n, p)
       b = rand(T, n)
       B = rand(T, n, p)
 
-      spmat = qrm_spmat_init(T)
-      qrm_spmat_init!(spmat, A)
-      spfct = qrm_spfct_init(spmat)
-      qrm_analyse!(spmat, spfct)
-      qrm_factorize!(spmat, spfct)
-      spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
+      @testset "$(d[ordering])" for ordering in (0, 1, 2, 3, 4, 5)
+        (ordering == 5) && continue  # SCOTCH v7.0.6 is not working with qr_mumps
+        spmat = qrm_spmat_init(T)
+        qrm_spmat_init!(spmat, A)
 
-      if QRMumps.QRMUMPS_INSTALLATION == "YGGDRASIL"
-        rp = qrm_spfct_get_rp(spfct)
-        cp = qrm_spfct_get_cp(spfct)
-        R = qrm_spfct_get_r(spfct)
-        @test norm(A[rp,cp] - R[rp,cp]' * R[rp,cp]) ≤ tol
+        spfct = qrm_spfct_init(spmat)
+        qrm_set(spfct, "qrm_ordering", ordering)
+        if ordering == 2
+          permutation = Cint[i for i = n:-1:1]
+          qrm_user_permutation!(spfct, permutation)
+        end
+
+        qrm_analyse!(spmat, spfct)
+        qrm_factorize!(spmat, spfct)
+        spfct2 = (T <: Real) ? Transpose(spfct) : Adjoint(spfct)
+
+        if QRMumps.QRMUMPS_INSTALLATION == "YGGDRASIL"
+          rp = qrm_spfct_get_rp(spfct)
+          cp = qrm_spfct_get_cp(spfct)
+          R = qrm_spfct_get_r(spfct)
+          @test norm(A[rp,cp] - R[rp,cp]' * R[rp,cp]) ≤ tol
+        end
+
+        qrm_solve!(spfct, copy(b), x, transp=transp)
+        qrm_solve!(spfct, x, x, transp='n')
+        r = b - A * x
+        @test norm(r) ≤ tol
+
+        qrm_solve!(spfct, copy(B), X, transp=transp)
+        qrm_solve!(spfct, X, X, transp='n')
+        R = B - A * X
+        @test norm(R) ≤ tol
+
+        qrm_solve!(spfct2, copy(b), x)
+        qrm_solve!(spfct, x, x, transp='n')
+        r = b - A * x
+        @test norm(r) ≤ tol
+
+        qrm_solve!(spfct2, copy(B), X)
+        qrm_solve!(spfct, X, X, transp='n')
+        R = B - A * X
+        @test norm(R) ≤ tol
       end
-
-      qrm_solve!(spfct, copy(b), x, transp=transp)
-      qrm_solve!(spfct, x, x, transp='n')
-      r = b - A * x
-      @test norm(r) ≤ tol
-
-      qrm_solve!(spfct, copy(B), X, transp=transp)
-      qrm_solve!(spfct, X, X, transp='n')
-      R = B - A * X
-      @test norm(R) ≤ tol
-
-      qrm_solve!(spfct2, copy(b), x)
-      qrm_solve!(spfct, x, x, transp='n')
-      r = b - A * x
-      @test norm(r) ≤ tol
-
-      qrm_solve!(spfct2, copy(B), X)
-      qrm_solve!(spfct, X, X, transp='n')
-      R = B - A * X
-      @test norm(R) ≤ tol
 
       x = qrm_spposv(spmat, b)
       r = b - A * x
@@ -552,9 +581,9 @@ end
     tol = (real(T) == Float32) ? 1e-3 : 1e-12
     transp = (T <: Real) ? 't' : 'c'
 
-    for I in (Int32 , Int64)
+    for INT in (Int32 , Int64)
       A = sprand(T, m, n, 0.3)
-      A = convert(SparseMatrixCSC{T,I}, A)
+      A = convert(SparseMatrixCSC{T,INT}, A)
 
       spmat = qrm_spmat_init(T)
       qrm_spmat_init!(spmat, A)

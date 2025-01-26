@@ -53,7 +53,8 @@ export qrm_spmat, qrm_spfct,
     qrm_min_norm!, qrm_min_norm,
     qrm_residual_norm!, qrm_residual_norm,
     qrm_residual_orth!, qrm_residual_orth,
-    qrm_refine!, qrm_refine, qrm_set, qrm_get
+    qrm_refine!, qrm_refine, qrm_set, qrm_get,
+    qrm_user_permutation!
 
 @doc raw"""
     qrm_init(ncpu, ngpu)
