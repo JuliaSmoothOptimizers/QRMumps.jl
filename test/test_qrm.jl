@@ -581,7 +581,7 @@ end
     tol = (real(T) == Float32) ? 1e-3 : 1e-12
     transp = (T <: Real) ? 't' : 'c'
 
-    for INT in (Int32 , Int64)
+    @testset "$INT" for INT in (Int32, Int64)
       A = sprand(T, m, n, 0.3)
       A = convert(SparseMatrixCSC{T,INT}, A)
 
