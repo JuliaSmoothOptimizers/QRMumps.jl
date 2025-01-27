@@ -52,6 +52,12 @@ d = Dict(0 => "auto", 1 => "natural", 2 => "given", 3 => "colamd", 4 => "metis",
         spmat = qrm_spmat_init(T)
         qrm_spmat_init!(spmat, A)
 
+        spfct = qrm_spfct_init(spmat)
+        qrm_set(spfct, "qrm_ordering", ordering)
+        if ordering == 2
+          permutation = Cint[i for i = n:-1:1]
+          qrm_user_permutation!(spfct, permutation)
+        end
       spmat_transp = qrm_spmat_init(T)
       qrm_spmat_init!(spmat_transp, A_transp)
 
