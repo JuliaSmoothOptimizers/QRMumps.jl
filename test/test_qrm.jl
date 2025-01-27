@@ -12,15 +12,16 @@ d = Dict(0 => "auto", 1 => "natural", 2 => "given", 3 => "colamd", 4 => "metis",
 
     @testset "$INT" for INT in (Int32, Int64)
       A = sprand(T, m, n, 0.3)
-      A = convert(SparseMatrixCSC{T,I}, A)
+      A = convert(SparseMatrixCSC{T,INT}, A)
 
       A_transp = sprand(T, n, m, 0.3)
-      A_transp = convert(SparseMatrixCSC{T,I}, A_transp)
+      A_transp = convert(SparseMatrixCSC{T,INT}, A_transp)
 
       b = rand(T, m)
       B = rand(T, m, p)
 
       spmat = qrm_spmat_init(A)
+      spmat_transp = qrm_spmat_init(A_transp)
 
       spfct = qrm_analyse(spmat)
       qrm_factorize!(spmat, spfct)
@@ -214,10 +215,10 @@ end
 
     @testset "$INT" for INT in (Int32, Int64)
       A = sprand(T, n, m, 0.3)
-      A = convert(SparseMatrixCSC{T,I}, A)
+      A = convert(SparseMatrixCSC{T,INT}, A)
 
       A_transp = sprand(T, m, n, 0.3)
-      A_transp = convert(SparseMatrixCSC{T,I}, A_transp)
+      A_transp = convert(SparseMatrixCSC{T,INT}, A_transp)
 
       b = rand(T, n)
       B = rand(T, n, p)
