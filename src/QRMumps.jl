@@ -56,7 +56,8 @@ export qrm_spmat, qrm_spfct,
     qrm_residual_norm!, qrm_residual_norm,
     qrm_residual_orth!, qrm_residual_orth,
     qrm_refine!, qrm_refine,
-    qrm_shift_spmat, qrm_update_shift_spmat!, qrm_golub_riley!,
+    qrm_shift_spmat, qrm_update_shift_spmat!, 
+    qrm_golub_riley, qrm_golub_riley!,
     qrm_set, qrm_get,
     qrm_user_permutation!
 
