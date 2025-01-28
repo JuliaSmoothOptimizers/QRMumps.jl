@@ -191,3 +191,73 @@ function qrm_least_squares_semi_normal!(spmat :: qrm_spmat{T}, spfct :: qrm_spfc
 
   qrm_refine!(spmat, spfct, x, z, Δx, y)
 end
+
+function qrm_shift_spmat(spmat :: qrm_spmat{T}, α :: T) where T # Given a m×n matrix A, return the matrix Aₐ = [A √aI].
+  @assert α ≥ 0
+
+  m = spmat.mat.m
+  n = spmat.mat.n
+  irn = copy(spmat.irn)
+  jcn = copy(spmat.jcn)
+  val = copy(spmat.val)
+  append!(irn, eltype(irn)(1):eltype(irn)(m))
+  append!(jcn, eltype(irn)(1 + n):eltype(irn)(m + n))
+  append!(val,  sqrt(α)*ones(T,m))
+  shifted_spmat = qrm_spmat_init(m, n + m, irn, jcn, val)
+
+  return qrm_shifted_spmat(shifted_spmat, α)
+end
+
+function qrm_update_shift_spmat!(shifted_spmat :: qrm_shifted_spmat{T}, α :: T) where T
+  shifted_spmat.α = α
+  shifted_spmat.spmat.val[shifted_spmat.spmat.mat.nz - shifted_spmat.spmat.mat.m + 1:end] .= sqrt(α)
+end
+
+#Given an underdetermined, rank defficient system Ax = b, compute the least-norm solution with Golub-Riley iteration
+# TODO: add something for rank defficient least squares as well (i.e compute (Aᵀ)†z)
+# TODO: add semi normal solves etc.
+function qrm_golub_riley!(
+  shifted_spmat :: qrm_shifted_spmat{T},
+  spfct :: qrm_spfct{T},  
+  xₖ :: AbstractVector{T}, 
+  Δx ::AbstractVector{T},
+  bₖ :: AbstractVector{T},
+  b :: AbstractVector{T};  
+  α :: T = eps(T)^(1//2), 
+  max_iter ::Int = 10, 
+  tol ::T = eps(T)^(1//2)
+  ) where {T <: Real}
+  
+  spmat = shifted_spmat.spmat
+
+  @assert length(b) == spmat.mat.m
+  @assert length(xₖ) == spmat.mat.n
+  @assert length(bₖ) == spmat.mat.m
+  @assert length(Δx) == spmat.mat.n
+
+  qrm_update_shift_spmat!(shifted_spmat, α)
+  qrm_spfct_init!(spfct, spmat)
+ 
+  qrm_set(spfct, "qrm_keeph", 0)
+  qrm_analyse!(spmat, spfct, transp ='t')
+  qrm_factorize!(spmat, spfct, transp = 't')
+
+  k = 0
+  solved = false
+  xₖ .= T(0)
+  while k < max_iter && !solved
+
+    qrm_spmat_mv!(spmat, T(1), xₖ, T(0), bₖ)
+    @. bₖ = b - bₖ
+
+    qrm_solve!(spfct, bₖ, Δx, transp = 't')
+    qrm_solve!(spfct, Δx, bₖ, transp = 'n')
+
+    qrm_spmat_mv!(spmat, T(1), bₖ, T(0), Δx, transp = 't')
+
+    @. xₖ = xₖ + Δx
+    
+    solved = norm(Δx) ≤ tol*norm(xₖ)
+    k = k + 1
+  end
+end

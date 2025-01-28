@@ -35,6 +35,11 @@ mutable struct qrm_spmat{T} <: AbstractSparseMatrix{T, Cint}
   end
 end
 
+mutable struct qrm_shifted_spmat{T} <: AbstractSparseMatrix{T, Cint}
+  spmat :: qrm_spmat{T}
+  α     :: T
+end
+
 function Base.cconvert(::Type{Ref{c_spmat{T}}}, spmat :: qrm_spmat{T}) where T
     return spmat.mat
 end
