@@ -192,8 +192,9 @@ function qrm_least_squares_semi_normal!(spmat :: qrm_spmat{T}, spfct :: qrm_spfc
   qrm_refine!(spmat, spfct, x, z, Δx, y)
 end
 
-function qrm_shift_spmat(spmat :: qrm_spmat{T}, α :: T) where T # Given a m×n matrix A, return the matrix Aₐ = [A √aI].
-  @assert α ≥ 0
+function qrm_shift_spmat(spmat :: qrm_spmat{T}, α :: T = T(0)) where T # Given a m×n matrix A, return the matrix Aₐ = [A √aI].
+  @assert real(α) ≥ 0
+  @assert imag(α) == 0
 
   m = spmat.mat.m
   n = spmat.mat.n
@@ -213,33 +214,28 @@ function qrm_update_shift_spmat!(shifted_spmat :: qrm_shifted_spmat{T}, α :: T)
   shifted_spmat.spmat.val[shifted_spmat.spmat.mat.nz - shifted_spmat.spmat.mat.m + 1:end] .= sqrt(α)
 end
 
-function qrm_golub_riley(
-  spmat :: qrm_spmat{T},
-  b :: AbstractVector{T};
-  α :: T = eps(T),
-  max_iter :: Int = 10,
-  tol :: T = eps(T)
-) where T
+function qrm_golub_riley(spmat :: qrm_spmat{T}, b :: AbstractVector{T}; α :: T = T(eps(real(T))), max_iter :: Int = 50, tol :: Real = eps(real(T))) where T
   shifted_spmat = qrm_shift_spmat(spmat, α)
   spfct = qrm_spfct_init(shifted_spmat.spmat)
   n = shifted_spmat.spmat.mat.n
+  m = shifted_spmat.spmat.mat.m
 
   x = similar(b, n)
   Δx = similar(b, n)
   y = similar(b)
 
-  return qrm_golub_riley!(
-      shifted_spmat,
-      spfct,
-      x,
-      Δx,
-      y,
-      b,
-      α = α,
-      max_iter = max_iter,
-      tol = tol
-    )
-  
+  qrm_golub_riley!(
+    shifted_spmat,
+    spfct,
+    x,
+    Δx,
+    y,
+    b,
+    α = α,
+    max_iter = max_iter,
+    tol = tol
+  )
+  return x[1:n-m]
 end
 #Given an underdetermined, rank defficient system Ax = b, compute the least-norm solution with Golub-Riley iteration
 # TODO: add something for rank defficient least squares as well (i.e compute (Aᵀ)†z)
@@ -251,13 +247,16 @@ function qrm_golub_riley!(
   Δx ::AbstractVector{T},
   y :: AbstractVector{T},
   b :: AbstractVector{T};  
-  α :: T = eps(T), 
-  max_iter :: Int = 10, 
-  tol :: T = eps(T)
-  ) where {T <: Real}
+  α :: T = T(eps(real(T))), 
+  max_iter :: Int = 50, 
+  tol :: Real = eps(real(T))
+  ) where T
   
   spmat = shifted_spmat.spmat
+  t = T <: Real ? 't' : 'c'
 
+  @assert real(α) ≥ 0
+  @assert imag(α) == 0
   @assert length(b) == spmat.mat.m
   @assert length(x) == spmat.mat.n
   @assert length(y) == spmat.mat.m
@@ -267,8 +266,8 @@ function qrm_golub_riley!(
   qrm_spfct_init!(spfct, spmat)
  
   qrm_set(spfct, "qrm_keeph", 0)
-  qrm_analyse!(spmat, spfct, transp ='t')
-  qrm_factorize!(spmat, spfct, transp = 't')
+  qrm_analyse!(spmat, spfct, transp = t)
+  qrm_factorize!(spmat, spfct, transp = t)
 
   k = 0
   solved = false
@@ -278,16 +277,14 @@ function qrm_golub_riley!(
     qrm_spmat_mv!(spmat, T(1), x, T(0), y)
     @. y = b - y
 
-    qrm_solve!(spfct, y, Δx, transp = 't')
+    qrm_solve!(spfct, y, Δx, transp = t)
     qrm_solve!(spfct, Δx, y, transp = 'n')
 
-    qrm_spmat_mv!(spmat, T(1), y, T(0), Δx, transp = 't')
+    qrm_spmat_mv!(spmat, T(1), y, T(0), Δx, transp = t)
 
     @. x = x + Δx
     
     solved = norm(Δx) ≤ tol*norm(x)
     k = k + 1
   end
-
-  return x[1:spmat.mat.n-spmat.mat.m]
 end

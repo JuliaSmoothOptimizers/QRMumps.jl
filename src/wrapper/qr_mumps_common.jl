@@ -50,10 +50,16 @@ function Base.unsafe_convert(::Type{Ref{c_spmat{T}}}, spmat :: c_spmat{T}) where
 end
 
 Base.size(spmat :: qrm_spmat) = (spmat.mat.m, spmat.mat.n)
+Base.size(shifted_spmat :: qrm_shifted_spmat) = (shifted_spmat.spmat.mat.m, shifted_spmat.spmat.mat.n)
 SparseArrays.nnz(spmat :: qrm_spmat) = spmat.mat.nz
+SparseArrays.nnz(shifted_spmat :: qrm_shifted_spmat) = shifted_spmat.spmat.mat.nz
 
 function Base.show(io :: IO, ::MIME"text/plain", spmat :: qrm_spmat)
   println(io, "Sparse matrix -- qrm_spmat of size ", size(spmat), " with ", nnz(spmat), " nonzeros.")
+end
+
+function Base.show(io :: IO, ::MIME"text/plain", shifted_spmat :: qrm_shifted_spmat) 
+  println(io, "Sparse matrix -- qrm_spmat of size ", size(shifted_spmat.spmat), " with ", nnz(shifted_spmat.spmat), " nonzeros.")
 end
 
 mutable struct c_spfct{T}
