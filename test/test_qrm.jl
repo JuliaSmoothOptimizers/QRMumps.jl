@@ -704,7 +704,11 @@ end
       qrm_factorize!(spmat, spfct)
       nbits = @allocated qrm_get(spfct, "qrm_rd_num")
       @test nbits == 0
+
+      shifted_spmat = qrm_shift_spmat(spmat)
+      spfct = qrm_spfct_init(shifted_spmat.spmat)
+      nbits = @allocated qrm_golub_riley!(shifted_spmat, spfct, x, Δx, y, b)
+      @test nbits == 0
     end
   end
-
 end
