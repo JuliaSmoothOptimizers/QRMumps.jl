@@ -50,7 +50,9 @@ export qrm_spmat, qrm_spfct,
     qrm_spbackslash!, qrm_spbackslash, \,
     qrm_spposv!, qrm_spposv,
     qrm_least_squares!, qrm_least_squares,
+    qrm_least_squares_semi_normal!, qrm_least_squares_semi_normal,
     qrm_min_norm!, qrm_min_norm,
+    qrm_min_norm_semi_normal!, qrm_min_norm_semi_normal,
     qrm_residual_norm!, qrm_residual_norm,
     qrm_residual_orth!, qrm_residual_orth,
     qrm_refine!, qrm_refine, qrm_set, qrm_get,
@@ -350,6 +352,48 @@ function qrm_least_squares! end
 function qrm_least_squares end
 
 @doc raw"""
+    qrm_least_squares_semi_normal!(spmat, b, x, z, Δx, y; transp='n')
+
+This function can be used to solve a linear least squares problem
+
+```math
+\min \|Ax − b\|_2
+```
+
+in the case where A is square or overdetermined.
+Contrary to `qrm_least_squares!`, this function allows to solve the problem without storing the Q-factor of the QR factorization of A.
+
+It is a shortcut for the sequence
+
+    qrm_set(spfct, "qrm_keeph", 0)
+    qrm_analyse!(spmat, spfct, transp  = 'n')
+    qrm_factorize!(spmat, spfct, transp = 'n')
+    qrm_spmat_mv!(spmat, T(1), b, T(0), z, transp = 't')
+    qrm_solve!(spfct, z, y, transp = 't')
+    qrm_solve!(spfct, y, x, transp = 'n')
+    qrm_refine!(spmat, spfct, x, z, Δx, y)
+
+Note that the Q-factor is not used in this sequence; only A and R. 
+
+#### Input Arguments
+
+* `spmat`: the input matrix.
+* `spfct`: a sparse factorization object of type `qrm_spfct`.
+* `b`: the right-hand side(s).
+* `x`: the solution vector(s).
+* `Δx`: an auxiliary vector (or matrix if b and x are matrices) used to compute the solution, the size of this vector (resp. matrix) is the same as x and can be uninitialized when the function is called.
+* `z`: an auxiliary vector (or matrix if b and x are matrices) used to store the value z = Aᵀb, the size of this vector (resp. matrix) is the same as x and can be uninitialized when the function is called.
+* `y`: an auxiliary vector (or matrix if b and x are matrices) used to compute the solution, the size of this vector (resp. matrix) is the same as b and can be uninitialized when the function is called.
+* `transp`: whether to use A, Aᵀ or Aᴴ. Can be either `'t'`, `'c'` or `'n'`.
+"""
+function qrm_least_squares_semi_normal! end
+
+@doc raw"""
+    x = qrm_least_squares_semi_normal(spmat, b)
+"""
+function qrm_least_squares_semi_normal end
+
+@doc raw"""
     qrm_min_norm!(spmat, b, x; transp='n')
 
 This function can be used to solve a linear minimum norm problem
@@ -379,6 +423,44 @@ function qrm_min_norm! end
     x = qrm_min_norm(spmat, b; transp='n')
 """
 function qrm_min_norm end
+
+@doc raw"""
+    qrm_min_norm_semi_normal!(spmat, spfct, b, x, Δx, y; transp='n')
+
+This function can be used to solve a linear minimum-norm problem
+
+```math
+\min \|x\|_2 \quad s.t. \quad Ax = b
+```
+in the case where A is square or underdetermined.
+Contrary to `qrm_min_norm!`, this function allows to solve the problem without storing the Q-factor in the QR factorization of Aᵀ.
+It is a shortcut for the sequence
+
+    qrm_set(spfct, "qrm_keeph", 0)
+    qrm_analyse!(spmat, spfct, transp = 't')
+    qrm_factorize!(spmat, spfct, transp = 't')
+    qrm_solve!(spfct, b, Δx, transp = 't')
+    qrm_solve!(spfct, Δx, y, transp = 'n')
+    qrm_spmat_mv!(spmat, T(1),  y, T(0), x, transp = 't')
+
+Remark that the Q-factor is not used in this sequence but rather A and R. 
+
+#### Input Arguments :
+
+* `spmat`: the input matrix.
+* `spfct`: a sparse factorization object of type `qrm_spfct`.
+* `b`: the right-hand side(s).
+* `x`: the solution vector(s).
+* `Δx`: an auxiliary vector (or matrix if x and b are matrices) used to compute the solution, the size of this vector (resp. matrix) is the same as x and can be uninitialized when the function is called.
+* `y`: an auxiliary vector (or matrix if x and b are matrices) used to compute the solution, the size of this vector (resp. matrix) is the same as b and can be uninitialized when the function is called.
+* `transp`: whether to use A, Aᵀ or Aᴴ. Can be either `'t'`, `'c'` or `'n'`.
+"""
+function qrm_min_norm_semi_normal! end
+
+@doc raw"""
+    x = qrm_min_norm_semi_normal(spmat, b)
+"""
+function qrm_min_norm_semi_normal end
 
 @doc raw"""
     qrm_residual_norm!(spmat, b, x, nrm; transp='n')
@@ -428,10 +510,10 @@ Given an approximate solution x of the linear system RᵀRx ≈ z where R is the
 
 * `spmat`: the input matrix.
 * `spfct`: a sparse factorization object of type `qrm_spfct`.
-* `x`: the approximate solution vector, the size of this vector is n.
-* `z`: the RHS vector of the linear system, the size of this vector is n.
-* `Δx`: an auxiliary vector used to compute the refinement, the size of this vector is n.
-* `y`: an auxiliary vector used to compute the refinement, the size of this vector is m.
+* `x`: the approximate solution vector or matrix, the size of this vector (resp. matrix) is n (resp. n×k).
+* `z`: the RHS vector or matrix of the linear system, the size of this vector (resp. matrix) is n (resp. n×k).
+* `Δx`: an auxiliary vector (or matrix if x and z are matrices) used to compute the refinement, the size of this vector (resp. matrix) is n (resp. n×k) and can be uninitialized when the function is called.
+* `y`: an auxiliary vector (or matrix if x and z are matrices) used to compute the refinement, the size of this vector (resp. matrix) is m (resp. m×k) and can be uninitialized when the function is called.
 """
 function qrm_refine! end
 
