@@ -676,7 +676,7 @@ end
     b = A*rand(T, n) # Make sure b is in the range of A
 
     spmat = qrm_spmat_init(A)
-    x = qrm_golub_riley(spmat, b)
+    x = qrm_golub_riley(spmat, b, transp = transp)
     B = Matrix(A)
 
     @test norm(A*x - b) ≤ tol
@@ -694,6 +694,11 @@ end
       A = sprand(T, m, n, 0.3)
       A = convert(SparseMatrixCSC{T,INT}, A)
 
+      b = A*rand(T, n) 
+      x = zeros(T,n+m)
+      Δx = similar(x,n+m)
+      y = similar(b)
+
       spmat = qrm_spmat_init(T)
       qrm_spmat_init!(spmat, A)
 
@@ -707,8 +712,9 @@ end
 
       shifted_spmat = qrm_shift_spmat(spmat)
       spfct = qrm_spfct_init(shifted_spmat.spmat)
-      nbits = @allocated qrm_golub_riley!(shifted_spmat, spfct, x, Δx, y, b)
+      nbits = @allocated qrm_golub_riley!(shifted_spmat, spfct, x, b, Δx, y, transp = transp)
       @test nbits == 0
     end
   end
+
 end
