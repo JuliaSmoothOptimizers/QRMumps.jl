@@ -689,7 +689,7 @@ end
   for T in (Float32, Float64, ComplexF32, ComplexF64)
     tol = (real(T) == Float32) ? 1e-3 : 1e-12
     transp = (T <: Real) ? 't' : 'c'
-    
+
     @testset "$INT" for INT in (Int32, Int64)
       A = sprand(T, m, n, 0.3)
       A = convert(SparseMatrixCSC{T,INT}, A)
