@@ -36,7 +36,7 @@ include("wrapper/qr_mumps_api.jl")
 
 include("utils.jl")
 
-export qrm_spmat, qrm_spfct,
+export qrm_spmat, qrm_shifted_spmat, qrm_spfct,
     qrm_init, qrm_finalize,
     qrm_spmat_init!, qrm_spmat_init, qrm_spmat_destroy!,
     qrm_spfct_init!, qrm_spfct_init, qrm_spfct_destroy!,
