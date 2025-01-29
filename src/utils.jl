@@ -238,9 +238,8 @@ function qrm_golub_riley(spmat :: qrm_spmat{T}, b :: AbstractVector{T}; α :: T 
   )
   return x[1:n-m]
 end
+
 #Given an underdetermined, rank defficient system Ax = b, compute the least-norm solution with Golub-Riley iteration
-# TODO: add something for rank defficient least squares as well (i.e compute (Aᵀ)†z)
-# TODO: add semi normal solves etc.
 function qrm_golub_riley!(
   shifted_spmat :: qrm_shifted_spmat{T},
   spfct :: qrm_spfct{T},  

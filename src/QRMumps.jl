@@ -526,6 +526,57 @@ function qrm_refine! end
 function qrm_refine end
 
 @doc raw"""
+  qrm_shifted_spmat = qrm_shift_spmat(spmat, α = 0)
+
+Given a matrix `A`, return the block matrix `(A  √α)` as a `qrm_shifted_spmat` type. See `qrm_shifted_spmat` for more information.
+This can be especially usefull when `A` is a rank defficient matrix as choosing an `α > 0` can act as a regularization of the rank defficiency.
+
+### Input Arguments
+* `spmat`: the input matrix
+* `α ≥ 0`: the regularization parameter (note the square root in the block matrix representation).
+"""
+function qrm_shift_spmat end 
+
+@doc raw"""
+  qrm_update_shift_spmat!(shifted_spmat, α)
+
+Given a `shifted` block matrix of the form `(A  √α)`, update the parameter `α` in the matrix.
+### Input Arguments
+* `shifted_spmat`: the input matrix of the qrm_shifted_spmat type. See `qrm_shifted_spmat` for more information.
+* `α ≥ 0`: the regularization parameter (note the square root in the block matrix representation).
+"""
+function qrm_update_shift_spmat! end
+
+@doc raw"""
+  x = qrm_golub_riley(spmat, b)
+
+### Input Arguments : 
+* `spmat`: the input matrix of the ill-conditionned system `Ax = b`.
+* `b`: the RHS of the ill-conditionned system. 
+"""
+function qrm_golub_riley end 
+
+@doc raw"""
+  qrm_golub_riley!(shifted_spmat, spfct, x, b, Δx, y; α = ϵm, max_iter = 50, tol = ϵm, transp = 'n')
+
+This method implements the Golub-Riley iteration.
+Given an ill-conditionned or rank defficient system `Ax = b` where `A` can have any shape `m×n`, compute `x = A†b` where `A†` is the Moore-Penrose pseudoinverse of `A`.
+
+### Input Arguments :
+
+* `shifted_spmat`: a `qrm_shifted_spmat` type representing the matrix `(A  √α)` where `α` is a regularization parameter for the Golub-Riley iteration. See `qrm_shift_spmat` for more information.
+* `spfct`: a sparse factorization object of type `qrm_spfct`.
+* `x`: the approximate solution vector or matrix, the size of this vector is n+m.
+* `b`: the RHS vector of the linear system, the size of this vector is n.
+* `Δx`: an auxiliary vector used to compute the solution, the size of this vector is n+m and can be uninitialized when the function is called.
+* `y`: an auxiliary vector used to compute the solution, the size of this vector is n and can be uninitialized when the function is called.
+
+The definition of the `shifted_spmat` may look odd at first sight. We use such a block matrix as an argument of `qrm_golub_riley!` because the QR factorization of this matrix has the property that
+`RᵀR = AᵀA + αI` which is the system we need to iteratively solve from for the Golub-Riley iteration. 
+"""
+function qrm_golub_riley! end
+
+@doc raw"""
     qrm_set(str, val)
     qrm_set(spfct, str, val)
 

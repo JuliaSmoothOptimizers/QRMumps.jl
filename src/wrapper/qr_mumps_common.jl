@@ -35,6 +35,11 @@ mutable struct qrm_spmat{T} <: AbstractSparseMatrix{T, Cint}
   end
 end
 
+@dow raw"""
+This data type represents a "shifted" matrix. When one wants to solve a "regularized" problem of the form `(AᵀA + αI)x = b`,
+one can use a QR factorization of the block matrix `QR = (A  √α)ᵀ` and note that `RᵀR = AᵀA + αI`. This type of problem is especially useful when the matrix `A` is poorly conditionned or rank defficient.
+It only contains a `qrm_spmat` matrix representing the above block matrix and the regularization parameter `α`.
+"""
 mutable struct qrm_shifted_spmat{T} <: AbstractSparseMatrix{T, Cint}
   spmat :: qrm_spmat{T}
   α     :: T
