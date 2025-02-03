@@ -223,6 +223,7 @@ function qrm_golub_riley(spmat :: qrm_spmat{T}, b :: AbstractVector{T}; α :: T 
   x = similar(b, n)
   Δx = similar(b, n)
   y = similar(b)
+  Δy = similar(b) 
 
   qrm_golub_riley!(
     shifted_spmat,
@@ -231,6 +232,7 @@ function qrm_golub_riley(spmat :: qrm_spmat{T}, b :: AbstractVector{T}; α :: T 
     b,
     Δx,
     y,
+    Δy,
     α = α,
     max_iter = max_iter,
     tol = tol,
@@ -246,7 +248,8 @@ function qrm_golub_riley!(
   x :: AbstractVector{T},
   b :: AbstractVector{T}, 
   Δx ::AbstractVector{T},
-  y :: AbstractVector{T};  
+  y :: AbstractVector{T},
+  Δy :: AbstractVector{T};  
   α :: T = T(eps(real(T))), 
   max_iter :: Int = 50, 
   tol :: Real = eps(real(T)),
@@ -262,6 +265,7 @@ function qrm_golub_riley!(
   @assert length(b) == spmat.mat.m
   @assert length(x) == spmat.mat.n
   @assert length(y) == spmat.mat.m
+  @assert length(Δy) == spmat.mat.m
   @assert length(Δx) == spmat.mat.n
 
   qrm_update_shift_spmat!(shifted_spmat, α)
@@ -274,17 +278,19 @@ function qrm_golub_riley!(
   k = 0
   solved = false
   x .= T(0)
+  y .= T(0)
   while k < max_iter && !solved
 
-    qrm_spmat_mv!(spmat, T(1), x, T(0), y, transp = ntransp)
-    @. y = b - y
+    qrm_spmat_mv!(spmat, T(1), x, T(0), Δy, transp = ntransp)
+    @. Δy = b - Δy
 
-    qrm_solve!(spfct, y, Δx, transp = t)
-    qrm_solve!(spfct, Δx, y, transp = 'n')
+    qrm_solve!(spfct, Δy, Δx, transp = t)
+    qrm_solve!(spfct, Δx, Δy, transp = 'n')
 
-    qrm_spmat_mv!(spmat, T(1), y, T(0), Δx, transp = transp)
+    qrm_spmat_mv!(spmat, T(1), Δy, T(0), Δx, transp = transp)
 
     @. x = x + Δx
+    @. y = y + Δy
     
     solved = norm(Δx) ≤ tol*norm(x)
     k = k + 1
