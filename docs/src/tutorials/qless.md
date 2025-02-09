@@ -67,6 +67,26 @@ residual_norm = norm(r)
 
 @printf("Error norm ‖x* - x‖ = %10.5e\n", error_norm)
 @printf("Residual norm ‖b - Ax‖ = %10.5e\n", residual_norm)
+
+# Alternatively, you can use `qrm_min_norm_semi_normal!` which performs these steps automatically.
+
+# Initialize data structures
+spmat = qrm_spmat_init(A)
+spfct = qrm_spfct_init(spmat)
+
+# Solve the minimum-norm problem
+qrm_min_norm_semi_normal!(spmat, spfct, b, x, y₁, y)
+
+# Compute error norm and residual norm
+@. e = x - x_star
+error_norm = norm(e)
+
+mul!(r, A, x)
+@. r = b - r
+residual_norm = norm(r)
+
+@printf("Error norm (qrm function) ‖x* - x‖ = %10.5e\n", error_norm)
+@printf("Residual norm (qrm function) ‖b - Ax‖ = %10.5e\n", residual_norm)
 ```
 
 ```@example qless2
@@ -169,4 +189,26 @@ Aresidual_norm = norm(Ar)
 
 @printf("Error norm (iterative refinement step) ‖x* - x‖ = %10.5e\n", error_norm)
 @printf("Normal equations residual norm (iterative refinement step) ‖Aᵀ(Ax - b)‖= %10.5e\n", Aresidual_norm)
+
+# Alternatively, you can use `qrm_least_squares_semi_normal!` which performs these steps automatically.
+
+# Initialize data structures
+spmat = qrm_spmat_init(A)
+spfct = qrm_spfct_init(spmat)
+
+# Solve the least-squares problem
+qrm_least_squares_semi_normal!(spmat, spfct, b, x, z, Δx, x₁)
+
+# Compute errors
+@. e = x - x_star
+error_norm = norm(e)
+
+mul!(r, A, x)
+@. r = b - r
+
+mul!(Ar, A', r)
+Aresidual_norm = norm(Ar)
+
+@printf("Error norm (qrm function) ‖x* - x‖ = %10.5e\n", error_norm)
+@printf("Normal equations residual norm (qrm function) ‖Aᵀ(Ax - b)‖= %10.5e\n", Aresidual_norm)
 ```
