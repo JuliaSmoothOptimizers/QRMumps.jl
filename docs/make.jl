@@ -18,7 +18,8 @@ makedocs(
                            "Least-squares problems" => "tutorials/ls.md",
                            "Least-norm problems" => "tutorials/ln.md",
                            "Detect rank deficiency" => "tutorials/rank_deficiency.md",
-                           "Ordering" => "tutorials/ordering.md"],
+                           "Ordering" => "tutorials/ordering.md",
+                           "Semi-normal equations and Q-less factorization" => "tutorials/qless.md"],
            "Reference" => "reference.md",
           ]
 )
