@@ -529,7 +529,7 @@ function qrm_refine end
   qrm_shifted_spmat = qrm_shift_spmat(spmat, α = 0)
 
 Given a matrix `A`, return the block matrix `(A  √α)` as a `qrm_shifted_spmat` type. See `qrm_shifted_spmat` for more information.
-This can be especially usefull when `A` is a rank defficient matrix as choosing an `α > 0` can act as a regularization of the rank defficiency.
+This can be especially useful when `A` is rank deficient, as choosing `α > 0` acts as a regularization.
 
 ### Input Arguments
 * `spmat`: the input matrix
@@ -560,7 +560,7 @@ function qrm_golub_riley end
   qrm_golub_riley!(shifted_spmat, spfct, x, b, Δx, y; α = ϵm, max_iter = 50, tol = ϵm, transp = 'n')
 
 This method implements the Golub-Riley iteration.
-Given an ill-conditionned or rank defficient system `Ax = b` where `A` can have any shape `m×n`, compute `x = A†b = Aᵀ(AAᵀ)†b` where `A†` is the Moore-Penrose pseudoinverse of `A`.
+Given a (possibly ill-conditionned or rank deficient) system `Ax = b` where `A` can have any shape `m×n`, compute `x = A†b = Aᵀ(AAᵀ)†b` where `A†` is the Moore-Penrose pseudoinverse of `A`.
 
 ### Input Arguments :
 
