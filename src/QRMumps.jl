@@ -528,7 +528,7 @@ function qrm_refine end
 @doc raw"""
   qrm_shifted_spmat = qrm_shift_spmat(spmat, α = 0)
 
-Given a matrix `A`, return the block matrix `(A  √α)` as a `qrm_shifted_spmat` type. See `qrm_shifted_spmat` for more information.
+Given a `spmat` structure representing some sparse matrix `A`, return the block matrix `(A  √α)` as a `qrm_shifted_spmat` type. See `qrm_shifted_spmat` for more information.
 This can be especially useful when `A` is rank deficient, as choosing `α > 0` acts as a regularization.
 
 ### Input Arguments
@@ -567,7 +567,7 @@ Given a (possibly ill-conditionned or rank deficient) system `Ax = b` where `A` 
 * `shifted_spmat`: a `qrm_shifted_spmat` type representing the matrix `(A  √α)` where `α` is a regularization parameter for the Golub-Riley iteration. See `qrm_shift_spmat` for more information.
 * `spfct`: a sparse factorization object of type `qrm_spfct`.
 * `x`: the approximate solution vector x := A†b = Aᵀy, the size of this vector is n+m, its values are overwritten by this function and it can be uninitialized when the function is called.
-* `b`: the RHS vector of the linear system, the size of this vector is n.
+* `b`: the RHS vector of the linear system, the size of this vector is m.
 * `Δx`: an auxiliary vector used to compute the solution, the size of this vector is n+m and can be uninitialized when the function is called.
 * `y`: the vector used to compute y := (AAᵀ)†b, the size of this vector is n and can be uninitialized when the function is called.
 * `Δy`: an auxiliary vector used to compute the solution, the size of this vector is n and can be uninitialized when the function is called.
