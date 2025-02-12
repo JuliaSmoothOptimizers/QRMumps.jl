@@ -574,6 +574,10 @@ Given a (possibly ill-conditionned or rank deficient) system `Ax = b` where `A` 
 
 The definition of the `shifted_spmat` may look odd at first sight. We use such a block matrix as an argument of `qrm_golub_riley!` because the QR factorization of this matrix has the property that
 `RᵀR = AᵀA + αI` which is the system we need to iteratively solve from for the Golub-Riley iteration. 
+
+The Golub-Riley method works as follows:
+Given the system Ax = b, let xk := 0. At each iteration k compute Δxk := Aᵀ(AAᵀ + αI)⁻¹(b - Axk), for some fixed regularization parameter `α > 0`,
+and let xk := xk + Δxk. This method has the advantage of only costing one QR-factorization of the `qrm_shifted_spmat` matrix.
 """
 function qrm_golub_riley! end
 
