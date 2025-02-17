@@ -526,7 +526,7 @@ function qrm_refine! end
 function qrm_refine end
 
 @doc raw"""
-  qrm_shifted_spmat = qrm_shift_spmat(spmat, α = 0)
+    qrm_shifted_spmat = qrm_shift_spmat(spmat, α = 0)
 
 Given a `spmat` structure representing some sparse matrix `A`, return the block matrix `(A  √α)` as a `qrm_shifted_spmat` type. See `qrm_shifted_spmat` for more information.
 This can be especially useful when `A` is rank deficient, as choosing `α > 0` acts as a regularization.
@@ -538,7 +538,7 @@ This can be especially useful when `A` is rank deficient, as choosing `α > 0` a
 function qrm_shift_spmat end 
 
 @doc raw"""
-  qrm_update_shift_spmat!(shifted_spmat, α)
+    qrm_update_shift_spmat!(shifted_spmat, α)
 
 Given a `shifted` block matrix of the form `(A  √α)`, update the parameter `α` in the matrix.
 ### Input Arguments
@@ -548,7 +548,7 @@ Given a `shifted` block matrix of the form `(A  √α)`, update the parameter `�
 function qrm_update_shift_spmat! end
 
 @doc raw"""
-  x = qrm_golub_riley(spmat, b)
+    x = qrm_golub_riley(spmat, b)
 
 ### Input Arguments : 
 * `spmat`: the input matrix of the ill-conditionned system `Ax = b`.
@@ -557,7 +557,7 @@ function qrm_update_shift_spmat! end
 function qrm_golub_riley end 
 
 @doc raw"""
-  qrm_golub_riley!(shifted_spmat, spfct, x, b, Δx, y; α = ϵm, max_iter = 50, tol = ϵm, transp = 'n')
+    qrm_golub_riley!(shifted_spmat, spfct, x, b, Δx, y; α = ϵm, max_iter = 50, tol = ϵm, transp = 'n')
 
 This method implements the Golub-Riley iteration.
 Given a (possibly ill-conditionned or rank deficient) system `Ax = b` where `A` can have any shape `m×n`, compute `x = A†b = Aᵀ(AAᵀ)†b` where `A†` is the Moore-Penrose pseudoinverse of `A`.
