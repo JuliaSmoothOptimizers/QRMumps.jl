@@ -581,6 +581,8 @@ The Golub-Riley method works as follows:
 * At each iteration, compute Δx := Aᵀ(AAᵀ + αI)⁻¹ (b - Ax), and update x := x + Δx.
 
 This method has the advantage of only costing one QR-factorization of the `qrm_shifted_spmat` matrix.
+For more details, see 
+A. Dax and L. Eldén, Approximating minimum norm solutions of rank-deficient least squares problems, Numerical Linear Algebra with Applications, 5, pp. 79-99, 1998, DOI 10.1002/(SICI)1099-1506(199803/04)5:2<79::AID-NLA126>3.0.CO;2-4
 """
 function qrm_golub_riley! end
 
