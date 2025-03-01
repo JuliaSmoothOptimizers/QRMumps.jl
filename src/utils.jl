@@ -191,3 +191,107 @@ function qrm_least_squares_semi_normal!(spmat :: qrm_spmat{T}, spfct :: qrm_spfc
 
   qrm_refine!(spmat, spfct, x, z, Δx, y)
 end
+
+function qrm_shift_spmat(spmat :: qrm_spmat{T}, α :: T = T(0)) where T # Given a m×n matrix A, return the matrix Aₐ = [A √aI].
+  @assert real(α) ≥ 0
+  @assert imag(α) == 0
+
+  m = spmat.mat.m
+  n = spmat.mat.n
+  irn = copy(spmat.irn)
+  jcn = copy(spmat.jcn)
+  val = copy(spmat.val)
+  append!(irn, eltype(irn)(1):eltype(irn)(m))
+  append!(jcn, eltype(irn)(1 + n):eltype(irn)(m + n))
+  append!(val,  sqrt(α)*ones(T,m))
+  shifted_spmat = qrm_spmat_init(m, n + m, irn, jcn, val)
+
+  return qrm_shifted_spmat(shifted_spmat, α)
+end
+
+function qrm_update_shift_spmat!(shifted_spmat :: qrm_shifted_spmat{T}, α :: T) where T
+  shifted_spmat.α = α
+  shifted_spmat.spmat.val[shifted_spmat.spmat.mat.nz - shifted_spmat.spmat.mat.m + 1:end] .= sqrt(α)
+end
+
+function qrm_golub_riley(spmat :: qrm_spmat{T}, b :: AbstractVector{T}; α :: T = T(eps(real(T))), max_iter :: Int = 50, tol :: Real = eps(real(T)), transp :: Char = 'n') where T
+  shifted_spmat = qrm_shift_spmat(spmat, α)
+  spfct = qrm_spfct_init(shifted_spmat.spmat)
+  n = shifted_spmat.spmat.mat.n
+  m = shifted_spmat.spmat.mat.m
+
+  x = similar(b, n)
+  Δx = similar(b, n)
+  y = similar(b)
+  Δy = similar(b) 
+
+  qrm_golub_riley!(
+    shifted_spmat,
+    spfct,
+    x,
+    b,
+    Δx,
+    y,
+    Δy,
+    α = α,
+    max_iter = max_iter,
+    tol = tol,
+    transp = transp
+  )
+  return x[1:n-m]
+end
+
+function qrm_golub_riley!(
+  shifted_spmat :: qrm_shifted_spmat{T},
+  spfct :: qrm_spfct{T},  
+  x :: AbstractVector{T},
+  b :: AbstractVector{T}, 
+  Δx ::AbstractVector{T},
+  y :: AbstractVector{T},
+  Δy :: AbstractVector{T};  
+  α :: T = T(eps(real(T))), 
+  max_iter :: Int = 50, 
+  tol :: Real = eps(real(T)),
+  transp :: Char = 'n'
+  ) where T
+  
+  spmat = shifted_spmat.spmat
+  t = T <: Real ? 't' : 'c'
+  ntransp = transp == 't' || transp == 'c' ? 'n' : t
+
+  @assert real(α) ≥ 0
+  @assert imag(α) == 0
+  @assert length(b) == spmat.mat.m
+  @assert length(x) == spmat.mat.n
+  @assert length(y) == spmat.mat.m
+  @assert length(Δy) == spmat.mat.m
+  @assert length(Δx) == spmat.mat.n
+
+  qrm_update_shift_spmat!(shifted_spmat, α)
+  qrm_spfct_init!(spfct, spmat)
+ 
+  qrm_set(spfct, "qrm_keeph", 0)
+  qrm_analyse!(spmat, spfct, transp = transp)
+  qrm_factorize!(spmat, spfct, transp = transp)
+
+  k = 0
+  solved = false
+  x .= T(0)
+  y .= T(0)
+  while k < max_iter && !solved
+
+    qrm_spmat_mv!(spmat, T(1), x, T(0), Δy, transp = ntransp)
+    @. Δy = b - Δy
+
+    qrm_solve!(spfct, Δy, Δx, transp = t)
+    qrm_solve!(spfct, Δx, Δy, transp = 'n')
+
+    qrm_spmat_mv!(spmat, T(1), Δy, T(0), Δx, transp = transp)
+
+    @. x = x + Δx
+    @. y = y + Δy
+    
+    solved = norm(Δx) ≤ tol*norm(x)
+    k = k + 1
+  end
+end
