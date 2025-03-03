@@ -325,7 +325,7 @@ end
       X = qrm_min_norm(spmat, B, seminormal = true)
       R = B - A * X
       @test norm(R) ≤ tol
-      
+
       X = qrm_min_norm_semi_normal(spmat, B)
       R = B - A * X
       @test norm(R) ≤ tol
@@ -337,7 +337,7 @@ end
       qrm_min_norm!(spmat, b, x)
       r = b - A * x
       @test norm(r) ≤ tol
-      
+
       Δx = similar(x)
       y = similar(b)
       qrm_min_norm_semi_normal!(spmat, spfct, b, x, Δx, y)
@@ -669,6 +669,19 @@ end
     x_refined = qrm_refine(spmat, spfct, x, b)
     @test norm(b - A'*(A*x)) ≥ norm(b - A'*(A*x_refined))
 
+    tol = (real(T) == Float32) ? 1e-2 : 1e-9
+    A = sprand(T, m, n, 0.3)
+    k = n ÷ 8
+    A[randperm(n)[1:k],:] .= T(0) # Make A rank deficient.
+    b = A*rand(T, n) # Make sure b is in the range of A
+
+    spmat = qrm_spmat_init(A)
+    x = qrm_golub_riley(spmat, b, transp = transp)
+    B = Matrix(A)
+
+    @test norm(A*x - b) ≤ tol
+    @test norm(x - pinv(B)*b) ≤ tol
+    @test norm(x - A'*pinv(B*B')*b) ≤ tol
   end
 end
 

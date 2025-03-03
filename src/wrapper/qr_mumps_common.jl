@@ -35,6 +35,16 @@ mutable struct qrm_spmat{T} <: AbstractSparseMatrix{T, Cint}
   end
 end
 
+@doc raw"""
+This data type represents a "shifted" matrix. When one wants to solve a "regularized" problem of the form `(AᵀA + αI)x = b`,
+one can use a QR factorization of the block matrix `QR = (A  √α)ᵀ` and note that `RᵀR = AᵀA + αI`. This type of problem is especially useful when `A` is poorly conditioned or rank deficient.
+It only contains a `qrm_spmat` matrix representing the above block matrix and the regularization parameter `α`.
+"""
+mutable struct qrm_shifted_spmat{T} <: AbstractSparseMatrix{T, Cint}
+  spmat :: qrm_spmat{T}
+  α     :: T
+end
+
 function Base.cconvert(::Type{Ref{c_spmat{T}}}, spmat :: qrm_spmat{T}) where T
     return spmat.mat
 end
@@ -45,10 +55,16 @@ function Base.unsafe_convert(::Type{Ref{c_spmat{T}}}, spmat :: c_spmat{T}) where
 end
 
 Base.size(spmat :: qrm_spmat) = (spmat.mat.m, spmat.mat.n)
+Base.size(shifted_spmat :: qrm_shifted_spmat) = (shifted_spmat.spmat.mat.m, shifted_spmat.spmat.mat.n)
 SparseArrays.nnz(spmat :: qrm_spmat) = spmat.mat.nz
+SparseArrays.nnz(shifted_spmat :: qrm_shifted_spmat) = shifted_spmat.spmat.mat.nz
 
 function Base.show(io :: IO, ::MIME"text/plain", spmat :: qrm_spmat)
   println(io, "Sparse matrix -- qrm_spmat of size ", size(spmat), " with ", nnz(spmat), " nonzeros.")
+end
+
+function Base.show(io :: IO, ::MIME"text/plain", shifted_spmat :: qrm_shifted_spmat) 
+  println(io, "Sparse matrix -- qrm_spmat of size ", size(shifted_spmat.spmat), " with ", nnz(shifted_spmat.spmat), " nonzeros.")
 end
 
 mutable struct c_spfct{T}
