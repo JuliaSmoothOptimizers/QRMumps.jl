@@ -57,6 +57,14 @@ qrm_refine!
 ```
 
 ```@docs
+qrm_update_shift_spmat!
+qrm_shift_spmat
+qrm_shifted_spmat
+qrm_golub_riley!
+qrm_golub_riley
+```
+
+```@docs
 qrm_spmat_mv!
 qrm_spmat_nrm
 qrm_vecnrm!
