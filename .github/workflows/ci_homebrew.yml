@@ -9,23 +9,12 @@ jobs:
   test:
     name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.allow_failure }}
     strategy:
       fail-fast: false
       matrix:
         version: ['lts', '1']
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-22.04, macos-13]
         arch: [x64]
-        allow_failure: [false]
-        include:
-          - version: 'nightly'
-            os: ubuntu-latest
-            arch: x64
-            allow_failure: true
-          - version: 'nightly'
-            os: macos-latest
-            arch: x64
-            allow_failure: true
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
