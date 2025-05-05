@@ -2,7 +2,7 @@ module QRMumps
 
 using Libdl, SparseArrays, LinearAlgebra
 
-import Base: \
+import Base: \, RefValue
 import LinearAlgebra: mul!
 
 if haskey(ENV, "JULIA_QRMUMPS_LIBRARY_PATH")
