@@ -92,10 +92,10 @@ solve phase.
 """
 mutable struct qrm_spfct{T} <: Factorization{T}
   cperm_in :: Vector{Cint}
-  ptr_rp   :: Ref{Ptr{Cint}}
-  ptr_cp   :: Ref{Ptr{Cint}}
-  ref_int  :: Ref{Clonglong}
-  ref_float:: Ref{Float32}
+  ptr_rp   :: RefValue{Ptr{Cint}}
+  ptr_cp   :: RefValue{Ptr{Cint}}
+  ref_int  :: RefValue{Clonglong}
+  ref_float:: RefValue{Float32}
   fct      :: c_spfct{T}
 
   function qrm_spfct{T}() where T
