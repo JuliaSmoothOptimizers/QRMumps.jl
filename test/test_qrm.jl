@@ -699,7 +699,8 @@ end
 
       spfct = qrm_spfct_init(spmat)
 
-      qrm_set(spfct, "qrm_rd_eps", tol)
+      nbits = @allocated qrm_set(spfct, "qrm_rd_eps", tol)
+      @test nbits == 0
       qrm_analyse!(spmat, spfct)
       qrm_factorize!(spmat, spfct)
       nbits = @allocated qrm_get(spfct, "qrm_rd_num")
