@@ -834,9 +834,11 @@ for (finame, frname, elty) in ((:sqrm_spfct_set_i4_c, :sqrm_spfct_set_r4_c, :Flo
     @eval begin
         function qrm_set(spfct :: qrm_spfct{$elty}, str :: String, val :: Number)
             if str ∈ PICNTL
-                err = $finame(spfct, str, val)
+                spfct.ref_int[] = Cint(val)
+                err = $finame(spfct, str, spfct.ref_int)
             elseif str ∈ RCNTL
-                err = $frname(spfct, str, val)
+                spfct.ref_float[] = Cfloat(val)
+                err = $frname(spfct, str, spfct.ref_float)
             else
                 err = Int32(23)
             end
