@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Semi-normal equations and Q-less factorization · QRMumps.jl</title><meta name="title" content="Semi-normal equations and Q-less factorization · QRMumps.jl"/><meta property="og:title" content="Semi-normal equations and Q-less factorization · QRMumps.jl"/><meta property="twitter:title" content="Semi-normal equations and Q-less factorization · QRMumps.jl"/><meta name="description" content="Documentation for QRMumps.jl."/><meta property="og:description" content="Documentation for QRMumps.jl."/><meta property="twitter:description" content="Documentation for QRMumps.jl."/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/style.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img src="../../assets/logo.png" alt="QRMumps.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../../">QRMumps.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Introduction</a></li><li><a class="tocitem" href="../../features/">Features</a></li><li><a class="tocitem" href="../../optional_features/">Optional features</a></li><li><a class="tocitem" href="../../api/">API</a></li><li><a class="tocitem" href="../../control_parameters/">Control parameters</a></li><li><a class="tocitem" href="../../information_parameters/">Information parameters</a></li><li><a class="tocitem" href="../../performance/">Performance tuning</a></li><li><span class="tocitem">Tutorials</span><ul><li><a class="tocitem" href="../spd/">Symmetric and positive definite linear systems</a></li><li><a class="tocitem" href="../ls/">Least-squares problems</a></li><li><a class="tocitem" href="../ln/">Least-norm problems</a></li><li><a class="tocitem" href="../rank_deficiency/">Detect rank deficiency</a></li><li><a class="tocitem" href="../ordering/">Ordering</a></li><li class="is-active"><a class="tocitem" href>Semi-normal equations and Q-less factorization</a></li></ul></li><li><a class="tocitem" href="../../reference/">Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Tutorials</a></li><li class="is-active"><a href>Semi-normal equations and Q-less factorization</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Semi-normal equations and Q-less factorization</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/JuliaSmoothOptimizers/QRMumps.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/JuliaSmoothOptimizers/QRMumps.jl/blob/main/docs/src/tutorials/qless.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><pre><code class="language-julia hljs"># The Q-less QR factorization may be used to solve the least-norm problem
+#
+#   minimize ‖x‖  subject to  Ax=b
+#
+# while saving storage because Q is not formed.
+# Thus it is appropriate for large problems where storage is at a premium.
+# The normal equations of the second kind AAᵀy = b are the optimality conditions of the least-norm problems, where x = Aᵀy.
+# If Aᵀ = QR, they can be equivalently written RᵀRy = b.
+#
+# The stability of this procedure is comparable to the method that uses Q---see
+#
+# C. C. Paige, An error analysis of a method for solving matrix equations,
+# Mathematics of Computations, 27, pp. 355-359, 1973, DOI 10.2307/2005623.
+
+using LinearAlgebra, Printf, SparseArrays
+using QRMumps
+
+# Initialize data
+m, n = 5, 7
+irn = [1, 3, 5, 2, 3, 5, 1, 4, 4, 5, 2, 1, 3]
+jcn = [1, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6, 7, 7]
+val = [1.0, 2.0, 3.0, 1.0, 1.0, 2.0, 4.0, 1.0, 5.0, 1.0, 3.0, 6.0, 1.0]
+
+A = sparse(irn, jcn, val, m, n)
+b = [40.0, 10.0, 44.0, 98.0, 87.0]
+x_star = [16.0, 1.0, 10.0, 3.0, 19.0, 3.0, 2.0]
+y₁ = zeros(n)
+y = zeros(m)
+x = zeros(n)
+
+e = zeros(n)
+r = zeros(m)
+
+# Initialize QRMumps
+qrm_init()
+
+# Initialize data structures
+spmat = qrm_spmat_init(A)
+spfct = qrm_spfct_init(spmat)
+
+# Specify that we want the Q-less QR factorization
+qrm_set(spfct, &quot;qrm_keeph&quot;, 0)
+
+# Perform symbolic analysis of Aᵀ and factorize Aᵀ = QR
+qrm_analyse!(spmat, spfct; transp=&#39;t&#39;)
+qrm_factorize!(spmat, spfct, transp=&#39;t&#39;)
+
+# Solve RᵀR y = b in two steps:
+# 1. Solve Rᵀy₁ = b
+qrm_solve!(spfct, b, y₁; transp=&#39;t&#39;)
+
+# 2. Solve Ry = y₁
+qrm_solve!(spfct, y₁, y; transp=&#39;n&#39;)
+
+
+# Compute the least norm solution of Ax = b
+x .= A&#39;*y
+
+# Compute error norm and residual norm
+@. e = x - x_star
+error_norm = norm(e)
+
+mul!(r, A, x)
+@. r = b - r
+residual_norm = norm(r)
+
+@printf(&quot;Error norm ‖x* - x‖ = %7.1e\n&quot;, error_norm)
+@printf(&quot;Residual norm ‖b - Ax‖ = %7.1e\n&quot;, residual_norm)
+
+# Alternatively, you can use `qrm_min_norm_semi_normal!`, which performs these steps automatically
+
+# Initialize data structures
+spmat = qrm_spmat_init(A)
+spfct = qrm_spfct_init(spmat)
+
+# Solve the minimum-norm problem
+qrm_min_norm_semi_normal!(spmat, spfct, b, x, y₁, y)
+
+# Compute error norm and residual norm
+@. e = x - x_star
+error_norm = norm(e)
+
+mul!(r, A, x)
+@. r = b - r
+residual_norm = norm(r)
+
+@printf(&quot;Error norm (qrm function) ‖x* - x‖ = %7.1e\n&quot;, error_norm)
+@printf(&quot;Residual norm (qrm function) ‖b - Ax‖ = %7.1e\n&quot;, residual_norm)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Error norm ‖x* - x‖ = 1.1e-14
+Residual norm ‖b - Ax‖ = 3.6e-14
+Error norm (qrm function) ‖x* - x‖ = 1.1e-14
+Residual norm (qrm function) ‖b - Ax‖ = 3.6e-14</code></pre><pre><code class="language-julia hljs"># The Q-less QR factorization may be used to solve the least-square problem
+#
+#   minimize ‖Ax - b‖
+#
+# while saving storage because Q is not formed.
+# Thus it is appropriate for large problems where storage is at a premium.
+# The normal equations AᵀAx = Aᵀb are the optimality conditions of the least-squares problem.
+# If A = QR, they can be equivalently written RᵀRx = Aᵀb.
+#
+# This procedure is backward stable if we perform one step of iterative refinement---see
+#
+# Å. Björck, Stability analysis of the method of seminormal equations for linear least squares problems,
+# Linear Algebra and its Applications, 88–89, pp. 31-48, 1987, DOI 10.1016/0024-3795(87)90101-7.
+
+using LinearAlgebra, Printf, SparseArrays
+using QRMumps
+
+# Initialize data
+m, n = 7, 5
+irn = [1, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6, 7, 7]
+jcn = [1, 3, 5, 2, 3, 5, 1, 4, 4, 5, 2, 1, 3]
+val = [1.0, 2.0, 3.0, 1.0, 1.0, 2.0, 4.0, 1.0, 3.0, 1.0, 3.0, 2.0, 1.0]
+
+A = sparse(irn, jcn, val, m, n)
+b = [22.0, 2.0, 13.0, 8.0, 17.0, 6.0, 5.0]
+x_star = [1.0, 2.0, 3.0, 4.0, 5.0]
+
+z = zeros(n)
+x₁ = zeros(m)
+x = zeros(n)
+
+r = zeros(m)
+Ar = zeros(n)
+e = zeros(n)
+Δx₁ = zeros(m)
+Δx = zeros(n)
+
+# Initialize QRMumps
+qrm_init()
+
+# Initialize data structures
+spmat = qrm_spmat_init(A)
+spfct = qrm_spfct_init(spmat)
+
+# Specify that we want the Q-less QR factorization
+qrm_set(spfct, &quot;qrm_keeph&quot;, 0)
+
+# Perform symbolic analysis of A and factorize A = QR
+qrm_analyse!(spmat, spfct)
+qrm_factorize!(spmat, spfct)
+
+# Compute the RHS of the semi-normal equations
+mul!(z, A&#39;, b)
+
+# Solve RᵀR x = z = Aᵀb in two steps:
+# 1. Solve Rᵀx₁ = z
+qrm_solve!(spfct, z, x₁; transp = &#39;t&#39;)
+
+# 2. Solve Rx = x₁
+qrm_solve!(spfct, x₁, x; transp = &#39;n&#39;)
+
+# Compute errors
+@. e = x - x_star
+error_norm = norm(e)
+
+# Compute the normal equations residual in two steps to prevent allocating memory:
+# 1. Compute r = b - Ax
+mul!(r, A, x)
+@. r = b - r
+
+# 2. Compute Aᵀr = Aᵀ(b - A*x)
+mul!(Ar, A&#39;, r)
+Aresidual_norm = norm(Ar)
+
+@printf(&quot;Error norm ‖x* - x‖ = %7.1e\n&quot;, error_norm)
+@printf(&quot;Normal equations residual norm ‖Aᵀ(Ax - b)‖= %7.1e\n&quot;, Aresidual_norm)
+
+# As such, this method is not backward stable and we need to add an iterative refinement step:
+# For this, we compute the least-squares solution Δx of min ‖Aᵀr - AΔx‖, where r is the residual r = b - A*x.
+# We then update x := x + Δx
+
+# Solve the semi-normal equations as before
+qrm_solve!(spfct, Ar, Δx₁; transp=&#39;t&#39;)
+qrm_solve!(spfct, Δx₁, Δx; transp=&#39;n&#39;)
+
+# Update the least squares solution
+@. x = x + Δx
+
+# Compute errors as before
+@. e = x - x_star
+error_norm = norm(e)
+
+mul!(r, A, x)
+@. r = b - r
+mul!(Ar, A&#39;, r)
+Aresidual_norm = norm(Ar)
+
+@printf(&quot;Error norm (iterative refinement step) ‖x* - x‖ = %7.1e\n&quot;, error_norm)
+@printf(&quot;Normal equations residual norm (iterative refinement step) ‖Aᵀ(Ax - b)‖= %7.1e\n&quot;, Aresidual_norm)
+
+# Alternatively, you can use `qrm_least_squares_semi_normal!`, which performs these steps automatically
+
+# Initialize data structures
+spmat = qrm_spmat_init(A)
+spfct = qrm_spfct_init(spmat)
+
+# Solve the least-squares problem
+qrm_least_squares_semi_normal!(spmat, spfct, b, x, z, Δx, x₁)
+
+# Compute errors
+@. e = x - x_star
+error_norm = norm(e)
+
+mul!(r, A, x)
+@. r = b - r
+
+mul!(Ar, A&#39;, r)
+Aresidual_norm = norm(Ar)
+
+@printf(&quot;Error norm (qrm function) ‖x* - x‖ = %7.1e\n&quot;, error_norm)
+@printf(&quot;Normal equations residual norm (qrm function) ‖Aᵀ(Ax - b)‖= %7.1e\n&quot;, Aresidual_norm)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Error norm ‖x* - x‖ = 9.2e-15
+Normal equations residual norm ‖Aᵀ(Ax - b)‖= 4.0e-14
+Error norm (iterative refinement step) ‖x* - x‖ = 5.0e-16
+Normal equations residual norm (iterative refinement step) ‖Aᵀ(Ax - b)‖= 0.0e+00
+Error norm (qrm function) ‖x* - x‖ = 8.1e-15
+Normal equations residual norm (qrm function) ‖Aᵀ(Ax - b)‖= 8.7e-15</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../ordering/">« Ordering</a><a class="docs-footer-nextpage" href="../../reference/">Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.16.1 on <span class="colophon-date" title="Thursday 4 December 2025 22:40">Thursday 4 December 2025</span>. Using Julia version 1.12.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
