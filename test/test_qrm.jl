@@ -4,6 +4,16 @@ n = 100
 p = 5
 d = Dict(0 => "auto", 1 => "natural", 2 => "given", 3 => "colamd", 4 => "metis", 5 => "scotch")
 
+macro wrappedallocs(expr) # Makes allocation tests more stable on some versions of Julia
+  argnames = [gensym() for a in expr.args]
+  quote
+    function g($(argnames...))
+      @allocated $(Expr(expr.head, argnames...))
+    end
+    $(Expr(:call, :g, [esc(a) for a in expr.args]...))
+  end
+end
+
 @testset "least-squares problems" begin
   @testset "$T" for T in (Float32, Float64, ComplexF32, ComplexF64)
 
@@ -700,12 +710,12 @@ end
       spfct = qrm_spfct_init(spmat)
 
       qrm_set(spfct, "qrm_rd_eps", tol)
-      nbits = @allocated qrm_set(spfct, "qrm_rd_eps", tol)
+      nbits = @wrappedallocs qrm_set(spfct, "qrm_rd_eps", tol)
       @test nbits == 0
       qrm_analyse!(spmat, spfct)
       qrm_factorize!(spmat, spfct)
       qrm_get(spfct, "qrm_rd_num")
-      nbits = @allocated qrm_get(spfct, "qrm_rd_num")
+      nbits = @wrappedallocs qrm_get(spfct, "qrm_rd_num")
       @test nbits == 0
     end
   end
