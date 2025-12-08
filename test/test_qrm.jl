@@ -581,9 +581,9 @@ end
 end
 
 @testset "Auxiliary functions" begin
-  for str ∈ QRMumps.GICNTL ∪ QRMumps.PICNTL ∪ QRMumps.RCNTL
-    qrm_get(str)
-    qrm_set(str, 1)
+  for sym ∈ QRMumps.GICNTL ∪ QRMumps.PICNTL ∪ QRMumps.RCNTL
+    qrm_get(String(sym))
+    qrm_set(String(sym), 1)
   end
 
   @testset "precision = $T" for T in (Float32, Float64, ComplexF32, ComplexF64)
@@ -593,13 +593,13 @@ end
     spfct = qrm_analyse(spmat)
     qrm_factorize!(spmat, spfct)
 
-    for str ∈ QRMumps.PICNTL ∪ QRMumps.RCNTL
-      qrm_get(spfct, str)
-      qrm_set(spfct, str, 1)
+    for sym ∈ QRMumps.PICNTL ∪ QRMumps.RCNTL
+      qrm_get(spfct, String(sym))
+      qrm_set(spfct, String(sym), 1)
     end
 
-    for str ∈ QRMumps.STATS
-      qrm_get(spfct, str)
+    for sym ∈ QRMumps.STATS
+      qrm_get(spfct, String(sym))
     end
 
     A = 2 * A
