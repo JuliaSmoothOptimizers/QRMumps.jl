@@ -815,6 +815,10 @@ for (fname, elty, subty) in ((:sqrm_residual_orth_c, :Float32   , :Float32),
     end
 end
 
+function qrm_set(str :: Symbol, val :: Real)
+    qrm_set(String(sym), val)
+end
+
 function qrm_set(str :: String, val :: Number)
     if (Symbol(str) ∈ GICNTL) || (Symbol(str) ∈ PICNTL)
         err = qrm_glob_set_i4_c(str, val)
@@ -832,6 +836,9 @@ for (finame, frname, elty) in ((:sqrm_spfct_set_i4_c, :sqrm_spfct_set_r4_c, :Flo
                                (:cqrm_spfct_set_i4_c, :cqrm_spfct_set_r4_c, :ComplexF32),
                                (:zqrm_spfct_set_i4_c, :zqrm_spfct_set_r4_c, :ComplexF64))
     @eval begin
+        function qrm_set(spfct :: qrm_spfct{$elty}, sym :: Symbol, val :: Real)
+            qrm_set(spfct, String(sym), val)
+        end
         function qrm_set(spfct :: qrm_spfct{$elty}, str :: String, val :: Real)
             if Symbol(str) ∈ PICNTL
                 err = $finame(spfct, str, val)
@@ -844,6 +851,10 @@ for (finame, frname, elty) in ((:sqrm_spfct_set_i4_c, :sqrm_spfct_set_r4_c, :Flo
             return nothing
         end
     end
+end
+
+function qrm_get(sym :: Symbol)
+    return qrm_get(String(sym))
 end
 
 function qrm_get(str :: String)
@@ -865,6 +876,9 @@ for (finame, frname, elty) in ((:sqrm_spfct_get_i8_c, :sqrm_spfct_get_r4_c, :Flo
                                (:cqrm_spfct_get_i8_c, :cqrm_spfct_get_r4_c, :ComplexF32),
                                (:zqrm_spfct_get_i8_c, :zqrm_spfct_get_r4_c, :ComplexF64))
     @eval begin
+        function qrm_get(spfct :: qrm_spfct{$elty}, sym :: Symbol)
+            return qrm_get(spfct, String(sym))
+        end
         function qrm_get(spfct :: qrm_spfct{$elty}, str :: String)
             if (Symbol(str) ∈ PICNTL) || (Symbol(str) ∈ STATS)
                 val = spfct.ref_int
