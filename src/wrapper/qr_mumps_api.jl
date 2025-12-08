@@ -833,9 +833,9 @@ for (finame, frname, elty) in ((:sqrm_spfct_set_i4_c, :sqrm_spfct_set_r4_c, :Flo
                                (:zqrm_spfct_set_i4_c, :zqrm_spfct_set_r4_c, :ComplexF64))
     @eval begin
         function qrm_set(spfct :: qrm_spfct{$elty}, str :: String, val :: Real)
-            if Symbol(str) ∈ PICNTL_SYM
+            if str ∈ PICNTL
                 err = $finame(spfct, str, val)
-            elseif Symbol(str) ∈ RCNTL_SYM
+            elseif str ∈ RCNTL
                 err = $frname(spfct, str, val)
             else
                 err = Int32(23)
