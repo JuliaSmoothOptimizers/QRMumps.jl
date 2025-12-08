@@ -815,7 +815,7 @@ for (fname, elty, subty) in ((:sqrm_residual_orth_c, :Float32   , :Float32),
     end
 end
 
-function qrm_set(str :: Symbol, val :: Real)
+function qrm_set(sym :: Symbol, val :: Real)
     qrm_set(String(sym), val)
 end
 
