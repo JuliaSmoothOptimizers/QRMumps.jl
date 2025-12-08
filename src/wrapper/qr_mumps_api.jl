@@ -832,7 +832,7 @@ for (finame, frname, elty) in ((:sqrm_spfct_set_i4_c, :sqrm_spfct_set_r4_c, :Flo
                                (:cqrm_spfct_set_i4_c, :cqrm_spfct_set_r4_c, :ComplexF32),
                                (:zqrm_spfct_set_i4_c, :zqrm_spfct_set_r4_c, :ComplexF64))
     @eval begin
-        function qrm_set(spfct :: qrm_spfct{$elty}, str :: String, val :: Number)
+        function qrm_set(spfct :: qrm_spfct{$elty}, str :: String, val :: Real)
             if str ∈ PICNTL
                 err = $finame(spfct, str, val)
             elseif str ∈ RCNTL
