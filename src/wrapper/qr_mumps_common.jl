@@ -118,10 +118,10 @@ function Base.show(io :: IO, ::MIME"text/plain", spfct :: qrm_spfct)
   println(io, "Sparse factorization -- qrm_spfct")
 end
 
-const GICNTL = ("qrm_eunit", "qrm_print_etree", "qrm_ounit", "qrm_dunit", "qrm_ncpu", "qrm_ngpu", "qrm_max_mem", "qrm_tot_mem")
-const PICNTL = ("qrm_ordering", "qrm_minamalg", "qrm_mb", "qrm_nb", "qrm_ib", "qrm_bh", "qrm_keeph", "qrm_rhsnb", "qrm_nlz", "qrm_pinth")
-const RCNTL  = ("qrm_amalgth", "qrm_mem_relax", "qrm_rd_eps")
-const STATS  = ("qrm_e_nnz_r", "qrm_e_nnz_h", "qrm_e_facto_flops", "qrm_e_facto_mempeak", "qrm_nnz_r", "qrm_nnz_h", "qrm_facto_flops", "qrm_rd_num")
+const GICNTL = (:qrm_eunit, :qrm_print_etree, :qrm_ounit, :qrm_dunit, :qrm_ncpu, :qrm_ngpu, :qrm_max_mem, :qrm_tot_mem)
+const PICNTL = (:qrm_ordering, :qrm_minamalg, :qrm_mb, :qrm_nb, :qrm_ib, :qrm_bh, :qrm_keeph, :qrm_rhsnb, :qrm_nlz, :qrm_pinth)
+const RCNTL  = (:qrm_amalgth, :qrm_mem_relax, :qrm_rd_eps)
+const STATS  = (:qrm_e_nnz_r, :qrm_e_nnz_h, qrm_e_facto_flops, :qrm_e_facto_mempeak, :qrm_nnz_r, :qrm_nnz_h, :qrm_facto_flops, :qrm_rd_num)
 
 function error_handling(err :: Cint)
   status = "Unknown qr_mumps error: $err"
