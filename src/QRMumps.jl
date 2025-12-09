@@ -595,7 +595,7 @@ Set control parameters that define the behavior of `qr_mumps`.
 #### Input Arguments :
 
 * `spfct`: a sparse factorization object of type `qrm_spfct`.
-* `str`: a string describing the parameter to set.
+* `str`: either a string or a symbol describing the parameter to set. 
 * `val`: the parameter value.
 """
 function qrm_set end
@@ -609,7 +609,7 @@ Returns the value of a control parameter or an information parameter.
 #### Input Arguments :
 
 * `spfct`: a sparse factorization object of type `qrm_spfct`.
-* `str`: a string describing the parameter to get.
+* `str`: either a string or a symbol describing the parameter to get.
 """
 function qrm_get end
 

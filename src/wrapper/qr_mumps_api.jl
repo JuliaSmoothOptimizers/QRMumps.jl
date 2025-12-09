@@ -815,10 +815,14 @@ for (fname, elty, subty) in ((:sqrm_residual_orth_c, :Float32   , :Float32),
     end
 end
 
+function qrm_set(sym :: Symbol, val :: Real)
+    qrm_set(String(sym), val)
+end
+
 function qrm_set(str :: String, val :: Number)
-    if (str ∈ GICNTL) || (str ∈ PICNTL)
+    if (Symbol(str) ∈ GICNTL) || (Symbol(str) ∈ PICNTL)
         err = qrm_glob_set_i4_c(str, val)
-    elseif str ∈ RCNTL
+    elseif Symbol(str) ∈ RCNTL
         err = qrm_glob_set_r4_c(str, val)
     else
         err = Int32(23)
@@ -832,10 +836,13 @@ for (finame, frname, elty) in ((:sqrm_spfct_set_i4_c, :sqrm_spfct_set_r4_c, :Flo
                                (:cqrm_spfct_set_i4_c, :cqrm_spfct_set_r4_c, :ComplexF32),
                                (:zqrm_spfct_set_i4_c, :zqrm_spfct_set_r4_c, :ComplexF64))
     @eval begin
+        function qrm_set(spfct :: qrm_spfct{$elty}, sym :: Symbol, val :: Real)
+            qrm_set(spfct, String(sym), val)
+        end
         function qrm_set(spfct :: qrm_spfct{$elty}, str :: String, val :: Real)
-            if str ∈ PICNTL
+            if Symbol(str) ∈ PICNTL
                 err = $finame(spfct, str, val)
-            elseif str ∈ RCNTL
+            elseif Symbol(str) ∈ RCNTL
                 err = $frname(spfct, str, val)
             else
                 err = Int32(23)
@@ -846,11 +853,15 @@ for (finame, frname, elty) in ((:sqrm_spfct_set_i4_c, :sqrm_spfct_set_r4_c, :Flo
     end
 end
 
+function qrm_get(sym :: Symbol)
+    return qrm_get(String(sym))
+end
+
 function qrm_get(str :: String)
-    if (str ∈ GICNTL) || (str ∈ PICNTL)
+    if (Symbol(str) ∈ GICNTL) || (Symbol(str) ∈ PICNTL)
         val = Ref{Clonglong}(0)
         err = qrm_glob_get_i8_c(str, val)
-    elseif str ∈ RCNTL
+    elseif Symbol(str) ∈ RCNTL
         val = Ref{Float32}(0)
         err = qrm_glob_get_r4_c(str, val)
     else
@@ -865,11 +876,14 @@ for (finame, frname, elty) in ((:sqrm_spfct_get_i8_c, :sqrm_spfct_get_r4_c, :Flo
                                (:cqrm_spfct_get_i8_c, :cqrm_spfct_get_r4_c, :ComplexF32),
                                (:zqrm_spfct_get_i8_c, :zqrm_spfct_get_r4_c, :ComplexF64))
     @eval begin
+        function qrm_get(spfct :: qrm_spfct{$elty}, sym :: Symbol)
+            return qrm_get(spfct, String(sym))
+        end
         function qrm_get(spfct :: qrm_spfct{$elty}, str :: String)
-            if (str ∈ PICNTL) || (str ∈ STATS)
+            if (Symbol(str) ∈ PICNTL) || (Symbol(str) ∈ STATS)
                 val = spfct.ref_int
                 err = $finame(spfct, str, val)
-            elseif str ∈ RCNTL
+            elseif Symbol(str) ∈ RCNTL
                 val = spfct.ref_float
                 err = $frname(spfct, str, val)
             else
