@@ -557,7 +557,7 @@ function qrm_update_shift_spmat! end
 function qrm_golub_riley end 
 
 @doc raw"""
-    qrm_golub_riley!(shifted_spmat, spfct, x, b, Δx, y; α = ϵm, max_iter = 3, tol = ϵm, transp = 'n')
+    qrm_golub_riley!(shifted_spmat, spfct, x, b, Δx, y, Δy; α = ϵm, max_iter = 3, tol = ϵm, transp = 'n')
 
 This method implements the Golub-Riley iteration.
 Given a (possibly ill-conditionned or rank deficient) system `Ax = b` where `A` can have any shape `m×n`, compute `x = A†b = Aᵀ(AAᵀ)†b` where `A†` is the Moore-Penrose pseudoinverse of `A`.
