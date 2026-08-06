@@ -214,7 +214,7 @@ function qrm_update_shift_spmat!(shifted_spmat :: qrm_shifted_spmat{T}, α :: T)
   shifted_spmat.spmat.val[shifted_spmat.spmat.mat.nz - shifted_spmat.spmat.mat.m + 1:end] .= sqrt(α)
 end
 
-function qrm_golub_riley(spmat :: qrm_spmat{T}, b :: AbstractVector{T}; α :: T = T(eps(real(T))), max_iter :: Int = 50, tol :: Real = eps(real(T)), transp :: Char = 'n') where T
+function qrm_golub_riley(spmat :: qrm_spmat{T}, b :: AbstractVector{T}; α :: T = T(eps(real(T))), max_iter :: Int = 3, tol :: Real = eps(real(T)), transp :: Char = 'n') where T
   shifted_spmat = qrm_shift_spmat(spmat, α)
   spfct = qrm_spfct_init(shifted_spmat.spmat)
   n = shifted_spmat.spmat.mat.n
@@ -250,7 +250,7 @@ function qrm_golub_riley!(
   y :: AbstractVector{T},
   Δy :: AbstractVector{T};  
   α :: T = T(eps(real(T))), 
-  max_iter :: Int = 50, 
+  max_iter :: Int = 3, 
   tol :: Real = eps(real(T)),
   transp :: Char = 'n'
   ) where T
